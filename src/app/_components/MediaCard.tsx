@@ -1,26 +1,68 @@
-"use client"
-import MediaType from "./MediaType"
+import { db } from "../lib/database";
 
+interface MediaData {
+  Imdb_ID: string;
+  Name: string;
+  Description: string;
+  Cover_url: string;
+  Hero_url: string | null;
+  Release_year: number;
+  Pegi_rating: number;
+  Content_type: "film" | "serie";
+}
 
-export default function MediaCard({ID}: {ID: string})
-{
-    const mediaID = "112"
-   
-    return(
-        <button className="relative overflow-hidden border-2 border-[#090909] shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0">
-           
-            <div className="absolute inset-0 bg-cover bg-center bg-[url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.coverwhiz.com%2Fuploads%2Ftv%2Fstranger-things-season-2.jpg&f=1&nofb=1&ipt=0ae6fcc4c77da32048a1e7a8565f2c5ee29ee558a69f92af56e02a69e2a32a61')] transition-transform duration-500 scale-120 group-hover:scale-100"></div>
-           
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-[#00000035]"></div>
-           
-            <div className="relative z-10 font-bold">
-                <h1 className="text-[1rem]">media name: {mediaID}</h1>
-                <div className="flex flex-row gap-x-1 items-center">
-                    <h1>release year: {mediaID}</h1>
-                    <span className="text-gray-400">|</span>
-                    <h1>media type: {mediaID}</h1>
-                </div>
-            </div>
-        </button>
-    )
+interface MediaCardProps {
+  mediaID: string;
+}
+
+async function getMediaData(mediaId: string): Promise<MediaData | null> {
+  try {
+    const connection = await db;
+    const [rows] = await connection.execute(
+      "SELECT * FROM `content` WHERE Imdb_ID = ? ",
+      [mediaId]
+    );
+
+    const mediaArray = rows as any[];
+    return mediaArray.length > 0 ? mediaArray[0] : null;
+  } catch (error) {
+    console.error("Database error:", error);
+    return null;
+  }
+}
+
+export default async function MediaCard({ mediaID }: MediaCardProps) {
+  const mediaData = await getMediaData(mediaID);
+
+  if (!mediaData) {
+    return (
+      <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-gray-800 text-white p-8">
+        <p className="text-xl">Media not found</p>
+      </div>
+    );
+  }
+
+  const coverURL = mediaData.Cover_url || " ";
+
+  return (
+<button className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0 bg-[#090909]">
+  
+  <img
+    src={coverURL}
+    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-100"
+    style={{ clipPath: 'inset(0 round 12px)' }}
+  />
+  
+  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-[1]"></div>
+  
+  <div className="relative z-10 font-bold text-white">
+    <h1 className="text-[1rem]">{mediaData.Name}</h1>
+    <div className="flex flex-row gap-x-1 items-center">
+      <h1>{mediaData.Release_year}</h1>
+      <span className="text-gray-400">|</span>
+      <h1>{mediaData.Content_type}</h1>
+    </div>
+  </div>
+</button>
+  );
 }
