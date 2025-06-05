@@ -48,25 +48,28 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   const bgUrl = mediaData.Hero_url || " ";
 
   return (
-    <div className="relative flex flex-col justify-center gap-y-3 text-5xl w-full h-[30rem] bg-cover bg-center bg-[linear-gradient(rgba(10,10,10,0.1),rgba(10,10,10,1))] text-white p-8">
-      <img
-        src={bgUrl}
-        className="absolute inset-0 w-full h-full object-cover object-top -z-10"
-      />
-      <h1>{mediaData.Name}</h1>
-      <div className="flex flex-row gap-x-5 text-xl">
-        <PegiRating ID={mediaID} />
-        <h1>Release year: {mediaData.Release_year}</h1>
-        <h1>Type: {mediaData.Content_type}</h1>
-        <h1>Rating: {mediaData.Pegi_rating}+</h1>
-      </div>
-      <h1 className="text-xl font-medium w-[25rem] md:w-[50rem]">
-        {mediaData.Description}
-      </h1>
-      <div className="flex flex-row gap-x-4 text-lg mt-4">
-        <PlayButton ID={mediaID} />
-        <TrailerButton ID={mediaID} />
-      </div>
-    </div>
+    <div className="relative flex flex-col justify-center gap-y-3 text-5xl w-full h-[30rem] bg-cover bg-center text-white p-8">
+ <img
+   src={bgUrl}
+   className="absolute inset-0 w-full h-full object-cover object-top -z-10"
+ />
+ {/* Combined gradients overlay - positioned above image but below text */}
+ <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_100%)]"></div>
+ <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)] "></div>
+ <h1>{mediaData.Name}</h1>
+ <div className="flex flex-row gap-x-5 text-xl">
+   <PegiRating ID={mediaID} />
+   <h1>Release year: {mediaData.Release_year}</h1>
+   <h1>Type: {mediaData.Content_type}</h1>
+   <h1>Rating: {mediaData.Pegi_rating}+</h1>
+ </div>
+ <h1 className="text-xl font-medium w-[25rem] md:w-[50rem]">
+   {mediaData.Description}
+ </h1>
+ <div className="flex flex-row gap-x-4 text-lg mt-4">
+   <PlayButton ID={mediaID} />
+   <TrailerButton ID={mediaID} />
+ </div>
+</div>
   );
 }

@@ -49,7 +49,7 @@ export default async function MediaCard({ mediaID }: MediaCardProps) {
   
   <img
     src={coverURL}
-    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-100"
+    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-105"
     style={{ clipPath: 'inset(0 round 12px)' }}
   />
   

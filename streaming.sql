@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Giu 05, 2025 alle 12:02
+-- Creato il: Giu 05, 2025 alle 12:33
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -64,7 +64,11 @@ INSERT INTO `content` (`Imdb_ID`, `Name`, `Description`, `Cover_url`, `Hero_url`
 ('1', 'Interstellar', 'Interstellar è un film', 'https://s3.amazonaws.com/nightjarprod/content/uploads/sites/130/2021/08/19085635/gEU2QniE6E77NI6lCU6MxlNBvIx-scaled.jpg', 'https://www.blogo.it/app/uploads/sites/3/2023/07/interstellar-torna-al-cinema-lodissea-sci-fi-di-cristopher-nolan-nelle-sale-dal-31-luglio-al-2-agosto-2.jpg', 2014, 13, 'film'),
 ('2', 'Cinaglia', 'Negro negro', 'oiahsd', 'asdkjg', 2007, 18, 'film'),
 ('3', 'Crementi', 'Ciao nigger', 'ASDAaas', 'adasd', 2010230123, 99, 'film'),
-('4', 'Jojo\'s bizzarre adventure', 'Niggas', 'https://next-media.elkjop.com/image/dv_web_D1800010021386774/597312/jojos-bizarre-adventure-all-star-battle-r-pc-windows.jpg?w=1200&q=75', 'https://i.ytimg.com/vi/q5YTt8Jtnxw/maxresdefault.jpg', 2010, 13, 'serie');
+('4', 'Jojo\'s bizzarre adventure', 'Niggas', 'https://next-media.elkjop.com/image/dv_web_D1800010021386774/597312/jojos-bizarre-adventure-all-star-battle-r-pc-windows.jpg?w=1200&q=75', 'https://i.ytimg.com/vi/q5YTt8Jtnxw/maxresdefault.jpg', 2010, 13, 'serie'),
+('5', 'oppenheimer', 'Federico distone', 'https://m.media-amazon.com/images/M/MV5BNTFlZDI1YWQtMTVjNy00YWU1LTg2YjktMTlhYmRiYzQ3NTVhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', 'https://i.ytimg.com/vi/AByfwXr_JXs/maxresdefault.jpg', 2024, 13, 'film'),
+('6', 'zodiac', 'Film 123', 'https://m.media-amazon.com/images/I/61E0FgTRRmL.jpg', 'https://hotcorn-cdn.fra1.cdn.digitaloceanspaces.com/wp-content/uploads/sites/2/2020/04/21171648/zodiac.jpg', 2010, 13, 'film'),
+('7', 'the imitation game', 'imitation', 'https://m.media-amazon.com/images/M/MV5BNjI3NjY1Mjg3MV5BMl5BanBnXkFtZTgwMzk5MDQ3MjE@._V1_.jpg', 'https://www.intofilm.org/intofilm-production/7061/scaledcropped/3000x1688/resources/7061/imitation-game-image-1-studio-canal.jpg', 2017, 13, 'film'),
+('8', 'Avengers EndGame', 'ciao', 'https://i.redd.it/a1h3w7blmm2a1.jpg', 'https://quinlan.it/upload/images/2019/04/Avengers-Endgame-2019-Anthony-Russo-Joe-Russo-23.jpg', 2012, 12, 'film');
 
 -- --------------------------------------------------------
 
