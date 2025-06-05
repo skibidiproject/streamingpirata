@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <NavBar/>
-      <HeroMediaCard/>
+      <HeroMediaCard mediaID="4"/>
 
       <h1 className="text-2xl font-bold mt-15 ml-8">Aggiunti di recente</h1>
 

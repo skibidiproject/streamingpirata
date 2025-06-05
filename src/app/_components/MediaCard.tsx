@@ -1,7 +1,6 @@
 "use client"
-import ReleaseYear from "./ReleaseYear"
 import MediaType from "./MediaType"
-import MediaName from "./MediaName"
+
 
 export default function MediaCard({ID}: {ID: string})
 {
@@ -15,11 +14,11 @@ export default function MediaCard({ID}: {ID: string})
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-[#00000035]"></div>
            
             <div className="relative z-10 font-bold">
-                <MediaName ID={mediaID} />
+                <h1 className="text-[1rem]">media name: {mediaID}</h1>
                 <div className="flex flex-row gap-x-1 items-center">
-                    <ReleaseYear ID={mediaID} />
+                    <h1>release year: {mediaID}</h1>
                     <span className="text-gray-400">|</span>
-                    <MediaType ID={mediaID} />
+                    <h1>media type: {mediaID}</h1>
                 </div>
             </div>
         </button>
