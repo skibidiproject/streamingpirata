@@ -1,5 +1,3 @@
-import { db } from "../lib/database";
-
 interface MediaData {
   Imdb_ID: string;
   Name: string;
@@ -7,62 +5,35 @@ interface MediaData {
   Cover_url: string;
   Hero_url: string | null;
   Release_year: number;
-  Pegi_rating: number;
+  Pegi_rating: string;
   Content_type: "film" | "serie";
 }
 
 interface MediaCardProps {
-  mediaID: string;
+  mediaData: MediaData; // Riceve direttamente i dati
 }
 
-async function getMediaData(mediaId: string): Promise<MediaData | null> {
-  try {
-    const connection = await db;
-    const [rows] = await connection.execute(
-      "SELECT * FROM `content` WHERE Imdb_ID = ? ",
-      [mediaId]
-    );
-
-    const mediaArray = rows as any[];
-    return mediaArray.length > 0 ? mediaArray[0] : null;
-  } catch (error) {
-    console.error("Database error:", error);
-    return null;
-  }
-}
-
-export default async function MediaCard({ mediaID }: MediaCardProps) {
-  const mediaData = await getMediaData(mediaID);
-
-  if (!mediaData) {
-    return (
-      <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-gray-800 text-white p-8">
-        <p className="text-xl">Media not found</p>
-      </div>
-    );
-  }
-
+export default function MediaCard({ mediaData }: MediaCardProps) {
+  // Utilizza i dati passati come prop
   const coverURL = mediaData.Cover_url || " ";
 
   return (
-<button className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0 bg-[#090909]">
-  
-  <img
-    src={coverURL}
-    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-105"
-    style={{ clipPath: 'inset(0 round 12px)' }}
-  />
-  
-  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-[1]"></div>
-  
-  <div className="relative z-10 font-bold text-white">
-    <h1 className="text-[1rem]">{mediaData.Name}</h1>
-    <div className="flex flex-row gap-x-1 items-center">
-      <h1>{mediaData.Release_year}</h1>
-      <span className="text-gray-400">|</span>
-      <h1>{mediaData.Content_type}</h1>
-    </div>
-  </div>
-</button>
+    <button className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0 bg-[#090909]">
+      <img
+        src={coverURL}
+        className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-105"
+        style={{ clipPath: 'inset(0 round 12px)' }}
+        alt={mediaData.Name}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent z-[1]"></div>
+      <div className="relative z-10 font-bold text-white">
+        <h1 className="text-[1rem]">{mediaData.Name}</h1>
+        <div className="flex flex-row gap-x-1 items-center">
+          <h1>{mediaData.Release_year}</h1>
+          <span className="text-gray-400">|</span>
+          <h1>{mediaData.Content_type}</h1>
+        </div>
+      </div>
+    </button>
   );
 }

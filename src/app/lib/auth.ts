@@ -8,28 +8,6 @@ export interface User {
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        try {
-            const response = await fetch("/api/auth/me");
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data.user);
-            } else {
-                setUser(null);
-            }
-        } catch (error) {
-            console.error("Errore verifica auth:", error);
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const login = async (username: string, password: string) => {
         try {
@@ -65,7 +43,6 @@ export function useAuth() {
 
     return {
         user,
-        loading,
         login,
         logout,
         isAuthenticated: !!user,

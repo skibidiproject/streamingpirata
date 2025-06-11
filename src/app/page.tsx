@@ -1,33 +1,45 @@
+// app/page.tsx o app/(home)/page.tsx
 
 import NavBar from "./_components/NavBar";
 import HeroMediaCard from "./_components/HeroMediaCard";
-import MediaCard from "./_components/MediaCard";
+import Footer from "./_components/Footer";
+import ScrollSection from "./_components/ScrollSection";
 
+// Definisci il tipo per i dati dei media
+interface MediaData {
+  Imdb_ID: string;
+  Name: string;
+  Description: string;
+  Cover_url: string;
+  Hero_url: string | null;
+  Release_year: number;
+  Pegi_rating: string;
+  Content_type: "film" | "serie";
+}
 
-export default function Home() {
+export default async function Home() {
+  let latestMedia: MediaData[] = [];
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest`, {
+      cache: "no-store",
+    });
+    latestMedia = await res.json();
+  } catch (error) {
+    console.error("Errore nel fetch:", error);
+  }
+
   return (
     <>
-      <NavBar/>
-      <HeroMediaCard mediaID="1"/>
+      <NavBar />
 
-      <h1 className="text-2xl font-bold mt-15 ml-8">Aggiunti di recente</h1>
+      <HeroMediaCard mediaID="1" />
 
-      <div className="overflow-x-auto overflow-y-hidden">
+      <h1 className="text-2xl font-bold ml-8 mb-4">Aggiunti di recente</h1>
 
-        <div className="flex flex-row gap-x-5 px-8 pb-4 w-max">
-          <MediaCard mediaID="1" />
-          <MediaCard mediaID="4" />
-          <MediaCard mediaID="5" />
-          <MediaCard mediaID="6" />
-          <MediaCard mediaID="7" />
-          <MediaCard mediaID="8" />
-          <MediaCard mediaID="1" />
-          <MediaCard mediaID="4" />
-          <MediaCard mediaID="5" />
-          <MediaCard mediaID="6" />
-        </div>
-      </div>
+      <ScrollSection media={latestMedia} />
 
+      <Footer />
     </>
   );
 }

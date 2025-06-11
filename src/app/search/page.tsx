@@ -13,7 +13,10 @@ export default function Home() {
   return (
     <>
       <NavBar/>
-      <h1>You searched {query}</h1>
+      <div className="p-12">
+      <h1 className="text-2xl">Risultati per "{query}":</h1>
+        
+      </div>
     </>
   );
 }

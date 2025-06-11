@@ -1,0 +1,11 @@
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/app/lib/database";
+
+export async function GET(request: NextRequest) {
+    const connection = await db;
+    const [result] = await connection.execute('select * from content c order by Added_date desc limit 10')
+
+    const medias = result as any[];
+
+    return NextResponse.json(medias);
+}
