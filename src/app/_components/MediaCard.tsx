@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 interface MediaData {
   Imdb_ID: string;
   Name: string;
@@ -13,12 +15,16 @@ interface MediaCardProps {
   mediaData: MediaData; // Riceve direttamente i dati
 }
 
+import Link from 'next/link';
+
 export default function MediaCard({ mediaData }: MediaCardProps) {
-  // Utilizza i dati passati come prop
   const coverURL = mediaData.Cover_url || " ";
 
   return (
-    <button className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0 bg-[#090909]">
+    <Link
+      href={`/media/${mediaData.Imdb_ID}`}
+      className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-xl mt-8 p-4 group flex-shrink-0 bg-[#090909]"
+    >
       <img
         src={coverURL}
         className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-110 group-hover:scale-105"
@@ -34,6 +40,6 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
           <h1>{mediaData.Content_type}</h1>
         </div>
       </div>
-    </button>
+    </Link>
   );
 }

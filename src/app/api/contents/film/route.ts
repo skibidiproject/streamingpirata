@@ -3,7 +3,7 @@ import { db } from "@/app/lib/database";
 
 export async function GET(request: NextRequest) {
     const connection = await db;
-    const [result] = await connection.execute('select * from film union select * from serie')
+    const [result] = await connection.execute('select * from film')
 
     const medias = result as any[];
 
