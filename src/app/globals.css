@@ -26,9 +26,18 @@ body {
   /* IE e Edge */
   scrollbar-width: none;
   /* Firefox */
+/* Stile per i sottotitoli nativi */
+video::cue {
+  background: transparent;
+  text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
+  color: white;
+  font-size: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
   /* Chrome, Safari e Opera */
+}video::cue(b) {
+  font-weight: bold;
 }
