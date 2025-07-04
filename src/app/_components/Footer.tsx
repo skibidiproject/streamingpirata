@@ -1,3 +1,4 @@
+import Link from "next/link"
 export default function Footer()
 {
     return <>
@@ -6,7 +7,7 @@ export default function Footer()
         <img src="logo.png" alt="Logo" className="w-32 mx-auto mt-15"/>
         <small className="text-s">Copyright&copy; 2025 - SuperStream</small>
         <br />
-        <small className="text-s">(Il nome è provvisorio)</small>
+        <small className="text-s"><Link href="/disclaimer">DCMA Disclaimer</Link></small>
     </div>
     </>
 }

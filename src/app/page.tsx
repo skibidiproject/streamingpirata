@@ -5,21 +5,6 @@ import HeroMediaCard from "./_components/HeroMediaCard";
 import Footer from "./_components/Footer";
 import ScrollSection from "./_components/ScrollSection";
 
-import { Metadata } from 'next';
-
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Streaming Platform',
-    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo vuoi di più? Mettiti seduto e prendi i popcorn! 🍿",
-    icons: {
-      icon: './logo.png',
-      shortcut: './logo.png',
-      apple: './logo.png',
-    },
-  };
-}
-
-
 // Definisci il tipo per i dati dei media
 interface MediaData {
   Imdb_ID: string;
@@ -32,8 +17,6 @@ interface MediaData {
   Content_type: "film" | "serie";
 }
 
-
-
 export default async function Home() {
   let latestMedia: MediaData[] = [];
 
@@ -45,10 +28,9 @@ export default async function Home() {
   } catch (error) {
     console.error("Errore nel fetch:", error);
   }
+
   return (
     <>
-
-      <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
       <NavBar />
 
       <HeroMediaCard mediaID="1" />
