@@ -4,7 +4,7 @@ import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 
 interface MediaData {
-  Imdb_ID: string;
+  ID: string;
   Name: string;
   Description: string;
   Cover_url: string;
@@ -35,18 +35,18 @@ export default async function FilmPage() {
       
       {/* Hero Section con un film random o featured */}
       {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].Imdb_ID} />
+        <HeroMediaCard mediaID={films[0].ID} />
       )}
 
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Film</h1>
+      <div className="mx-8 lg:mx-12 mt-5">
+        <h1 className="text-2xl font-bold mb-2 mt-">Film</h1>
         
         {films.length === 0 ? (
           <p className="text-gray-500">Nessun film disponibile</p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">
             {films.map((film) => (
-              <MediaCard key={film.Imdb_ID} mediaData={film} />
+              <MediaCard key={film.ID} mediaData={film} />
             ))}
           </div>
         )}

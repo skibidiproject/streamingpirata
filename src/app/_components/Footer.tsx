@@ -7,7 +7,7 @@ export default function Footer()
         <img src="logo.png" alt="Logo" className="w-32 mx-auto mt-15"/>
         <small className="text-s">Copyright&copy; 2025 - SuperStream</small>
         <br />
-        <small className="text-s"><Link href="/disclaimer">DCMA Disclaimer</Link></small>
+        <small className="text-s underline text-stone-500"><Link href="/disclaimer">DISCLAIMER</Link></small>
     </div>
     </>
 }
