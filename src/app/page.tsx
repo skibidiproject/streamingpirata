@@ -22,7 +22,7 @@ export function generateMetadata(): Metadata {
 
 // Definisci il tipo per i dati dei media
 interface MediaData {
-  Imdb_ID: string;
+  ID: string;
   Name: string;
   Description: string;
   Cover_url: string;
@@ -30,6 +30,7 @@ interface MediaData {
   Release_year: number;
   Pegi_rating: string;
   Content_type: "film" | "serie";
+  title_card_url: string;
 }
 
 
@@ -42,6 +43,7 @@ export default async function Home() {
       cache: "no-store",
     });
     latestMedia = await res.json();
+    
   } catch (error) {
     console.error("Errore nel fetch:", error);
   }
@@ -53,7 +55,7 @@ export default async function Home() {
 
       <HeroMediaCard mediaID="1" />
 
-      <h1 className="text-2xl font-bold ml-8 mb-4">Aggiunti di recente</h1>
+      <h1 className="text-2xl font-bold ml-8 ">Aggiunti di recente</h1>
 
       <ScrollSection media={latestMedia} />
 

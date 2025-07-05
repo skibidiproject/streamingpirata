@@ -21,7 +21,7 @@ async function getMediaData(mediaId: string): Promise<MediaData | null> {
   try {
     const connection = await db;
     const [rows] = await connection.execute(
-      "SELECT * FROM `content` WHERE Imdb_ID = ? ",
+      "SELECT * FROM `content` WHERE ID = ? ",
       [mediaId]
     );
 
@@ -61,7 +61,7 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
         <h1>{mediaData.Content_type}</h1>
         {mediaData.Pegi_rating == "VM14" || mediaData.Pegi_rating == "VM18" ? <h1 className="border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.Pegi_rating}</h1> : <h1 className="border-1 px-1 rounded-[5px]" id="yr">{mediaData.Pegi_rating}</h1>}
       </div>
-      <h1 className="text-sm md:w-[50rem]">
+      <h1 className="text-[1rem] md:w-[50rem]">
         {mediaData.Description}
       </h1>
       <div className="flex flex-row gap-x-4 text-lg mt-4">

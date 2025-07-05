@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import MediaCard from "./MediaCard";
 
 interface MediaData {
-  Imdb_ID: string;
+  ID: string;
   Name: string;
   Description: string;
   Cover_url: string;
@@ -44,7 +44,26 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
   };
 
   return (
-    <div className="relative group px-5">
+    <div className="relative px-5 w-full ">
+
+
+      {/* LEFT GRADIENT */}
+      <div
+        className="pointer-events-none absolute left-0 top-0 h-full w-[150px] z-10"
+        style={{
+          background: `linear-gradient(to right, #0a0a0a 15%, #00000000  50%)`,
+        }}
+      ></div>
+
+      {/* RIGHT GRADIENT */}
+      <div
+        className="pointer-events-none absolute right-0 top-0 h-full w-[150px] z-10"
+        style={{
+          background: `linear-gradient(to left, #0a0a0a 15%, #00000000  50%)`,
+        }}
+      ></div>
+
+
       {/* Freccia sinistra */}
       {canScrollLeft && (
         <button
@@ -59,18 +78,18 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
                      shadow-lg hover:shadow-xl"
           aria-label="Scorri a sinistra"
         >
-          <svg 
-            width="16" 
-            height="16" 
-            viewBox="0 0 16 16" 
-            fill="none" 
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
             className="rotate-180"
           >
-            <path 
-              d="M6 12L10 8L6 4" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
+            <path
+              d="M6 12L10 8L6 4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
@@ -91,17 +110,17 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
                      shadow-lg hover:shadow-xl"
           aria-label="Scorri a destra"
         >
-          <svg 
-            width="16" 
-            height="16" 
-            viewBox="0 0 16 16" 
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
             fill="none"
           >
-            <path 
-              d="M6 12L10 8L6 4" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
+            <path
+              d="M6 12L10 8L6 4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
@@ -116,11 +135,19 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <div className="w-full flex flex-row gap-x-5 px-2 pb-4 whitespace-nowrap">
-          {media.map((m) => (
-            <div key={m.Imdb_ID} className="inline-block">
-              <MediaCard mediaData={m} />
-            </div>
-          ))}
+          {media.map((m) => {
+
+            console.log(m)
+
+            return (
+
+              <div key={m.ID} className="inline-block">
+
+                <MediaCard mediaData={m} />
+              </div>
+
+            )
+          })}
         </div>
       </div>
 
