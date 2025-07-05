@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import VideoPlayer from '@/app/_components/VideoPlayer';
 import PlayerLoader from '@/app/_components/PlayerLoader';
+import { Metadata } from 'next';
 
 interface PageProps {
   params: {
@@ -25,6 +26,18 @@ interface StreamData {
     total_found: number;
     working: number;
     master_playlists: number;
+  };
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    title: 'Player',
+    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo vuoi di più? Mettiti seduto e prendi i popcorn! 🍿",
+    icons: {
+      icon: './logo.png',
+      shortcut: './logo.png',
+      apple: './logo.png',
+    },
   };
 }
 

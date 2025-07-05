@@ -148,7 +148,64 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
     const handleWaiting = () => setIsBuffering(true);
     const handlePlaying = () => setIsBuffering(false);
 
+    const volumeSliderRef = useRef<HTMLDivElement>(null);
+    const isVolumeSliderDragging = useRef(false);
 
+
+    const handleVolumeSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!videoRef.current || !volumeSliderRef.current) return;
+
+        const rect = volumeSliderRef.current.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const newVolume = Math.min(Math.max(clickX / rect.width, 0), 1);
+
+        videoRef.current.volume = newVolume;
+        videoRef.current.muted = newVolume === 0;
+        setVolume(newVolume);
+    };
+
+    const updateVolumeFromEvent = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) => {
+        if (!videoRef.current || !volumeSliderRef.current) return;
+
+        let clientX: number;
+        if ('touches' in e && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+        } else if ('clientX' in e) {
+            clientX = (e as MouseEvent).clientX;
+        } else {
+            return;
+        }
+
+        const rect = volumeSliderRef.current.getBoundingClientRect();
+        let newVolume = (clientX - rect.left) / rect.width;
+        newVolume = Math.min(Math.max(newVolume, 0), 1);
+
+        videoRef.current.volume = newVolume;
+        videoRef.current.muted = newVolume === 0;
+        setVolume(newVolume);
+    };
+
+    const handleVolumeDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        isVolumeSliderDragging.current = true;
+        updateVolumeFromEvent(e);
+        document.addEventListener('mousemove', handleVolumeDragging);
+        document.addEventListener('touchmove', handleVolumeDragging);
+        document.addEventListener('mouseup', handleVolumeDragEnd);
+        document.addEventListener('touchend', handleVolumeDragEnd);
+    };
+
+    const handleVolumeDragging = (e: MouseEvent | TouchEvent) => {
+        if (!isVolumeSliderDragging.current) return;
+        updateVolumeFromEvent(e);
+    };
+
+    const handleVolumeDragEnd = () => {
+        isVolumeSliderDragging.current = false;
+        document.removeEventListener('mousemove', handleVolumeDragging);
+        document.removeEventListener('touchmove', handleVolumeDragging);
+        document.removeEventListener('mouseup', handleVolumeDragEnd);
+        document.removeEventListener('touchend', handleVolumeDragEnd);
+    };
 
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!videoRef.current || !duration || !progressRef.current) return;
@@ -726,20 +783,8 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             {showSettings && (
                 <div
                     ref={settingsRef}
-                    className={`
-                        absolute
-                        bottom-28
-                        h-70
-                        right-2
-                        bg-[#0a0a0a] rounded-xl
-                        p-4 z-40
-                        shadow-2xl border border-stone-800
-                        w-[80%] max-w-md
-                        sm:w-96 sm:right-4 lg:right-6
-                        md:w-80
-                        lg:w-80
-                        settings-panel
-                    `}
+                    className={`absolute bottom-24 lg:bottom-28 h-70 right-2 bg-[#0a0a0a]/50 backdrop-blur-sm rounded-xl p-4 z-40 shadow-2xl w-[80%] max-w-md sm:w-96 sm:right-4 lg:right-6 md:w-80 lg:w-80 settings-panel`}
+
                 >
                     <div className="flex justify-between items-center mb-4">
                         {/* Tabs a sinistra */}
@@ -747,7 +792,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <button
                                 onClick={() => setSettingsTab('quality')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'quality'
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-blue-500 text-white'
                                     : 'text-gray-300 hover:bg-gray-700'
                                     }`}
                             >
@@ -756,7 +801,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <button
                                 onClick={() => setSettingsTab('audio')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'audio'
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-blue-500 text-white'
                                     : 'text-gray-300 hover:bg-gray-700'
                                     }`}
                             >
@@ -765,7 +810,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <button
                                 onClick={() => setSettingsTab('subtitles')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'subtitles'
-                                    ? 'bg-blue-600 text-white'
+                                    ? 'bg-blue-500 text-white'
                                     : 'text-gray-300 hover:bg-gray-700'
                                     }`}
                             >
@@ -789,7 +834,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <div className="space-y-2 h-50">
                                 <button
                                     onClick={() => changeQuality(-1)}
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${isAutoQuality ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${isAutoQuality ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-gray-700'
                                         }`}
                                 >
                                     Automatico
@@ -798,7 +843,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                     <button
                                         key={level.id}
                                         onClick={() => changeQuality(level.id)}
-                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex justify-between items-center transition-all control-element ${!isAutoQuality && currentQuality === level.id ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex justify-between items-center transition-all control-element ${!isAutoQuality && currentQuality === level.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-gray-700'
                                             }`}
                                     >
                                         <span>{level.height}p</span>
@@ -817,7 +862,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                         <button
                                             key={track.id}
                                             onClick={() => changeAudioTrack(track.id)}
-                                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentAudioTrack === track.id ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentAudioTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
                                         >
                                             <span>
                                                 {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}
@@ -832,7 +877,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <div className="space-y-2 overflow-auto h-50">
                                 <button
                                     onClick={() => changeSubtitleTrack(-1)}
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === -1 ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === -1 ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
                                 >
                                     Disattivati
                                 </button>
@@ -840,7 +885,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                     <button
                                         key={track.id}
                                         onClick={() => changeSubtitleTrack(track.id)}
-                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === track.id ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
+                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-gray-700'}`}
                                     >
                                         <span>
                                             {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}
@@ -890,7 +935,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             style={{ width: `${buffered}%` }}
                         />
                         <div
-                            className="h-full bg-white rounded-full absolute"
+                            className="h-full bg-blue-500 rounded-full absolute"
                             style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                         >
                         </div>
@@ -917,8 +962,8 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                 )}
                             </button>
 
-                            {/* Volume Control */}
                             <div className="flex items-center gap-2">
+                                {/*Volume control*/}
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -938,16 +983,19 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                     )}
                                 </button>
 
-                                <input
-                                    type='range'
-                                    min="0"
-                                    max="1"
-                                    step="0.05"
-                                    value={volume}
-                                    onChange={handleVolumeChange}
-                                    className="w-16 md:w-20 accent-blue-500 control-element"
-                                    aria-label="Volume"
-                                />
+                                {/* Custom Volume Slider */}
+                                <div
+                                    ref={volumeSliderRef}
+                                    className="w-16 md:w-20 h-1.5 bg-zinc-700 rounded-full cursor-pointer relative control-element"
+                                    onClick={handleVolumeSeek}
+                                    onMouseDown={handleVolumeDragStart}
+                                    onTouchStart={handleVolumeDragStart}
+                                >
+                                    <div
+                                        className="h-full bg-blue-500 rounded-full absolute"
+                                        style={{ width: `${volume * 100}%` }}
+                                    />
+                                </div>
                             </div>
 
                             {/* Time Display */}
