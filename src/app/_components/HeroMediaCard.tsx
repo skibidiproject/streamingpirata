@@ -48,24 +48,29 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="relative flex flex-col justify-center gap-y-3 text-4xl w-full h-full py-35 bg-cover bg-center text-white p-8">
+    <div className="relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full md:h-[40vw] text-white p-8 ">
+
       <img
         src={bgUrl}
         className="absolute inset-0 w-full h-full object-cover object-top -z-10"
       />
+
       {/* Combined gradients overlay - positioned above image but below text */}
       <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_100%)]"></div>
+
       <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)] "></div>
-      <img src={mediaData.logo_url} className="max-w-72 max-h-32 mb-3 ml-1 object-contain object-left"/>
+
+      <img src={mediaData.logo_url} className="w-[15rem] lg:w-[15vw] mb-3 ml-1 object-contain object-left "/>
+
       <div className="flex flex-row gap-x-5 text-sm font-bold p-1">
         <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
         <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
-        {mediaData.certification == "VM14" || mediaData.certification == "VM18" ? <h1 className="border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.certification}</h1> : null}
+        {mediaData.certification == "VM14" || mediaData.certification == "VM18" ? <h1 className=" border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.certification}</h1> : null}
       </div>
-      <h1 className="text-sm md:w-[50rem]">
+      <h1 className="text-sm md:w-[50rem]  ">
           <ExpandableText text={mediaData.description}/>
       </h1>
-      <div className="flex flex-row gap-x-4 text-lg mt-4">
+      <div className="flex flex-row gap-x-4 text-lg mt-4 ">
         <PlayButton id={mediaID} type={mediaData.type}/>
         <TrailerButton id={mediaID} />
       </div>

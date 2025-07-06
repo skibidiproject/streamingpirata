@@ -52,7 +52,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
       <div
         className="pointer-events-none absolute left-0 top-0 h-full w-[150px] z-10"
         style={{
-          background: `linear-gradient(to right, #0a0a0a 15%, #00000000  50%)`,
+          background: `linear-gradient(to right, #0a0a0a 15%, #00000000  20%)`,
         }}
       ></div>
 
@@ -60,7 +60,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
       <div
         className="pointer-events-none absolute right-0 top-0 h-full w-[150px] z-10"
         style={{
-          background: `linear-gradient(to left, #0a0a0a 15%, #00000000  50%)`,
+          background: `linear-gradient(to left, #0a0a0a 15%, #00000000  20%)`,
         }}
       ></div>
 
@@ -131,25 +131,26 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
       {/* Container scrollabile */}
       <div
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-hidden scrollbar-hide
-                   scroll-smooth"
+        className=" overflow-y-hidden scroll-smooth"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        <div className="w-full flex flex-row gap-x-5 px-2 pb-4 whitespace-nowrap">
-          {media.map((m) => {
 
-            console.log(m)
-
-            return (
+        <div className="w-full flex flex-row gap-x-5 px-2 pb-4 whitespace-nowrap hover:overflow-x-scroll md:overflow-x-hidden duration-300">
+          
+          {
+          
+          media.map((m) => (
 
               <div key={m.id} className="inline-block">
 
                 <MediaCard mediaData={m} />
               </div>
+            ) 
+          )
 
-            )
-          })}
+          }
         </div>
+
       </div>
 
 

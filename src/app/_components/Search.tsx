@@ -23,17 +23,18 @@ export default function Search() {
   };
 
   return (
-    <div className="relative w-full max-w-[15rem] flex-shrink">
+    <div className={`relative min-w-[15rem]  flex flex-row duration-300 ${query.trim() ? "md:w-[20rem]" : "w-[15rem]"}`} >
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cerca film, serie TV..."
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        className="bg-[#191919] w-full rounded-md p-1 pl-5 text-[0.9rem] h-[2rem] focus:outline-none"
+        className="md:bg-[#0a0a0a]/50 bg-[#3d3d3d] border-1 border-[#2e2e2e] w-full backdrop-blur-[8px] rounded-sm p-1 pl-5 text-[0.9rem] h-[2rem] focus:outline-none duration-200"
       />
+      
       <button
-        className="absolute right-1 top-[0.25rem] hover:bg-[#3e3e3e] aspect-square h-[1.5rem] rounded-2xl duration-200"
+        className="cursor-pointer text-[1.4rem] text-[#eeeeee] ml-[-1.5rem] z-10 aspect-square rounded-2xl duration-200"
         onClick={handleSearch}
       >
         ⌕

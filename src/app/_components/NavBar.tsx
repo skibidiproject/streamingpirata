@@ -1,10 +1,11 @@
 'use client'
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Search from "./Search";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -16,10 +17,19 @@ function Navbar() {
     document.body.style.overflow = '';
   };
 
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 50);
+    }
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <>
-      <header className="relative z-50 bg-black text-white px-5 md:px-8 lg:px-8 py-4">
+      <header className={`lg:fixed relative z-50 duration-500 ${scrolled ? 'bg-black/80 backdrop-blur-md shadow-md' : 'bg-transparent'} w-screen text-white px-5 md:px-8 lg:px-8 py-4`}>
         <div className="flex items-center justify-between md:justify-start md:gap-12">
+          
           {/* Logo + hamburger */}
           <div className="flex items-center justify-between w-full md:w-auto">
             <Link href="/">

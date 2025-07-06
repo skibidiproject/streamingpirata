@@ -24,7 +24,7 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
   return (
     <Link
       href={`/media/${mediaData.id}`}
-      className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end h-[15rem] w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
+      className= "relative overflow-hidden shadow-2xl transition-all duration-300  text-xs flex flex-col text-left justify-end aspect-[9/16] w-[7rem] xl:w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
     >
       <img
         src={coverURL}
@@ -36,7 +36,7 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
       <div className="relative text-white w-[8rem] m-2">
 
 
-        <h1 className="text-sm text-wrap font-bold">{mediaData.title}</h1>
+        <h1 className="text-[0.9rem] text-wrap font-bold w-[6rem] sm:w-[10rem]">{mediaData.title}</h1>
         <div className="flex flex-row gap-x-1 items-center">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <span className="text-gray-400">|</span>
