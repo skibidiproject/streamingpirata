@@ -745,7 +745,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                 <div className={`absolute ${subtitlePosition} left-1/2 transform -translate-x-1/2 z-20 pointer-events-none px-2 transition-all duration-300`}>
                     <div className="bg-black/20 backdrop-blur-sm p-2 text-center rounded-md mx-4 sm:mx-1">
                         <span
-                            className="text-white text-base md:text-3xl font-medium leading-tight"
+                            className="text-white text-base lg:text-3xl font-medium leading-tight"
                             dangerouslySetInnerHTML={{ __html: customSubtitles }}
                         />
                     </div>

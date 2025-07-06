@@ -149,13 +149,11 @@ export default function PlayerPage({ params }: PageProps) {
 
 
 async function getTitle(params: PageProps['params']): Promise<string> {
-  const { type, tmdbid, season, episode } = params;
+  const { type, tmdbid, season, episode } = await params;
   
   try {
     // Chiamata fetch all'API passando tmdbid come id
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${tmdbid}`, {
-      cache: 'no-store' // evita caching per avere dati sempre aggiornati
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${tmdbid}`);
 
     if (!res.ok) throw new Error('Errore nel fetch API');
 

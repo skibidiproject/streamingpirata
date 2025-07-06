@@ -10,6 +10,7 @@ interface MediaData {
   poster_url: string;
   backdrop_url: string | null;
   logo_url: string;
+  trailer_url: string;
   release_date: string;
   certification: string;
   type: "tv" | "movie";

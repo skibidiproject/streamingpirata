@@ -4,13 +4,16 @@ import { useRouter } from "next/navigation";
 
 export default function PlayButton({id, type}: {id: string, type: string} ){
 
-    const filmID = useState(id)[0];
     const router = useRouter();
 
     const play = () => {
         if(type == "movie")
         {
             router.push(`/player/movie/${id}`)
+        }
+        else
+        {
+            router.push(`/media/${id}#episodi`)
         }
         // IMPLEMENTARE PER SERIE SELEZIONE EPISODI E LINK ANCHOR Lì, #episodes
     }

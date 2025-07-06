@@ -13,6 +13,7 @@ interface MediaData {
   poster_url: string;
   backdrop_url: string | null;
   logo_url: string;
+  trailer_url: string;
   release_date: string;
   certification: string;
   type: "tv" | "movie";
@@ -38,7 +39,7 @@ export default async function Home() {
       <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
       <NavBar />
 
-      <HeroMediaCard mediaID="872585" />
+      <HeroMediaCard mediaID="1100988" />
 
       <h1 className="text-2xl font-bold ml-8 mt-10 xl:mt-[-3vw] ">Aggiunti di recente</h1>
 

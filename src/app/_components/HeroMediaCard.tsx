@@ -10,6 +10,7 @@ interface MediaData {
   poster_url: string;
   backdrop_url: string | null;
   logo_url: string;
+  trailer_url: string;
   release_date: string;
   certification: string;
   type: "tv" | "movie";
@@ -21,6 +22,7 @@ interface HeroMediaCardProps {
 
 async function getMediaData(mediaId: string): Promise<MediaData | null> {
   try {
+    // CHIAMARE API /content/id AL POSTO DI INTERROGARE DB
     const result = await pool.query(
       "SELECT * FROM media WHERE id = $1",
       [mediaId]
@@ -39,7 +41,7 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
 
   if (!mediaData) {
     return (
-      <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-gray-800 text-white p-8">
+      <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-black text-white p-8">
         <p className="text-xl">Media not found</p>
       </div>
     );
@@ -48,8 +50,7 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full md:h-[40vw] text-white p-8 ">
-
+    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full h-full py-25 bg-cover bg-center text-white p-8">
       <img
         src={bgUrl}
         className="absolute inset-0 w-full h-full object-cover object-top -z-10"
@@ -67,12 +68,12 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
         <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
         {mediaData.certification == "VM14" || mediaData.certification == "VM18" ? <h1 className=" border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.certification}</h1> : null}
       </div>
-      <h1 className="text-sm md:w-[50rem]  ">
-          <ExpandableText text={mediaData.description}/>
+      <h1 className="text-sm md:w-[50rem] lg:w-[40%]">
+          <ExpandableText lines={3} text={mediaData.description}/>
       </h1>
       <div className="flex flex-row gap-x-4 text-lg mt-4 ">
         <PlayButton id={mediaID} type={mediaData.type}/>
-        <TrailerButton id={mediaID} />
+        <TrailerButton url={mediaData.trailer_url}/>
       </div>
     </div>
   );

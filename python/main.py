@@ -270,17 +270,15 @@ class M3U8Extractor:
         self.chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
 
     def extract_urls(self, player_url: str) -> List[Dict]:
-        """Estrae URL M3U8 da una pagina web."""
+        """Estrae URL M3U8 da una pagina web (più veloce)."""
         logger.info(f"Avvio estrazione da: {player_url}")
         driver = None
         try:
             driver = webdriver.Chrome(options=self.chrome_options)
-            driver.set_page_load_timeout(30)
+            driver.set_page_load_timeout(20)
             driver.get(player_url)
-            time.sleep(3)
-            self._trigger_playback(driver)
-            time.sleep(5)
-            urls = self._extract_from_logs(driver)
+            self._trigger_playback_quick(driver)
+            urls = self._extract_from_logs_quick(driver)
             validated_urls = self._validate_urls(urls)
             logger.info(f"Trovati {len(validated_urls)} URL validi")
             return validated_urls
@@ -291,8 +289,8 @@ class M3U8Extractor:
             if driver:
                 driver.quit()
 
-    def _trigger_playback(self, driver) -> bool:
-        """Avvia la riproduzione del video."""
+    def _trigger_playback_quick(self, driver) -> bool:
+        """Avvia la riproduzione del video (più veloce)."""
         selectors = [
             "button[class*='play']", ".play-button", ".vjs-big-play-button",
             "[aria-label*='play']", "video", ".play-btn", "#play-button",
@@ -303,9 +301,8 @@ class M3U8Extractor:
                 elements = driver.find_elements(By.CSS_SELECTOR, selector)
                 for element in elements:
                     if element.is_displayed():
+                        # FA PARTIRE IL PLAYER (NO LOG)
                         driver.execute_script("arguments[0].click();", element)
-                        logger.info(f"Cliccato pulsante play: {selector}")
-                        time.sleep(1)
                         return True
             except Exception:
                 continue
@@ -319,20 +316,21 @@ class M3U8Extractor:
             pass
         return False
 
-    def _extract_from_logs(self, driver) -> List[str]:
-        """Estrae URL M3U8 dai log di rete."""
+    def _extract_from_logs_quick(self, driver) -> List[str]:
+        """Estrae URL M3U8 dai log di rete (più veloce, meno tentativi)."""
         urls = set()
         try:
             logs = driver.get_log('performance')
             for log in logs:
                 try:
                     message = json.loads(log['message'])
-                    if message['message']['method'] == 'Network.requestWillBeSent':
-                        url = message['message']['params']['request']['url']
-                        if self._is_valid_m3u8_url(url):
-                            urls.add(url)
-                    elif message['message']['method'] == 'Network.responseReceived':
-                        url = message['message']['params']['response']['url']
+                    method = message['message']['method']
+                    if method == 'Network.requestWillBeSent' or method == 'Network.responseReceived':
+                        url = (
+                            message['message']['params']['request']['url']
+                            if method == 'Network.requestWillBeSent'
+                            else message['message']['params']['response']['url']
+                        )
                         if self._is_valid_m3u8_url(url):
                             urls.add(url)
                 except (json.JSONDecodeError, KeyError):
@@ -349,6 +347,7 @@ class M3U8Extractor:
                                 clean_url = match.replace('\\', '')
                                 if self._is_valid_m3u8_url(clean_url):
                                     urls.add(clean_url)
+            # Non ripetere la raccolta log, una sola passata
         except Exception as e:
             logger.error(f"Errore estrazione log: {e}")
         return list(urls)

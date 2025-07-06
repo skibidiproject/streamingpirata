@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} antialiased overflow-x-hidden`}
+        className={`${dmSans.variable} antialiased overflow-x-hidden scroll-smooth`}
       >
         {children}
       </body>

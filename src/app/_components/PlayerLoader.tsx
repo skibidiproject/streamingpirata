@@ -17,8 +17,6 @@ export default function PlayerLoader() {
           case 'Preparazione del contenuto':
             return 'Ricerca dello stream';
           case 'Ricerca dello stream':
-            return 'Configurazione del player';
-          case 'Configurazione del player':
             return 'Quasi pronto';
           case 'Quasi pronto':
             return 'Preparazione del contenuto';
