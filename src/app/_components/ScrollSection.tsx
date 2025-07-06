@@ -4,14 +4,15 @@ import { useRef, useState, useEffect } from "react";
 import MediaCard from "./MediaCard";
 
 interface MediaData {
-  ID: string;
-  Name: string;
-  Description: string;
-  Cover_url: string;
-  Hero_url: string | null;
-  Release_year: number;
-  Pegi_rating: string;
-  Content_type: "film" | "serie";
+  id: string;
+  title: string;
+  description: string;
+  poster_url: string;
+  backdrop_url: string | null;
+  logo_url: string;
+  release_date: string;
+  certification: string;
+  type: "tv" | "movie";
 }
 
 export default function ScrollSection({ media }: { media: MediaData[] }) {
@@ -141,7 +142,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
 
             return (
 
-              <div key={m.ID} className="inline-block">
+              <div key={m.id} className="inline-block">
 
                 <MediaCard mediaData={m} />
               </div>

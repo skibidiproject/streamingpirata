@@ -148,16 +148,27 @@ export default function PlayerPage({ params }: PageProps) {
 }
 
 
-// SPOSTARE DENTRO PAGE PER ERRORE PARAMETRI 
-// Genera un titolo basato sui parametri
 async function getTitle(params: PageProps['params']): Promise<string> {
   const { type, tmdbid, season, episode } = params;
   
-  if (type === 'movie') {
-    return `Film ${tmdbid}`;
-  } else if (type === 'tv' && season && episode) {
-    return `Serie TV ${tmdbid} - S${season}E${episode}`;
+  try {
+    // Chiamata fetch all'API passando tmdbid come id
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${tmdbid}`, {
+      cache: 'no-store' // evita caching per avere dati sempre aggiornati
+    });
+
+    if (!res.ok) throw new Error('Errore nel fetch API');
+
+    const data = await res.json();
+
+    if (type === 'movie') {
+      return data.title || `Film ${tmdbid}`;
+    } else if (type === 'tv' && season && episode) {
+      return `${data.title || 'Serie TV'} - S${season}E${episode}`;
+    }
+  } catch (error) {
+    console.error(error);
   }
-  
-  return 'Contenuto';
+
+  return `Streaming ${tmdbid}`;
 }

@@ -5,32 +5,17 @@ import HeroMediaCard from "./_components/HeroMediaCard";
 import Footer from "./_components/Footer";
 import ScrollSection from "./_components/ScrollSection";
 
-import { Metadata } from 'next';
 
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Streaming Platform',
-    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo vuoi di più? Mettiti seduto e prendi i popcorn! 🍿",
-    icons: {
-      icon: './logo.png',
-      shortcut: './logo.png',
-      apple: './logo.png',
-    },
-  };
-}
-
-
-// Definisci il tipo per i dati dei media
 interface MediaData {
-  ID: string;
-  Name: string;
-  Description: string;
-  Cover_url: string;
-  Hero_url: string | null;
-  Release_year: number;
-  Pegi_rating: string;
-  Content_type: "film" | "serie";
-  title_card_url: string;
+  id: string;
+  title: string;
+  description: string;
+  poster_url: string;
+  backdrop_url: string | null;
+  logo_url: string;
+  release_date: string;
+  certification: string;
+  type: "tv" | "movie";
 }
 
 
@@ -53,7 +38,7 @@ export default async function Home() {
       <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
       <NavBar />
 
-      <HeroMediaCard mediaID="1" />
+      <HeroMediaCard mediaID="194766" />
 
       <h1 className="text-2xl font-bold ml-8 ">Aggiunti di recente</h1>
 

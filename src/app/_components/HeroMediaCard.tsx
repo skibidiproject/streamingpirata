@@ -1,16 +1,18 @@
 import PlayButton from "./PlayButton";
 import TrailerButton from "./TrailerButton";
-import { db } from "../lib/database";
+import ExpandableText from "./ExpandableText";
+import pool from "../lib/database";
 
 interface MediaData {
-  Imdb_ID: string;
-  Name: string;
-  Description: string;
-  Cover_url: string;
-  Hero_url: string | null;
-  Release_year: number;
-  Pegi_rating: string;
-  Content_type: "film" | "serie";
+  id: string;
+  title: string;
+  description: string;
+  poster_url: string;
+  backdrop_url: string | null;
+  logo_url: string;
+  release_date: string;
+  certification: string;
+  type: "tv" | "movie";
 }
 
 interface HeroMediaCardProps {
@@ -19,13 +21,12 @@ interface HeroMediaCardProps {
 
 async function getMediaData(mediaId: string): Promise<MediaData | null> {
   try {
-    const connection = await db;
-    const [rows] = await connection.execute(
-      "SELECT * FROM `content` WHERE ID = ? ",
+    const result = await pool.query(
+      "SELECT * FROM media WHERE id = $1",
       [mediaId]
     );
 
-    const mediaArray = rows as any[];
+    const mediaArray = result.rows;
     return mediaArray.length > 0 ? mediaArray[0] : null;
   } catch (error) {
     console.error("Database error:", error);
@@ -44,10 +45,10 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
     );
   }
 
-  const bgUrl = mediaData.Hero_url || " ";
+  const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="relative flex flex-col justify-center gap-y-3 text-4xl w-full h-[30rem] bg-cover bg-center text-white p-8">
+    <div className="relative flex flex-col justify-center gap-y-3 text-4xl w-full h-full py-35 bg-cover bg-center text-white p-8">
       <img
         src={bgUrl}
         className="absolute inset-0 w-full h-full object-cover object-top -z-10"
@@ -55,18 +56,18 @@ export default async function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
       {/* Combined gradients overlay - positioned above image but below text */}
       <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_100%)]"></div>
       <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)] "></div>
-      <h1>{mediaData.Name}</h1>
+      <img src={mediaData.logo_url} className="max-w-72 max-h-32 mb-3 ml-1 object-contain object-left"/>
       <div className="flex flex-row gap-x-5 text-sm font-bold p-1">
-        <h1>{mediaData.Release_year}</h1>
-        <h1>{mediaData.Content_type}</h1>
-        {mediaData.Pegi_rating == "VM14" || mediaData.Pegi_rating == "VM18" ? <h1 className="border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.Pegi_rating}</h1> : <h1 className="border-1 px-1 rounded-[5px]" id="yr">{mediaData.Pegi_rating}</h1>}
+        <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
+        <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
+        {mediaData.certification == "VM14" || mediaData.certification == "VM18" ? <h1 className="border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.certification}</h1> : null}
       </div>
       <h1 className="text-sm md:w-[50rem]">
-        {mediaData.Description}
+          <ExpandableText text={mediaData.description}/>
       </h1>
       <div className="flex flex-row gap-x-4 text-lg mt-4">
-        <PlayButton ID={mediaID} />
-        <TrailerButton ID={mediaID} />
+        <PlayButton id={mediaID} type={mediaData.type}/>
+        <TrailerButton id={mediaID} />
       </div>
     </div>
   );

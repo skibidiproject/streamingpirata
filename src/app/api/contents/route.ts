@@ -1,11 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/app/lib/database";
+import pool from "@/app/lib/database";
 
 export async function GET(request: NextRequest) {
-    const connection = await db;
-    const [result] = await connection.execute('select * from film union select * from serie')
+    const { searchParams } = new URL(request.url);
+    const searchQuery = searchParams.get("search")?.trim() || "";
 
-    const medias = result as any[];
+    // Cerca solo se la query ha almeno 3 caratteri
+    if (searchQuery.length >= 3) {
+        const search = `%${searchQuery}%`;
+        const result = await pool.query(
+            "SELECT * FROM media WHERE LOWER(title) LIKE LOWER($1)",
+            [search]
+        );
 
-    return NextResponse.json(medias);
+        const medias = result.rows;
+        return NextResponse.json(medias);
+    }
+
+    // Se la query è troppo corta, restituisci un array vuoto o errore
+    return NextResponse.json(
+        { error: "Inserisci piu di tre caratteri." },
+        { status: 400 }
+    );;
 }

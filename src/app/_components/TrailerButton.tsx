@@ -2,9 +2,9 @@
 import { useState } from "react";
 
 
-export default function TrailerButton({ID}: {ID: string} ){
+export default function TrailerButton({id}: {id: string} ){
 
-    const filmID = useState(ID)[0];
+    const filmID = useState(id)[0];
 
     const log = () => {
         console.log(filmID)

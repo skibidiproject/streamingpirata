@@ -4,14 +4,15 @@ import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 
 interface MediaData {
-  ID: string;
-  Name: string;
-  Description: string;
-  Cover_url: string;
-  Hero_url: string | null;
-  Release_year: number;
-  Pegi_rating: string;
-  Content_type: "film" | "serie";
+  id: string;
+  title: string;
+  description: string;
+  poster_url: string;
+  backdrop_url: string | null;
+  logo_url: string;
+  release_date: string;
+  certification: string;
+  type: "tv" | "movie";
 }
 
 export default async function FilmPage() {
@@ -27,7 +28,7 @@ export default async function FilmPage() {
   }
 
   // Filtra solo i film
-  const films = latestMedia.filter(media => media.Content_type === "film");
+  const films = latestMedia.filter(media => media.type === "movie");
 
   return (
     <>
@@ -35,7 +36,7 @@ export default async function FilmPage() {
       
       {/* Hero Section con un film random o featured */}
       {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].ID} />
+        <HeroMediaCard mediaID={films[0].id} />
       )}
 
       <div className="mx-8 lg:mx-12 mt-5">
@@ -46,7 +47,7 @@ export default async function FilmPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">
             {films.map((film) => (
-              <MediaCard key={film.ID} mediaData={film} />
+              <MediaCard key={film.id} mediaData={film} />
             ))}
           </div>
         )}

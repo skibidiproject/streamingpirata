@@ -39,7 +39,7 @@ export default function PlayerLoader() {
       <div className="text-center max-w-md">
         {/* Spinner animato */}
         <div className="relative w-16 h-16 mx-auto mb-6">
-          <div className="absolute inset-0 rounded-full border-4 border-gray-700"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-stone-800"></div>
           <div className="absolute inset-0 rounded-full border-4 border-blue-500  border-t-transparent animate-spin"></div>
         </div>
         
