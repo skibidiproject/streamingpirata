@@ -41,7 +41,6 @@ export default async function Media({ params }: MediaPageProps) {
       <HeroMediaCard mediaID={id} />
 
       <section id="episodi">
-      <EpisodeSelector/>
       </section>
 
       <Footer />

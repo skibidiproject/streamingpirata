@@ -8,6 +8,7 @@ interface Media {
   poster_url: string;
   backdrop_url: string | null;
   logo_url: string;
+  trailer_url: string;
   release_date: string;
   certification: string;
   type: "tv" | "movie";
@@ -52,11 +53,11 @@ export default async function Home({ searchParams }: Props) {
   return (
     <>
       <NavBar />
-      <div className="p-12">
+      <div className="p-12 mt-12">
 
         {error && <h1 className="text-2xl mb-4">{error}</h1>}
 
-        {!error && <h1 className="text-2xl mb-4">Risultati per "{query}":</h1>}
+        {!error && <h1 className="text-2xl mb-2">Risultati per "{query}":</h1>}
         {!error && results.length === 0 && <p>Nessun risultato trovato.</p>}
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">

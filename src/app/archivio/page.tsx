@@ -37,7 +37,6 @@ export default async function FilmPage() {
       
 
       <div className="mt-[5rem] flex flex-col items-center p-2 ">
-        <h1 className="text-2xl font-bold mb-2">Film</h1>
         
         {films.length === 0 ? (
           <p className="text-gray-500">Nessun film disponibile</p>

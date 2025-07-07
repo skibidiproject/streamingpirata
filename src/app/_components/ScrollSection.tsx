@@ -42,7 +42,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = direction === "left" ? -320 : 320;
+      const scrollAmount = direction === "left" ? -640 : 640;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };

@@ -6,11 +6,8 @@ import { useState, useEffect } from "react";
 export default function Search() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Inizializza query con il valore di "q" in URL, o stringa vuota
   const [query, setQuery] = useState(() => searchParams.get("q") || "");
 
-  // Se vuoi aggiornare query ogni volta che cambia "q" in URL (opzionale)
   useEffect(() => {
     const q = searchParams.get("q") || "";
     setQuery(q);
@@ -18,26 +15,42 @@ export default function Search() {
 
   const handleSearch = () => {
     if (query.trim()) {
-      router.push(`/search?q=${query}`);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
   return (
-    <div className={`relative min-w-[12rem] lg:min-w-[15rem]  flex flex-row duration-300 ${query.trim() ? "md:w-[20rem]" : "lg:w-[15rem] w-[12rem]"}`} >
+    <div className={`relative min-w-[12rem] lg:min-w-[15rem] flex flex-row duration-300 ${query.trim() ? "md:w-[20rem]" : "lg:w-[15rem] w-[12rem]"}`}>
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cerca film, serie TV..."
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        className="md:bg-[#0a0a0a]/50 bg-[#0a0a0a]/50 border-1 border-[#2e2e2e] w-full backdrop-blur-[8px] rounded-sm p-1 pl-5 text-[0.9rem] h-[2rem] focus:outline-none duration-200"
+        className="md:bg-[#0a0a0a]/50 bg-[#0a0a0a]/50 border border-[#2e2e2e] w-full backdrop-blur-[8px] rounded-sm p-1 pl-5 pr-10 text-[0.9rem] h-[2rem] focus:outline-none duration-200 text-white"
       />
-      
+
       <button
-        className="cursor-pointer text-[1.4rem] text-[#eeeeee] ml-[-1.5rem] z-10 aspect-square rounded-2xl duration-200"
         onClick={handleSearch}
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#ab9c8b]"
+        aria-label="Cerca"
       >
-        ⌕
+        {/* Icona lente */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11 4a7 7 0 105.292 12.292l4.353 4.353a1 1 0 001.415-1.415l-4.353-4.353A7 7 0 0011 4z"
+          />
+        </svg>
+
       </button>
     </div>
   );

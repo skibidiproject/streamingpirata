@@ -584,6 +584,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             controlsTimeoutRef.current = setTimeout(() => {
                 if (!isDraggingRef.current) { // Usa isDraggingRef invece di isDragging
                     setShowControls(false);
+
                 }
             }, 3000);
         }
@@ -723,7 +724,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[100dvh] bg-black overflow-hidden group touch-manipulation"
+            className="cursor-none relative w-full h-[100dvh] bg-black overflow-hidden group touch-manipulation"
             onMouseEnter={() => setShowControls(true)}
             onMouseMove={() => setShowControls(true)}
             onMouseLeave={handleMouseLeave} // AGGIUNGI QUESTA RIGA
@@ -900,7 +901,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
             {/* Controls Overlay */}
             <div
-                className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                className={`cursor-auto absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent duration-300 ${showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
             >
                 {/* Top Bar con freccia indietro */}
