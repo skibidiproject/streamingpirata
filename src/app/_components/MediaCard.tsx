@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Image from 'next/image';
 
 interface MediaData {
   id: string;
@@ -27,8 +28,11 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
       href={`/media/${mediaData.id}`}
       className= "relative overflow-hidden shadow-2xl transition-all duration-300  text-xs flex flex-col text-left justify-end aspect-[9/16] w-[7rem] xl:w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
     >
-      <img
+      <Image
         src={coverURL}
+        alt={mediaData.title}
+        fill
+        
         className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-107 group-hover:scale-105 "
       />
 

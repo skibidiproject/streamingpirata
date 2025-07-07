@@ -2,6 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import MediaCard from "./MediaCard";
+import Script from "next/script";
+import { RedirectType } from "next/navigation";
 
 interface MediaData {
   id: string;
@@ -45,98 +47,94 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
     }
   };
 
+  
+
   return (
-    <div className="relative px-5 w-full ">
+    <div className="relative  w-full px-5">
+      
 
 
-      {/* LEFT GRADIENT */}
-      <div
-        className="pointer-events-none absolute left-0 top-0 h-full w-[150px] z-10"
-        style={{
-          background: `linear-gradient(to right, #0a0a0a 15%, #00000000  20%)`,
-        }}
-      ></div>
+      <div className="md:block hidden">
 
-      {/* RIGHT GRADIENT */}
-      <div
-        className="pointer-events-none absolute right-0 top-0 h-full w-[150px] z-10"
-        style={{
-          background: `linear-gradient(to left, #0a0a0a 15%, #00000000  20%)`,
-        }}
-      ></div>
-
-
-      {/* Freccia sinistra */}
-      {canScrollLeft && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 
-                     bg-black/70 hover:bg-black/90 
-                     text-white rounded-full p-3 
-                     transition-all duration-200 
-                     opacity-0 group-hover:opacity-100
-                     hover:scale-110 active:scale-95
-                     backdrop-blur-sm border border-white/10
-                     shadow-lg hover:shadow-xl"
-          aria-label="Scorri a sinistra"
+          className="
+            
+            absolute h-full z-10 w-30 
+            overflow-hidden
+            group
+            before:content-['']
+            before:absolute before:inset-0
+            before:bg-gradient-to-r
+            before:from-[#0a0a0a] before:from-20%
+            before:to-transparent before:to-100%
+            before:opacity-0
+            before:transition-opacity before:duration-300
+            hover:before:opacity-100 
+          "
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            className="rotate-180"
-          >
-            <path
-              d="M6 12L10 8L6 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      )}
+          
+          <span
+            className="
+              absolute inset-0
+              bg-gradient-to-r from-[#0a0a0a] from-0% to-transparent to-10%
+            "
+          />
 
-      {/* Freccia destra */}
-      {canScrollRight && (
+          <h1 className="absolute z-10 left-5 text-2xl font-bold invisible group-hover:visible h-fit "> &lt; </h1>
+
+
+          
+        </button>
+
+
+
+        
         <button
           onClick={() => scroll("right")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 
-                     bg-black/70 hover:bg-black/90 
-                     text-white rounded-full p-3 
-                     transition-all duration-200 
-                     opacity-0 group-hover:opacity-100
-                     hover:scale-110 active:scale-95
-                     backdrop-blur-sm border border-white/10
-                     shadow-lg hover:shadow-xl"
-          aria-label="Scorri a destra"
+          className="
+            
+            absolute h-full z-10 w-30 
+            overflow-hidden
+            group right-4
+            before:content-['']
+            before:absolute before:inset-0
+            before:bg-gradient-to-l
+            before:from-[#0a0a0a] before:from-20%
+            before:to-transparent before:to-100%
+            before:opacity-0
+            before:transition-opacity before:duration-300
+            hover:before:opacity-100 
+          "
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M6 12L10 8L6 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          
+          <span
+            className="
+              absolute inset-0
+              bg-gradient-to-l from-[#0a0a0a] from-5% to-transparent to-20%
+            "
+          />
+
+          <h1 className="absolute z-10 right-5 text-2xl font-bold invisible group-hover:visible h-fit "> &gt; </h1>
+
+
+          
         </button>
-      )}
+      </div>
+
+
+
+
+
 
       {/* Container scrollabile */}
       <div
         ref={scrollRef}
-        className=" overflow-y-hidden scroll-smooth"
+        className=" overflow-y-hidden scroll-smooth overflow-x-auto  "
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
 
-        <div className="w-full flex flex-row gap-x-5 px-2 pb-4 whitespace-nowrap hover:overflow-x-scroll md:overflow-x-hidden duration-300">
+        <div className="flex flex-row gap-x-5 pb-4 whitespace-nowrap  duration-300 ">
           
           {
           

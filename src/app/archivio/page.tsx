@@ -2,7 +2,6 @@ import MediaCard from "../_components/MediaCard";
 import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
-import ScrollSection from "../_components/ScrollSection";
 
 interface MediaData {
   id: string;
@@ -36,21 +35,20 @@ export default async function FilmPage() {
     <>
       <NavBar />
       
-      {/* Hero Section con un film random o featured */}
-      {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].id} />
-      )}
 
-      <h1 className="text-2xl font-bold ml-8 mt-10  mt-[-3rem]">Azione</h1>
-      <ScrollSection media={latestMedia} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Avventura</h1>
-      <ScrollSection media={latestMedia} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Amore</h1>
-      <ScrollSection media={latestMedia} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Drama</h1>
-      <ScrollSection media={latestMedia} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Thriller</h1>
-      <ScrollSection media={latestMedia} />
+      <div className="mt-[5rem] flex flex-col items-center p-2 ">
+        <h1 className="text-2xl font-bold mb-2">Film</h1>
+        
+        {films.length === 0 ? (
+          <p className="text-gray-500">Nessun film disponibile</p>
+        ) : (
+          <div className="flex flex-wrap flex-row w-full justify-center gap-x-10">
+            {films.map((film) => (
+              <MediaCard key={film.id} mediaData={film} />
+            ))}
+          </div>
+        )}
+      </div>
 
       <Footer />
     </>

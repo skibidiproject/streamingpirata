@@ -27,7 +27,8 @@ function Navbar() {
 
   return (
     <>
-      <header className={`lg:fixed relative z-50 duration-500 ${scrolled ? 'bg-black/80 backdrop-blur-md shadow-md' : 'bg-transparent'} w-screen text-white px-5 md:px-8 lg:px-8 py-4`}>
+      <header className={`fixed  z-50 duration-500 ${scrolled ? 'bg-black/80 backdrop-blur-md shadow-md' : 'bg-transparent'} w-screen text-white px-5 md:px-8 lg:px-8 py-4 `}>
+
         <div className="flex items-center justify-between md:justify-start md:gap-12">
           
           {/* Logo + hamburger */}
@@ -63,6 +64,7 @@ function Navbar() {
             <Link href="/" className="hover:underline transition-all duration-200">Home</Link>
             <Link href="/film" className="hover:underline transition-all duration-200">Film</Link>
             <Link href="/serie-tv" className="hover:underline transition-all duration-200">Serie TV</Link>
+            <Link href="/archivio" className="hover:underline transition-all duration-200">Archivio</Link>
           </nav>
 
           {/* Search (desktop) */}

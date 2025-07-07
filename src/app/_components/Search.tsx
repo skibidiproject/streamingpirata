@@ -23,14 +23,14 @@ export default function Search() {
   };
 
   return (
-    <div className={`relative min-w-[15rem]  flex flex-row duration-300 ${query.trim() ? "md:w-[20rem]" : "w-[15rem]"}`} >
+    <div className={`relative min-w-[12rem] lg:min-w-[15rem]  flex flex-row duration-300 ${query.trim() ? "md:w-[20rem]" : "lg:w-[15rem] w-[12rem]"}`} >
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cerca film, serie TV..."
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        className="md:bg-[#0a0a0a]/50 bg-[#3d3d3d] border-1 border-[#2e2e2e] w-full backdrop-blur-[8px] rounded-sm p-1 pl-5 text-[0.9rem] h-[2rem] focus:outline-none duration-200"
+        className="md:bg-[#0a0a0a]/50 bg-[#0a0a0a]/50 border-1 border-[#2e2e2e] w-full backdrop-blur-[8px] rounded-sm p-1 pl-5 text-[0.9rem] h-[2rem] focus:outline-none duration-200"
       />
       
       <button

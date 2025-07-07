@@ -39,18 +39,12 @@ export default async function Home() {
       <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
       <NavBar />
 
-      <HeroMediaCard mediaID="1100988" />
+      <HeroMediaCard mediaID="872585" />
 
       <h1 className="text-2xl font-bold ml-8 mt-10 xl:mt-[-3vw] ">Aggiunti di recente</h1>
 
       <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
-      <ScrollSection media={latestMedia} />
+
 
       <Footer />
     </>
