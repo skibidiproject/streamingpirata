@@ -90,6 +90,9 @@ function Navbar() {
           <li>
             <Link href="/serie-tv" onClick={closeMenu} className="hover:underline">Serie TV</Link>
           </li>
+          <li>
+            <Link href="/archivio" onClick={closeMenu} className="hover:underline">Archivio</Link>
+          </li>
         </ul>
       </div>
 

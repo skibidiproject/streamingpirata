@@ -70,7 +70,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:to-transparent before:to-100%
             before:opacity-0
             before:transition-opacity before:duration-300
-            hover:before:opacity-100 
+            hover:before:opacity-100 cursor-pointer
           "
         >
           
@@ -105,6 +105,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:opacity-0
             before:transition-opacity before:duration-300
             hover:before:opacity-100 
+            cursor-pointer
           "
         >
           
@@ -120,6 +121,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
 
           
         </button>
+        
       </div>
 
 
