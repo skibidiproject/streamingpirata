@@ -1,3 +1,4 @@
+'use client' // RISOLVERE PROBLEMA CARICAMENTO USARE USEEFFECT
 import NavBar from "../_components/NavBar";
 import MediaCard from "../_components/MediaCard";
 
@@ -53,18 +54,25 @@ export default async function Home({ searchParams }: Props) {
   return (
     <>
       <NavBar />
-      <div className="p-12 mt-12">
-
-        {error && <h1 className="text-2xl mb-4">{error}</h1>}
-
-        {!error && <h1 className="text-2xl mb-2">Risultati per "{query}":</h1>}
-        {!error && results.length === 0 && <p>Nessun risultato trovato.</p>}
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-2">
-          {results.map((r) => (
-            <MediaCard key={r.id} mediaData={r} />
-          ))}
-        </div>
+      {/* luciani ti prego sistema sta griglia del cazzo (e pure le quella ) prima che asporto nodejs dal cazzo di pc*/}
+      {/* lo scemo in culo di chatgpt dice pure che devi adattare le dimensioni di MediaCard per essere responsive*/ }
+      <div className="mt-[5rem] flex flex-col w-full px-6 sm:px-8">
+        {error ? (
+          <h1 className="text-2xl mb-4">{error}</h1>
+        ) : (
+          <>
+            <h1 className="text-2xl mb-1">Risultati per "{query}":</h1>
+            {results.length === 0 ? (
+              <p className="text-gray-500">Nessun risultato trovato.</p>
+            ) : (
+              <div className="flex flex-wrap flex-row w-full justify-start gap-x-4 sm:gap-x-4">
+                {results.map((r) => (
+                  <MediaCard key={r.id} mediaData={r} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </>
   );

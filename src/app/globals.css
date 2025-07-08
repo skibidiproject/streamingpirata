@@ -19,6 +19,13 @@ body {
 
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+#episodi {
+  scroll-margin-top: 10vh;
+}
 
 /* Nasconde la scrollbar ma mantiene lo scroll attivo */
 .scrollbar-hide {
@@ -45,5 +52,3 @@ video::cue {
 video::cue(b) {
   font-weight: bold;
 }
-
-

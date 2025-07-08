@@ -5,6 +5,7 @@ import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import { useEffect, useState, useRef } from "react";
 
+
 interface MediaData {
   id: string;
   title: string;
@@ -54,7 +55,7 @@ export default function ArchivePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents`, {
           cache: "no-store",
         });
         const data: MediaData[] = await res.json();

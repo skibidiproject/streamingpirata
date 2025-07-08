@@ -1,3 +1,6 @@
+'use client' // Vedere se si puo togliere quando mettiamo ScrollSection 
+// RISOLVERE ASYNC IN CLIENT 
+// FARE COME PAGINA FILM
 import MediaCard from "../_components/MediaCard";
 import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";

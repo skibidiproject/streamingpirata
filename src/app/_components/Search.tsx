@@ -32,7 +32,7 @@ export default function Search() {
 
       <button
         onClick={handleSearch}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#ab9c8b]"
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white opacity-40"
         aria-label="Cerca"
       >
         {/* Icona lente */}

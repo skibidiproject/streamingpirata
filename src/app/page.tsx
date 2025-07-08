@@ -41,7 +41,7 @@ export default async function Home() {
 
       <HeroMediaCard mediaID="872585" />
 
-      <h1 className="text-2xl font-bold ml-8 mt-10 xl:mt-[-3vw] ">Aggiunti di recente</h1>
+      <h1 className="text-2xl font-bold ml-6 mt-10 xl:mt-[-3vw] ">Aggiunti di recente</h1>
 
       <ScrollSection media={latestMedia} />
 
