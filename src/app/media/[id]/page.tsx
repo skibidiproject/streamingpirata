@@ -1,4 +1,9 @@
 // app/page.tsx o app/(home)/page.tsx
+import NavBar from "../../_components/NavBar";
+import HeroMediaCard from "../../_components/HeroMediaCard";
+import Footer from "../../_components/Footer";
+import EpisodeSelector from "@/app/_components/EpisodeSelector";
+import ScrollToAnchor from "@/app/_components/ScrollToAnchor";
 
 interface MediaPageProps {
   params: {
@@ -6,10 +11,6 @@ interface MediaPageProps {
   };
 }
 
-import NavBar from "../../_components/NavBar";
-import HeroMediaCard from "../../_components/HeroMediaCard";
-import Footer from "../../_components/Footer";
-import EpisodeSelector from "@/app/_components/EpisodeSelector";
 
 export default async function Media({ params }: MediaPageProps) {
   const { id } = params;
@@ -37,10 +38,15 @@ export default async function Media({ params }: MediaPageProps) {
 
       <HeroMediaCard mediaID={id} />
 
-      <section id="episodi">
-        <hr className="text-[#212121] mb-5" />
-        {data.type == "tv" && <EpisodeSelector id={id} />}
-      </section>
+      {data.type == "tv" &&
+        <section id="episodi">
+          <ScrollToAnchor/>
+          <hr className="text-[#212121] mb-5" />
+          <EpisodeSelector id={id} />
+        </section>
+
+      }
+
 
       <Footer />
     </>

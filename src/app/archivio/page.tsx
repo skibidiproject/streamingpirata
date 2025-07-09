@@ -83,6 +83,7 @@ export default function ArchivePage() {
         }
         
         const data: MediaData[] = await res.json();
+        // qua mettere filtri
         setFilms(data.filter((m) => m.type === "movie"));
       } catch (e) {
         console.error("Errore nel fetch:", e);

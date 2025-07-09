@@ -30,27 +30,27 @@ export default async function FilmPage() {
   }
 
   // Filtra solo i film
-  const films = latestMedia.filter(media => media.type === "tv");
+  const series = latestMedia.filter(media => media.type === "tv");
 
   return (
     <>
       <NavBar />
       
       {/* Hero Section con un film random o featured */}
-      {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].id} />
+      {series.length > 0 && (
+        <HeroMediaCard mediaID={series[0].id} />
       )}
 
       <h1 className="text-2xl font-bold ml-8 mt-10  mt-[-3rem]">Azione</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={series} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Avventura</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={series} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Amore</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={series} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Drama</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={series} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Thriller</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={series} />
 
       <Footer />
     </>
