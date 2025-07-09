@@ -54,7 +54,7 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
       
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
       <div className="relative text-white w-[8rem] m-2">
-        <h1 className="text-[0.9rem] text-wrap font-bold w-[6rem] sm:w-[10rem]">{mediaData.title}</h1>
+        <h1 className="text-[0.9rem] text-wrap font-bold w-full">{mediaData.title}</h1>
         <div className="flex flex-row gap-x-1 items-center">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <span className="text-gray-400">|</span>

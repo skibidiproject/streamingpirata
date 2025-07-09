@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import NavBar from "../_components/NavBar";
-import MediaCard from "../_components/MediaCard";
+import Loader from "../_components/loader";
+import LazyLoader from "../_components/LazyLoader";
 
 interface Media {
   id: string;
@@ -23,6 +24,7 @@ interface Props {
 
 export default function Home({ searchParams }: Props) {
   const [results, setResults] = useState<Media[]>([]);
+  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
@@ -63,12 +65,32 @@ export default function Home({ searchParams }: Props) {
     fetchResults();
   }, [query]);
 
-  if (!query) {
+
+
+  
+  // Show loader while loading
+  if (loading) {
     return (
       <>
         <NavBar />
-        <div className="p-12">
-          <h1 className="text-2xl mb-4">Nessun risultato da mostrare.</h1>
+        <hr className="mt-[5rem] text-[#212121]"/>
+        <Loader />
+      </>
+    );
+  }
+
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <hr className="mt-[5rem] text-[#212121]"/>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+          <div className="text-center">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <p className="text-red-500 text-xl mb-2">Errore nel caricamento dei film</p>
+            <p className="text-gray-600">Riprova più tardi</p>
+          </div>
         </div>
       </>
     );
@@ -77,28 +99,8 @@ export default function Home({ searchParams }: Props) {
   return (
     <>
       <NavBar />
-      <div className="mt-[5rem] flex flex-col w-full px-6 sm:px-8">
-        {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <p className="text-lg">Caricamento...</p>
-          </div>
-        ) : error ? (
-          <h1 className="text-2xl mb-4">{error}</h1>
-        ) : (
-          <>
-            <h1 className="text-2xl mb-1">Risultati per "{query}":</h1>
-            {results.length === 0 ? (
-              <p className="text-gray-500">Nessun risultato trovato.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
-                {results.map((r) => (
-                  <MediaCard key={r.id} mediaData={r} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      <hr className="mt-[5rem] text-[#212121]"/>
+      <LazyLoader mediaData={results}/>
     </>
   );
 }

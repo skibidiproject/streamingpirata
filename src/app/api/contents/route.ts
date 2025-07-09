@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     if(rawSearchQuery === null)
     {
-        const result = await pool.query("SELECT * FROM media WHERE streamable = TRUE LIMIT 500");
+        const result = await pool.query("SELECT * FROM media WHERE streamable = TRUE ");
         const medias = result.rows;
         return NextResponse.json(medias);
     } else
