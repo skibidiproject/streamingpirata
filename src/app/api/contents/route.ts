@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const rawSearchQuery = searchParams.get("search");
     const searchQuery = searchParams.get("search")?.trim() || "";
 
+
     if(rawSearchQuery === null)
     {
         const result = await pool.query("SELECT * FROM media WHERE streamable = TRUE ");

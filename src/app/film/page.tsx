@@ -43,15 +43,15 @@ export default async function FilmPage() {
       )}
 
       <h1 className="text-2xl font-bold ml-8 mt-10  mt-[-3rem]">Azione</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={films} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Avventura</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={films} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Amore</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={films} />
       <h1 className="text-2xl font-bold ml-8 mt-10  ">Drama</h1>
-      <ScrollSection media={latestMedia} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Thriller</h1>
-      <ScrollSection media={latestMedia} />
+      <ScrollSection media={films} />
+      <h1 className="text-2xfilms ml-8 mt-10  ">Thriller</h1>
+      <ScrollSection media={films} />
 
       <Footer />
     </>
