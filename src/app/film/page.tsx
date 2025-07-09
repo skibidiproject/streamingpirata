@@ -4,6 +4,7 @@ import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 import ScrollSection from "../_components/ScrollSection";
 
+
 interface MediaData {
   id: string;
   title: string;

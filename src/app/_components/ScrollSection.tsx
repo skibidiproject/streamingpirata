@@ -47,20 +47,20 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
     }
   };
 
-  
+
 
   return (
     <div className="relative  w-full px-5">
-      
+
 
 
       <div className="md:block hidden">
 
         <button
           onClick={() => scroll("left")}
-          className="
-            
-            absolute h-full z-10 w-30 
+          className={`
+            ${!canScrollLeft ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+            absolute h-full z-10 w-20 
             overflow-hidden
             group
             before:content-['']
@@ -70,10 +70,11 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:to-transparent before:to-100%
             before:opacity-0
             before:transition-opacity before:duration-300
-            hover:before:opacity-100 cursor-pointer
-          "
+            hover:before:opacity-100 
+            transition-opacity duration-700 ease-in-out
+          `}
         >
-          
+
           <span
             className="
               absolute inset-0
@@ -81,20 +82,24 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             "
           />
 
-          <h1 className="absolute z-10 left-5 text-2xl font-bold invisible group-hover:visible h-fit "> &lt; </h1>
+          <h1 className="absolute z-10 left-5 text-2xl font-bold invisible group-hover:visible h-fit ">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </h1>
 
 
-          
+
         </button>
 
 
 
-        
+
         <button
           onClick={() => scroll("right")}
-          className="
-            
-            absolute h-full z-10 w-30 
+          className={`
+            ${!canScrollRight ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+            absolute h-full z-10 w-20 
             overflow-hidden
             group right-4
             before:content-['']
@@ -105,10 +110,10 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:opacity-0
             before:transition-opacity before:duration-300
             hover:before:opacity-100 
-            cursor-pointer
-          "
+            transition-opacity duration-700 ease-in-out
+          `}
         >
-          
+
           <span
             className="
               absolute inset-0
@@ -116,10 +121,15 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             "
           />
 
-          <h1 className="absolute z-10 right-5 text-2xl font-bold invisible group-hover:visible h-fit "> &gt; </h1>
+          <h1 className="absolute z-10 right-5 text-2xl font-bold invisible group-hover:visible h-fit ">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+
+          </h1>
 
 
-          
+
         </button>
         
       </div>
@@ -136,18 +146,18 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
 
-        <div className="flex flex-row gap-x-5 pb-4 whitespace-nowrap  duration-300 ">
-          
+        <div className="flex flex-row gap-x-5 pb-4 whitespace-nowrap mx-1 duration-300 ">
+
           {
-          
-          media.map((m) => (
+
+            media.map((m) => (
 
               <div key={m.id} className="inline-block">
 
                 <MediaCard mediaData={m} />
               </div>
-            ) 
-          )
+            )
+            )
 
           }
         </div>

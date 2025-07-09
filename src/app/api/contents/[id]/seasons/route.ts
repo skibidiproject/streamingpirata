@@ -6,9 +6,9 @@ export async function GET(
     { params }: { params: { id: string } }) {
     const id = await params.id;
 
-    const result = await pool.query('SELECT m.*, ARRAY_AGG(g.genre) AS genres_array FROM media m INNER JOIN genres g ON g.id = ANY(m.genres_ids) WHERE m.id = $1 AND m.streamable = TRUE GROUP BY m.id', [id]);
+    const result = await pool.query('SELECT * FROM tv_seasons WHERE media_id = $1 AND streamable = TRUE', [id]);
 
-    const media = result.rows[0];
+    const media = result.rows;
 
     return NextResponse.json(media);
 }
