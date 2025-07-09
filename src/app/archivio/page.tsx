@@ -5,7 +5,6 @@ import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import { useEffect, useState, useRef } from "react";
 
-
 interface MediaData {
   id: string;
   title: string;
@@ -19,10 +18,29 @@ interface MediaData {
   type: "tv" | "movie";
 }
 
+// Loader Component
+const Loader = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+      <div className="relative">
+        {/* Pulsing dots */}
+        <div className="flex space-x-2 justify-center">
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+        </div>
+      </div>
+      
+      <p className="text-white mt-4 text-lg">Caricamento film...</p>
+    </div>
+  );
+};
+
 export default function ArchivePage() {
   const ref = useRef<HTMLDivElement>(null);
   const [films, setFilms] = useState<MediaData[]>([]);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   // Dynamic card dimensions
   const [cardWidth, setCardWidth] = useState<number>(200);
@@ -55,14 +73,22 @@ export default function ArchivePage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoading(true);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents`, {
           cache: "no-store",
         });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data: MediaData[] = await res.json();
         setFilms(data.filter((m) => m.type === "movie"));
       } catch (e) {
         console.error("Errore nel fetch:", e);
         setError(true);
+      } finally {
+        setLoading(false);
       }
     }
     fetchData();
@@ -134,8 +160,47 @@ export default function ArchivePage() {
 
   const rowCount = Math.ceil(films.length / columnCount);
 
-  if (error) return <p className="text-red-500">Errore nel caricamento dei film.</p>;
-  if (films.length === 0) return <p className="text-gray-500 mt-10">Nessun film disponibile</p>;
+  // Show loader while loading
+  if (loading) {
+    return (
+      <>
+        <NavBar />
+        <hr className="mt-[5rem] text-[#212121]"/>
+        <Loader />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <NavBar />
+        <hr className="mt-[5rem] text-[#212121]"/>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+          <div className="text-center">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <p className="text-red-500 text-xl mb-2">Errore nel caricamento dei film</p>
+            <p className="text-gray-600">Riprova più tardi</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (films.length === 0) {
+    return (
+      <>
+        <NavBar />
+        <hr className="mt-[5rem] text-[#212121]"/>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+          <div className="text-center">
+            <div className="text-gray-400 text-6xl mb-4">🎬</div>
+            <p className="text-gray-500 text-xl">Nessun film disponibile</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const Cell = ({
     columnIndex,
