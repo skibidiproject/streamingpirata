@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/database";
+import React from "react";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -8,24 +9,29 @@ export async function GET(request: NextRequest) {
     const searchQuery = searchParams.get("search")?.trim() || "";
 
 
-    if(rawSearchQuery === null)
-    {
+    if (rawSearchQuery === null) {
         const result = await pool.query("SELECT * FROM media WHERE streamable = TRUE ");
         const medias = result.rows;
         return NextResponse.json(medias);
-    } else
-    {
+    } else {
 
         if (searchQuery.length >= 3) {
-    
+
             const search = `%${searchQuery}%`;
             const result = await pool.query(
-                "SELECT * FROM media WHERE LOWER(title) LIKE LOWER($1) AND streamable = TRUE",
+                `SELECT * FROM media
+                WHERE LOWER(
+                  REGEXP_REPLACE(
+                    REGEXP_REPLACE(title, '[.,\-]', '', 'g'), -- rimuove invece di sostituire
+                    '\s+', ' ', 'g' -- normalizza spazi multipli
+                  )
+                ) LIKE LOWER($1)
+                AND streamable = TRUE`,
                 [search]
             );
             const medias = result.rows;
             return NextResponse.json(medias);
-    
+
         } else {
             return NextResponse.json(
                 { error: "Inserisci piu di tre caratteri." },

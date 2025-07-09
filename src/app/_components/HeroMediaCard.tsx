@@ -22,27 +22,28 @@ interface MediaData {
 
 interface HeroMediaCardProps {
   mediaID: string;
+  type: string;
 }
 
 function getYouTubeVideoId(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    
+
     if (urlObj.hostname === 'youtu.be') {
       return urlObj.pathname.slice(1);
     }
-    
+
     if (urlObj.hostname.includes('youtube.com')) {
       return urlObj.searchParams.get('v');
     }
-    
+
     return null;
   } catch {
     return null;
   }
 }
 
-export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
+export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
   const [mediaData, setMediaData] = useState<MediaData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,9 +51,9 @@ export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
 
   useEffect(() => {
-    async function getMediaData(mediaId: string): Promise<MediaData | null> {
+    async function getMediaData(mediaId: string, type: string): Promise<MediaData | null> {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${mediaId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${type}/${mediaId}`);
         if (!res.ok) throw new Error('Errore nel fetch API');
         const data = await res.json();
         return data;
@@ -66,11 +67,11 @@ export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
       setIsLoading(true);
       setError(null);
 
-      const data = await getMediaData(mediaID);
+      const data = await getMediaData(mediaID, type);
 
       if (data) {
         setMediaData(data);
-        
+
         // Extract YouTube video ID after data is loaded
         if (data.trailer_url) {
           const videoId = getYouTubeVideoId(data.trailer_url);
@@ -90,7 +91,14 @@ export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-black text-white p-8">
-        <p className="text-xl">Loading...</p>
+        <div className="relative">
+          {/* Pulsing dots */}
+          <div className="flex space-x-2 justify-center">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -106,7 +114,7 @@ export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
   const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full md:h-[40vw] text-white p-8">
+    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full md:h-[40vw] text-white p-8 mb-1">
 
       {youtubeEmbed && (
         <iframe
@@ -128,13 +136,29 @@ export default function HeroMediaCard({ mediaID }: HeroMediaCardProps) {
         />
         <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)]  "></div>
 
-        <img src={mediaData.logo_url} className={`w-[15rem] lg:w-[15vw] mb-3 ml-1 object-contain object-left mt-[5rem] `} />
+        {mediaData.logo_url ? <img src={mediaData.logo_url} className={`w-[15rem] lg:w-80 mb-5 ml-1 object-contain object-left mt-[3rem]`} /> : <h1 className="mb-5 mt-8">{mediaData.title}</h1>}
 
-        <div className="flex flex-row gap-x-5 text-sm font-bold p-1 flex-wrap gap-y-2">
+        <div className="flex flex-row gap-x-5 text-sm font-bold p-1 flex-wrap gap-y-2 mb-1">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
+          {mediaData.certification && (
+            <h1
+              className={`border px-1 rounded-[5px]
+                ${
+                  ['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17'].includes(mediaData.certification)
+                    ? 'bg-red-500 border-red-500 text-white'
+                    : ['PG', 'PG-13', 'TV-PG', 'TV-G', 'E10+', 'T', 'M'].includes(mediaData.certification)
+                      ? 'bg-yellow-400 border-yellow-400 text-black'
+                      : 'border-white text-white bg-transparent'
+                }
+              `}
+              id="yr"
+            >
+              {mediaData.certification}
+            </h1>
+          )}
           <h1>{mediaData.genres_array && <span>{mediaData.genres_array.join(', ')}</span>}</h1>
-          {mediaData.certification == "VM14" || mediaData.certification == "VM18" ? <h1 className=" border-1 px-1 rounded-[5px] bg-red-500 border-red-500" id="yr">{mediaData.certification}</h1> : null}
+
         </div>
         <h1 className="text-sm md:w-[45rem] w-[20rem] ">
           <ExpandableText lines={3} text={mediaData.description} />

@@ -152,8 +152,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
 
             media.map((m) => (
 
-              <div key={m.id} className="inline-block">
-
+              <div key={m.type + m.id} className="inline-block">
                 <MediaCard mediaData={m} />
               </div>
             )

@@ -8,13 +8,17 @@ export default function Search() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get("q") || "");
 
+
+
   useEffect(() => {
     const q = searchParams.get("q") || "";
     setQuery(q);
   }, [searchParams]);
 
+
   const handleSearch = () => {
-    if (query.trim()) {
+
+    if (query) {
       router.push(`/search?q=${encodeURIComponent(query)}`);
     }
   };

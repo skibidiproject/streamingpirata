@@ -13,7 +13,7 @@ export default function Loader() {
         </div>
       </div>
       
-      <p className="text-white mt-4 text-lg">Caricamento film...</p>
+      <p className="text-white mt-4 text-lg">Caricamento...</p>
     </div>
   );
 };

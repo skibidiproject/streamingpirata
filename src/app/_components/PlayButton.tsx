@@ -13,9 +13,8 @@ export default function PlayButton({id, type}: {id: string, type: string} ){
         }
         else
         {
-            router.push(`/media/${id}#episodi`)
+            router.push(`/media/${type}/${id}#episodi`)
         }
-        // IMPLEMENTARE PER SERIE SELEZIONE EPISODI E LINK ANCHOR Lì, #episodes
     }
 
     return(

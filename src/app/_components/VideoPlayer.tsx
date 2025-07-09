@@ -784,7 +784,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             {showSettings && (
                 <div
                     ref={settingsRef}
-                    className={`absolute bottom-24 lg:bottom-28 h-70 right-2 bg-[#0a0a0a]/50 backdrop-blur-sm rounded-xl p-4 z-40 shadow-2xl w-[80%] max-w-md sm:w-96 sm:right-4 lg:right-6 md:w-80 lg:w-80 settings-panel`}
+                    className={`absolute bottom-24 lg:bottom-28 h-70 right-2 bg-[#0a0a0a]/50 backdrop-blur-sm rounded-xl p-4 z-40 shadow-2xl w-[80%] max-w-md sm:w-96 sm:right-4 lg:right-6 md:w-80 lg:w-80 settings-panel cursor-default`}
 
                 >
                     <div className="flex justify-between items-center mb-4">
@@ -794,7 +794,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                 onClick={() => setSettingsTab('quality')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'quality'
                                     ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-stone-800'
+                                    : 'text-gray-300 hover:bg-[#212121]'
                                     }`}
                             >
                                 Qualità
@@ -803,7 +803,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                 onClick={() => setSettingsTab('audio')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'audio'
                                     ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-stone-800'
+                                    : 'text-gray-300 hover:bg-[#212121]'
                                     }`}
                             >
                                 Audio
@@ -812,7 +812,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                 onClick={() => setSettingsTab('subtitles')}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all control-element ${settingsTab === 'subtitles'
                                     ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-stone-800'
+                                    : 'text-gray-300 hover:bg-[#212121]'
                                     }`}
                             >
                                 Sottotitoli
@@ -822,7 +822,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                         {/* Bottone X a destra */}
                         <button
                             onClick={() => setShowSettings(false)}
-                            className="p-2 rounded-full hover:bg-stone-800 text-gray-300 transition-colors"
+                            className="p-2 rounded-full hover:bg-[#212121] text-gray-300 transition-colors"
                             aria-label="Chiudi impostazioni"
                         >
                             <CloseIcon className="w-5 h-5" />
@@ -835,7 +835,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <div className="space-y-2 h-50">
                                 <button
                                     onClick={() => changeQuality(-1)}
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${isAutoQuality ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-stone-800'
+                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${isAutoQuality ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-[#212121]'
                                         }`}
                                 >
                                     Automatico
@@ -844,7 +844,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                     <button
                                         key={level.id}
                                         onClick={() => changeQuality(level.id)}
-                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex justify-between items-center transition-all control-element ${!isAutoQuality && currentQuality === level.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-stone-800'
+                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex justify-between items-center transition-all control-element ${!isAutoQuality && currentQuality === level.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-[#212121]'
                                             }`}
                                     >
                                         <span>{level.height}p</span>
@@ -863,7 +863,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                         <button
                                             key={track.id}
                                             onClick={() => changeAudioTrack(track.id)}
-                                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentAudioTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-stone-800'}`}
+                                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentAudioTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-[#212121]'}`}
                                         >
                                             <span>
                                                 {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}
@@ -878,7 +878,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             <div className="space-y-2 overflow-auto h-50">
                                 <button
                                     onClick={() => changeSubtitleTrack(-1)}
-                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === -1 ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-stone-800'}`}
+                                    className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === -1 ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-[#212121]'}`}
                                 >
                                     Disattivati
                                 </button>
@@ -886,7 +886,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                     <button
                                         key={track.id}
                                         onClick={() => changeSubtitleTrack(track.id)}
-                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-stone-800'}`}
+                                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-[#212121]'}`}
                                     >
                                         <span>
                                             {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}

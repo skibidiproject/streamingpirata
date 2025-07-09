@@ -22,7 +22,7 @@ export default async function FilmPage() {
   let latestMedia: MediaData[] = [];
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest/movie`, {
       cache: "no-store",
     });
     latestMedia = await res.json();
@@ -39,7 +39,7 @@ export default async function FilmPage() {
       
       {/* Hero Section con un film random o featured */}
       {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].id} />
+        <HeroMediaCard mediaID={films[0].id} type={'movie'}/>
       )}
 
       <h1 className="text-2xl font-bold ml-8 mt-10  mt-[-3rem]">Azione</h1>

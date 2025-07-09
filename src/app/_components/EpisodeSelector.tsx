@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from "react"
 import Episode from "./Episode"
-
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 interface Season {
   id: string;
   media_id: string;
@@ -30,7 +31,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
   useEffect(() => {
     const fetchSeasons = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${id}/seasons`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/tv/${id}/seasons`);
         if (!res.ok) {
           throw new Error("Errore nel fetch delle stagioni");
         }
@@ -51,7 +52,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
   useEffect(() => {
     const fetchEpisodes = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${id}/episodes/${selectedSeason}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/tv/${id}/episodes/${selectedSeason}`);
         if (!res.ok) {
           throw new Error("Errore nel fetch degli episodi");
         }
@@ -63,16 +64,22 @@ export default function EpisodeSelector({ id }: { id: string }) {
       }
     };
 
-    if (selectedSeason) {
+    if (selectedSeason !== null && selectedSeason !== undefined) {
       fetchEpisodes();
     }
   }, [id, selectedSeason]);
 
   if (loading) {
     return <div className="m-10">
-      <h1>Caricamento...</h1>
-      
-      </div>;
+      <div className="relative">
+        {/* Pulsing dots */}
+        <div className="flex space-x-2 justify-center">
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+        </div>
+      </div>
+    </div>;
   }
 
   if (error) {
@@ -83,20 +90,59 @@ export default function EpisodeSelector({ id }: { id: string }) {
     <>
       <div className="w-[95%] h-full mx-auto p-3 rounded-2xl">
         <h1 className="text-2xl mb-2">Episodi</h1>
-        <div className="mb-4">
-          <label htmlFor="season-select" className="mr-2">Stagione:</label>
-          <select
-            id="season-select"
-            value={selectedSeason}
-            onChange={(e) => setSelectedSeason(Number(e.target.value))}
-            className="border border-[#2e2e2e] rounded px-2 py-1"
-          >
-            {seasons.map((season) => (
-              <option key={season.season_number} value={season.season_number}>
-                Stagione {season.season_number}
-              </option>
-            ))}
-          </select>
+        <div className="mb-6 flex items-center gap-3">
+          <span className="text-white">Stagione:</span>
+          <Listbox value={selectedSeason} onChange={setSelectedSeason}>
+            <div className="relative">
+              <ListboxButton className="
+                flex items-center justify-between
+                w-35 px-4 py-1
+                bg-[#0a0a0a] 
+                border border-[#212121]
+                rounded-lg
+                text-left text-white
+                transition-all
+              ">
+                <span className="block truncate">
+                  {selectedSeason == 0 ? 'Episodi Speciali' : `Stagione ${selectedSeason}`}
+                </span>
+                <ChevronDownIcon
+                  className="w-5 h-5 text-gray-400"
+                  aria-hidden="true"
+                />
+              </ListboxButton>
+
+              <ListboxOptions className="
+                absolute mt-1 w-48 max-h-60
+                bg-[#0a0a0a]
+                border border-[#212121]
+                rounded-lg
+                overflow-auto
+                z-10
+                shadow-lg shadow-black/50
+                focus:outline-none
+              ">
+                {seasons.map((season) => (
+                  <ListboxOption
+                    key={season.id}
+                    value={season.season_number}
+                    className={({ active, selected }) => `
+              relative cursor-pointer py-1 pl-4 pr-4
+              ${selected ? 'bg-gray-900 text-blue-400' : ''}
+              ${active && !selected ? 'bg-[#212121] text-white' : ''}
+              transition-colors
+            `}
+                  >
+                    {({ selected }) => (
+                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                        {season.season_number == 0 ? 'Episodi Speciali' : `Stagione ${season.season_number}`}
+                      </span>
+                    )}
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
+            </div>
+          </Listbox>
         </div>
 
         <div className="episodes-list">
