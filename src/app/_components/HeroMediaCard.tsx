@@ -3,7 +3,7 @@
 import PlayButton from "./PlayButton";
 import TrailerButton from "./TrailerButton";
 import ExpandableText from "./ExpandableText";
-import pool from "../lib/database";
+import YouTubePlayer from "./YoutubePlayer";
 import { useEffect, useState } from "react";
 
 interface MediaData {
@@ -114,29 +114,43 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
   const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full md:h-[40vw] text-white p-8 mb-1">
+    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full lg:h-[40vw] text-white p-8 mb-1">
 
-      {youtubeEmbed && (
-        <iframe
-          src={`https://www.youtube.com/embed/${youtubeEmbed}?autoplay=1&controls=0&modestbranding=1&rel=0&fs=0&iv_load_policy=3&mute=1`}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          className={`absolute inset-0 w-full h-full object-cover object-top -z-10 transition-opacity duration-500 ${isTrailerPlaying ? "opacity-100" : "opacity-0"}`}
+      {isTrailerPlaying && (
+
+        <>
+        <YouTubePlayer
+          videoId={youtubeEmbed}
+          onPause={() => setIsTrailerPlaying(false)}
+          onPlay={() => console.log('Video playing')}
+          onEnded={() => setIsTrailerPlaying(false)}
+          onError={(error) => console.error('Player error:', error)}
+          onReady={() => console.log('Player ready')}
+          className="absolute inset-0 w-screen h-full z-4"
         />
+
+        <div className="absolute w-full h-[7rem] md:h-[5rem] bg-black z-5 inset-0"></div>
+        </>
       )}
 
-      {/* Combined gradients overlay - positioned above image but below text */}
-      <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_100%)]"></div>
+      {/* Gradient Below */}
+      <div className={`absolute inset-0 z-5  pointer-events-none ${isTrailerPlaying ? "md:bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_20%)]  bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_15%,transparent_30%)]" : "bg-[linear-gradient(to_top,#0a0a0a_0%,#0a0a0a_5%,transparent_100%)]"}`}></div>
 
-      <div className={`transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0" : "opacity-100"}`}>
 
-        <img
-          src={bgUrl}
-          className="absolute inset-0 w-full h-full object-cover object-top -z-10"
-        />
+      {/* Background Image */}
+      <img
+        src={bgUrl}
+        className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} z-4`}
+      />
+
+      
+
+      <div className={`transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} z-6`}>
+
         <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)]  "></div>
 
-        {mediaData.logo_url ? <img src={mediaData.logo_url} className={`w-[15rem] lg:w-80 mb-5 ml-1 object-contain object-left mt-[3rem]`} /> : <h1 className="mb-5 mt-8">{mediaData.title}</h1>}
+
+        {mediaData.logo_url ? <img src={mediaData.logo_url} className={`w-[15rem] lg:w-80 mb-5 ml-1 object-contain object-left mt-[5rem]`} /> : <h1 className="mb-5 mt-8">{mediaData.title}</h1>}
 
         <div className="flex flex-row gap-x-5 text-sm font-bold p-1 flex-wrap gap-y-2 mb-1">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
@@ -144,14 +158,13 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
           {mediaData.certification && (
             <h1
               className={`border px-1 rounded-[5px]
-                ${
-                  ['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17'].includes(mediaData.certification)
-                    ? 'bg-red-500 border-red-500 text-white'
-                    : ['PG', 'PG-13', 'TV-PG', 'TV-G', 'E10+', 'T', 'M'].includes(mediaData.certification)
-                      ? 'bg-yellow-400 border-yellow-400 text-black'
-                      : 'border-white text-white bg-transparent'
+                  ${['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17'].includes(mediaData.certification)
+                  ? 'bg-red-500 border-red-500 text-white'
+                  : ['PG', 'PG-13', 'TV-PG', 'TV-G', 'E10+', 'T', 'M'].includes(mediaData.certification)
+                    ? 'bg-yellow-400 border-yellow-400 text-black'
+                    : 'border-white text-white bg-transparent'
                 }
-              `}
+                `}
               id="yr"
             >
               {mediaData.certification}
@@ -167,8 +180,8 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
           <PlayButton id={mediaID} type={mediaData.type} />
           {mediaData.trailer_url && <TrailerButton url={mediaData.trailer_url} onTrailerToggle={setIsTrailerPlaying} isPlaying={isTrailerPlaying} />}
         </div>
-
       </div>
+
     </div>
   );
 }
