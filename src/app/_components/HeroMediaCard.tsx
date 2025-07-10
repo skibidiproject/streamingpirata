@@ -158,7 +158,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
           {mediaData.certification && (
             <h1
               className={`border px-1 rounded-[5px]
-                  ${['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17'].includes(mediaData.certification)
+                  ${['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17', '18+', '14+'].includes(mediaData.certification)
                   ? 'bg-red-500 border-red-500 text-white'
                   : ['PG', 'PG-13', 'TV-PG', 'TV-G', 'E10+', 'T', 'M'].includes(mediaData.certification)
                     ? 'bg-yellow-400 border-yellow-400 text-black'

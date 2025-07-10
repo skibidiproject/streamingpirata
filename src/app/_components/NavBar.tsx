@@ -1,11 +1,13 @@
 'use client'
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Search from "./Search";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -25,10 +27,26 @@ function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Funzione per determinare se un link è attivo
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(path);
+  };
+
+  // Classi per link attivo e non attivo
+  const getLinkClasses = (path:string) => {
+    const baseClasses = "px-2 rounded py-0.5 transition-all duration-300";
+    const activeClasses = "bg-white text-black shadow-[0_0_10px_4px_rgba(255,255,255,0.3)]";
+    const inactiveClasses = "";
+    
+    return `${baseClasses} ${isActive(path) ? activeClasses : inactiveClasses}`;
+  };
+
   return (
     <>
-      <header className={`fixed  z-50 duration-500 ${scrolled ? 'bg-black/80 backdrop-blur-md shadow-md' : 'bg-transparent'} w-screen text-white px-5 md:px-8 lg:px-8 py-4.5 `}>
-
+      <header className={`fixed z-50 duration-500 ${scrolled ? 'bg-black/80 backdrop-blur-md shadow-md' : 'bg-transparent'} w-screen text-white px-5 md:px-8 lg:px-8 py-4.5`}>
         <div className="flex items-center justify-between md:justify-start md:gap-12">
           
           {/* Logo + hamburger */}
@@ -37,7 +55,7 @@ function Navbar() {
               <img src="/logo.png" alt="Logo" className="w-20 h-auto" />
             </Link>
             
-            {/* BARRA DI RICERCA MOBILE - MODIFICATA */}
+            {/* BARRA DI RICERCA MOBILE */}
             <div className="md:hidden flex-grow mx-3 max-w-[12rem]">
               <Search />
             </div>
@@ -60,11 +78,11 @@ function Navbar() {
           </div>
 
           {/* Menu link (desktop only) */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="hover:underline transition-all duration-200">Home</Link>
-            <Link href="/film" className="hover:underline transition-all duration-200">Film</Link>
-            <Link href="/serie-tv" className="hover:underline transition-all duration-200">Serie TV</Link>
-            <Link href="/archivio" className="hover:underline transition-all duration-200">Archivio</Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/" className={getLinkClasses('/')}>Home</Link>
+            <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
+            <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
+            <Link href="/archivio" className={getLinkClasses('/archivio')}>Archivio</Link>
           </nav>
 
           {/* Search (desktop) */}
