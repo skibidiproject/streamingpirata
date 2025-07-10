@@ -25,6 +25,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [episodes, setEpisodes] = useState<EpisodeComplete[]>([]);
   const [loading, setLoading] = useState(true);
+  const [episodesLoading, setEpisodesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch stagioni
@@ -51,6 +52,9 @@ export default function EpisodeSelector({ id }: { id: string }) {
   // Fetch episodi quando cambia la stagione 
   useEffect(() => {
     const fetchEpisodes = async () => {
+      setEpisodesLoading(true);
+      setEpisodes([]); // Reset episodes immediately
+      
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/tv/${id}/episodes/${selectedSeason}`);
         if (!res.ok) {
@@ -61,6 +65,8 @@ export default function EpisodeSelector({ id }: { id: string }) {
       } catch (e) {
         console.error(e);
         setError("Errore nel caricamento degli episodi");
+      } finally {
+        setEpisodesLoading(false);
       }
     };
 
@@ -69,17 +75,22 @@ export default function EpisodeSelector({ id }: { id: string }) {
     }
   }, [id, selectedSeason]);
 
+  const LoadingDots = () => (
+    <div className="flex space-x-2 justify-center">
+      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+    </div>
+  );
+
   if (loading) {
-    return <div className="m-10">
-      <div className="relative">
-        {/* Pulsing dots */}
-        <div className="flex space-x-2 justify-center">
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+    return (
+      <div className="m-10">
+        <div className="relative">
+          <LoadingDots />
         </div>
       </div>
-    </div>;
+    );
   }
 
   if (error) {
@@ -146,17 +157,23 @@ export default function EpisodeSelector({ id }: { id: string }) {
         </div>
 
         <div className="episodes-list">
-          {episodes.map((episode) => (
-            <Episode
-              key={episode.episode_number}
-              id={id}
-              season={selectedSeason}
-              episode={episode.episode_number}
-              title={episode.title}
-              description={episode.description}
-              stillUrl={episode.still_url}
-            />
-          ))}
+          {episodesLoading ? (
+            <div className="py-8">
+              <LoadingDots />
+            </div>
+          ) : (
+            episodes.map((episode) => (
+              <Episode
+                key={episode.episode_number}
+                id={id}
+                season={selectedSeason}
+                episode={episode.episode_number}
+                title={episode.title}
+                description={episode.description}
+                stillUrl={episode.still_url}
+              />
+            ))
+          )}
         </div>
       </div>
     </>

@@ -5,7 +5,7 @@ export default function Disclaimer() {
     return (
         <>
             <Navbar />
-            <main className="px-4 md:px-12 md:mt-24 text-white max-w-screen-lg mx-auto mt-12">
+            <main className="px-4 md:px-12 text-white max-w-screen-lg mx-auto mt-24">
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 underline">Disclaimer</h1>
 
                 <div className="text-base md:text-lg leading-relaxed">

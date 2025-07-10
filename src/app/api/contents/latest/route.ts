@@ -3,29 +3,31 @@ import pool from "@/app/lib/database";
 
 export async function GET(request: NextRequest) {
 
-    const result = await pool.query(`SELECT 
-        m.*, 
-        COALESCE(
-            (SELECT MAX(s.release_date) 
-            FROM tv_seasons s 
-            WHERE s.media_id = m.id AND s.streamable = TRUE),
-            m.release_date
-        ) AS release_date_for_order
-        FROM media m
-        WHERE 
-        m.streamable = TRUE
-        AND (
-            EXISTS (
-            SELECT 1 
-            FROM tv_seasons s 
-            WHERE s.media_id = m.id 
-                AND s.streamable = TRUE 
-                AND s.release_date >= CURRENT_DATE - INTERVAL '60 days'
+    const result = await pool.query(`WITH streamable_seasons AS (
+            SELECT 
+                media_id,
+                media_type,
+                MAX(release_date) AS max_season_release_date
+            FROM tv_seasons
+            WHERE streamable = TRUE
+            GROUP BY media_id, media_type
+        ),
+        media_with_release_dates AS (
+            SELECT 
+                m.*,
+                COALESCE(ss.max_season_release_date, m.release_date) AS release_date_for_order
+            FROM media m
+            LEFT JOIN streamable_seasons ss ON (
+                ss.media_id = m.id 
+                AND ss.media_type = m.type
             )
-            OR
-            m.release_date >= CURRENT_DATE - INTERVAL '60 days'
+            WHERE m.streamable = TRUE
+              AND (m.type = 'movie' OR ss.media_id IS NOT NULL)
         )
-        ORDER BY release_date_for_order DESC;
+        SELECT *
+        FROM media_with_release_dates
+        ORDER BY release_date_for_order DESC
+        LIMIT 50;
     `)
 
 

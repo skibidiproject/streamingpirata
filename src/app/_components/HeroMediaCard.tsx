@@ -5,6 +5,7 @@ import TrailerButton from "./TrailerButton";
 import ExpandableText from "./ExpandableText";
 import YouTubePlayer from "./YoutubePlayer";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface MediaData {
   id: string;
@@ -43,7 +44,9 @@ function getYouTubeVideoId(url: string): string | null {
   }
 }
 
+
 export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
+  const [logoLoaded, setLogoLoaded] = useState(false);
   const [mediaData, setMediaData] = useState<MediaData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,17 +122,17 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
       {isTrailerPlaying && (
 
         <>
-        <YouTubePlayer
-          videoId={youtubeEmbed}
-          onPause={() => setIsTrailerPlaying(false)}
-          onPlay={() => console.log('Video playing')}
-          onEnded={() => setIsTrailerPlaying(false)}
-          onError={(error) => console.error('Player error:', error)}
-          onReady={() => console.log('Player ready')}
-          className="absolute inset-0 w-screen h-full z-4"
-        />
+          <YouTubePlayer
+            videoId={youtubeEmbed}
+            onPause={() => setIsTrailerPlaying(false)}
+            onPlay={() => console.log('Video playing')}
+            onEnded={() => setIsTrailerPlaying(false)}
+            onError={(error) => console.error('Player error:', error)}
+            onReady={() => console.log('Player ready')}
+            className="absolute inset-0 w-screen h-full z-4"
+          />
 
-        <div className="absolute w-full h-[7rem] md:h-[5rem] bg-black z-5 inset-0"></div>
+          <div className="absolute w-full h-[7rem] md:h-[5rem] bg-black z-5 inset-0"></div>
         </>
       )}
 
@@ -143,31 +146,53 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
         className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} z-4`}
       />
 
-      
+
 
       <div className={`transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} z-6`}>
 
         <div className="absolute inset-0 -z-[5] bg-[linear-gradient(to_right,#0a0a0a_0%,#0a0a0a_20%,transparent_100%)]  "></div>
 
 
-        {mediaData.logo_url ? <img src={mediaData.logo_url} className={`w-[15rem] lg:w-80 mb-5 ml-1 object-contain object-left mt-[5rem]`} /> : <h1 className="mb-5 mt-8">{mediaData.title}</h1>}
+        {mediaData.logo_url ? (
+          <div className="relative w-[15rem] lg:w-80 aspect-[16/9] mt-[5rem] mb-5">
+            <Image
+              src={mediaData.logo_url}
+              alt={mediaData.title}
+              fill
+              quality={75}
+              className={`object-contain transition-opacity duration-500 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
+              onLoadingComplete={() => setLogoLoaded(true)}
+            />
+          </div>
+        ) : (
+          <h1 className="mb-5 mt-8">{mediaData.title}</h1>
+        )}
 
-        <div className="flex flex-row gap-x-5 text-sm font-bold p-1 flex-wrap gap-y-2 mb-1">
+
+        <div className="flex flex-row gap-x-5 text-sm font-bold py-1 flex-wrap gap-y-2 mb-1">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
           {mediaData.certification && (
             <h1
-              className={`border px-1 rounded-[5px]
-                  ${['VM14', 'VM18', 'R', 'TV-14', 'TV-MA', 'NC-17', '18+', '14+'].includes(mediaData.certification)
+              className={`border px-1 rounded-[5px] text-sm font-bold 
+                ${
+                // ROSSO: Contenuti per adulti o vietati ai minori
+                ['VM14', 'VM18', 'R', 'TV-MA', 'NC-17', '18+'].includes(mediaData.certification)
                   ? 'bg-red-500 border-red-500 text-white'
-                  : ['PG', 'PG-13', 'TV-PG', 'TV-G', 'E10+', 'T', 'M'].includes(mediaData.certification)
-                    ? 'bg-yellow-400 border-yellow-400 text-black'
-                    : 'border-white text-white bg-transparent'
+
+                  // GIALLO: Contenuti con avvertenze (moderati)
+                  : ['PG-13', 'TV-14', '14+'].includes(mediaData.certification)
+                    ? 'bg-yellow-500 border-yellow-500 text-black'
+
+                    // VERDE/BIANCO: Tutti pubblici o generici
+                    : ['T', 'PG', 'TV-G', 'TV-Y', 'TV-Y7', 'E10+', 'G'].includes(mediaData.certification)
+                      ? 'bg-transparent border-white text-white'
+
+                      : null
                 }
-                `}
-              id="yr"
+              `}
             >
-              {mediaData.certification}
+              {mediaData.certification || "N/A"}
             </h1>
           )}
           <h1>{mediaData.genres_array && <span>{mediaData.genres_array.join(', ')}</span>}</h1>

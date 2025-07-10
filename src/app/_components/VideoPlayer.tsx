@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import DisableContextMenu from './DisableContextMenu'
 import Hls from 'hls.js';
 
 interface VideoPlayerProps {
@@ -731,6 +732,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             onClick={handleContainerInteraction}
             onTouchEnd={handleContainerInteraction}
         >
+            <DisableContextMenu/>
             {/* Video Element */}
             <video
                 ref={videoRef}

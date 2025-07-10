@@ -71,13 +71,31 @@ class HLSProxy:
         raise Exception(f"Tutti i tentativi falliti per {url}")
 
     def proxy_playlist(self, url: str) -> Tuple[str, int, Dict]:
-        """Proxy per playlist M3U8 (master o media)."""
         try:
-            response = self._make_request(url)
-            if response.status_code != 200:
-                return f"Errore: {response.status_code}", response.status_code, {}
+            response = self._make_request(url, stream=True)
+            # Se è un file VTT
+            if url.lower().endswith('.vtt'):
+                content = response.text
+                return self._handle_vtt_subtitle(content, response.status_code)
+            # Se è un file TS o altro binario
+            content_type = response.headers.get('Content-Type', '').lower()
+            if url.lower().endswith('.ts') or 'video' in content_type or 'octet-stream' in content_type:
+                headers = {
+                    'Content-Type': content_type or 'video/mp2t',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Range',
+                    'Accept-Ranges': 'bytes',
+                    'Cache-Control': 'public, max-age=3600'
+                }
+                if 'Content-Length' in response.headers:
+                    headers['Content-Length'] = response.headers['Content-Length']
+                if response.status_code == 206 and 'Content-Range' in response.headers:
+                    headers['Content-Range'] = response.headers['Content-Range']
+                return response.content, response.status_code, headers
+            # Altrimenti, prova come M3U8
             content = response.text
-            if url.lower().endswith('.vtt') or content.strip().startswith('WEBVTT'):
+            if content.strip().startswith('WEBVTT'):
                 return self._handle_vtt_subtitle(content, response.status_code)
             if not content.strip().startswith('#EXTM3U'):
                 return "Non è un file M3U8 valido", 400, {}
@@ -88,6 +106,7 @@ class HLSProxy:
         except Exception as e:
             logger.error(f"Errore proxy playlist: {e}")
             return f"Errore interno: {str(e)}", 500, {}
+
 
     def _handle_vtt_subtitle(self, content: str, status_code: int) -> Tuple[str, int, Dict]:
         """Gestione file sottotitoli VTT."""

@@ -3,8 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import MediaCard from "./MediaCard";
 import { FixedSizeGrid as Grid } from "react-window";
-import { ListboxButton, Listbox, ListboxOptions, ListboxOption } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
+
 
 interface MediaData {
     id: string;
@@ -36,11 +35,6 @@ interface Genre {
 export default function LazyLoader({ mediaData }: LazyLoaderProps) {
 
     const measureCardRef = useRef<HTMLDivElement>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const [genres, setGenres] = useState<Genre[]>([]);
-    const [selectedGenre, setSelectedGenre] = useState("");
 
 
     // Dynamic card dimensions
@@ -184,41 +178,6 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
 
 
 
-
-
-
-
-
-
-
-
-    // Fetch stagioni
-    useEffect(() => {
-        const fetchGenres = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/genres`);
-                if (!res.ok) {
-                    throw new Error("Errore nel fetch delle stagioni");
-                }
-                const data = await res.json();
-                setGenres(data);
-
-                console.log(data)
-                setLoading(false);
-            } catch (e) {
-                console.error(e);
-                setError("Errore nel caricamento delle stagioni");
-                setLoading(false);
-            }
-        };
-
-        fetchGenres();
-
-    }, []);
-
-
-
-
     return (
         <>
 
@@ -239,65 +198,7 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
                 </div>
             )}
 
-
-
-            <Listbox value={selectedGenre} onChange={setSelectedGenre}>
-                <div className="relative h-50">
-                    <ListboxButton className="
-                                    flex items-center justify-between
-                                    w-35 px-4 py-1
-                                    bg-[#0a0a0a] 
-                                    border border-[#212121]
-                                    rounded-lg
-                                    text-left text-white
-                                    transition-all
-                                  ">
-                                    <span className="block truncate">
-                                      asd
-                                    </span>
-                                    <ChevronDownIcon
-                                      className="w-5 h-5 text-gray-400"
-                                      aria-hidden="true"
-                                    />
-                                  </ListboxButton>
-
-                    <ListboxOptions className="
-                              absolute mt-1 w-48 max-h-60
-                              bg-[#0a0a0a]
-                              border border-[#212121]
-                              rounded-lg
-                              overflow-auto
-                              z-10
-                              shadow-lg shadow-black/50
-                              focus:outline-none
-                            ">
-                        {genres.map((genre) => (
-                            <ListboxOption
-                                key={genre.id}
-                                value={genre.genre}
-                                className={({ active, selected }) => `
-                            relative cursor-pointer py-1 h-10 pl-4 pr-4
-                            ${selected ? 'bg-gray-900 text-blue-400' : ''}
-                            ${active && !selected ? 'bg-[#212121] text-white' : ''}
-                            transition-colors
-                          `}
-                            >
-                                
-                                    
-                                       {({ selected }) => (
-                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                        {genre.genre}
-                      </span>
-                    )}
-                                    
-                                
-                            </ListboxOption>
-                        ))}
-                    </ListboxOptions>
-
-
-                </div>
-            </Listbox>
+            
 
             <div
                 className="w-full mt-[0rem]"
@@ -309,7 +210,7 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
                     <Grid
                         columnCount={columnCount}
                         columnWidth={cardWidth + cellGap}
-                        height={windowHeight - 85}
+                        height={windowHeight - 135}
                         rowCount={rowCount}
                         rowHeight={cardHeight + cellGap}
                         width={Math.min(

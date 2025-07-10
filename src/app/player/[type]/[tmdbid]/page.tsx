@@ -153,7 +153,7 @@ async function getTitle(params: PageProps['params']): Promise<string> {
   
   try {
     // Chiamata fetch all'API passando tmdbid come id
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${tmdbid}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/movie/${tmdbid}`);
 
     if (!res.ok) throw new Error('Errore nel fetch API');
 
