@@ -2,20 +2,8 @@ import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 import ScrollSection from "../_components/ScrollSection";
+import { MediaData } from "../_components/Mediadata";
 
-
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
 
 export default async function FilmPage() {
   let latestMedia: MediaData[] = [];

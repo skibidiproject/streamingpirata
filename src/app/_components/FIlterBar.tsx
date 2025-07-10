@@ -33,18 +33,16 @@ interface DropdownProps {
 }
 
 const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProps) => (
-  <div className="w-full">
+  <div className="w-full ">
     <label className="block text-sm font-medium text-gray-300 mb-2">
       {label}
     </label>
     <Listbox value={value} onChange={onChange}>
-      <div className="relative">
+      <div className="relative ">
         <ListboxButton className="
           flex items-center justify-between
           w-full px-4 py-2
-          bg-[#0a0a0a] 
-          border border-[#212121]
-          rounded-lg
+          bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-sm
           text-left text-white
           transition-all
         ">
@@ -56,12 +54,10 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
 
         <ListboxOptions className="
           absolute mt-1 w-full max-h-60
-          bg-[#0a0a0a]
-          border border-[#212121]
-          rounded-lg
           overflow-auto
           z-[60]
-          shadow-lg shadow-black/50
+          bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-sm
+          shadow-2xl shadow-black/50
           focus:outline-none
         ">
           <ListboxOption
@@ -206,7 +202,7 @@ export default function FilterBar({
   const genreOptions = genres.map(genre => ({ value: genre.id, label: genre.genre }));
 
   return (
-    <div className={`bg-[#1a1a1a] border-b border-[#333] sticky top-[5rem] z-30 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
+    <div className={`bg-[#0a0a0a] backdrop-blur-md shadow-2xl  sticky top-[5rem] z-30 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -214,7 +210,7 @@ export default function FilterBar({
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
             >
-              <FunnelIcon className="w-5 h-5 text-blue-500" />
+              <FunnelIcon className="w-5 h-5 text-white" />
               <span className="font-medium">Filtri</span>
               <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
                 <ChevronDownIcon className="w-4 h-4" />
@@ -223,7 +219,7 @@ export default function FilterBar({
             
             {hasActiveFilters && (
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-white rounded-full"></span>
                 <span className="text-sm text-gray-400">Filtri attivi</span>
               </div>
             )}
@@ -250,11 +246,10 @@ export default function FilterBar({
         >
           <div className="
             absolute left-0 right-0 top-full
-            bg-[#1a1a1a]
-            border-t border-[#333]
-            shadow-lg shadow-black/50
+            
+            shadow-black/50
             z-[45]
-            overflow-visible
+            overflow-visible bg-[#0a0a0a]/95 backdrop-blur-md shadow-md
           ">
             <div className="px-4 py-4">
               {error && (
@@ -269,7 +264,7 @@ export default function FilterBar({
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
                     <Dropdown
                       label="Anno"
                       value={tempFilters.year || ""}
@@ -308,13 +303,13 @@ export default function FilterBar({
                   <div className="flex justify-end gap-3 mt-6">
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="px-4 py-2 text-sm bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      className="px-4 py-2 text-sm bg-[#171717] border-1 border-[#000000ac] text-white rounded-md hover:shadow-[0_0_10px_4px_#171717] transition-all duration-300 cursor-pointer"
                     >
                       Annulla
                     </button>
                     <button
                       onClick={applyFilters}
-                      className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="px-4 py-2 text-sm bg-white text-black rounded-md hover:shadow-[0_0_10px_4px_rgba(255,255,255,0.3)] transition-all duration-300 cursor-pointer"
                     >
                       Applica filtri
                     </button>

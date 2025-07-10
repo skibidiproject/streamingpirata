@@ -4,20 +4,7 @@ import NavBar from "./_components/NavBar";
 import HeroMediaCard from "./_components/HeroMediaCard";
 import Footer from "./_components/Footer";
 import ScrollSection from "./_components/ScrollSection";
-
-
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
+import { MediaData } from "./_components/Mediadata";
 
 
 

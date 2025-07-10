@@ -1,17 +1,6 @@
 import LazyLoader from "../_components/LazyLoader";
+import { MediaData } from "../_components/Mediadata";
 
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
 
 export default function Home( ) {
     const m: MediaData = {

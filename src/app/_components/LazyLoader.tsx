@@ -3,20 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import MediaCard from "./MediaCard";
 import { FixedSizeGrid as Grid } from "react-window";
-
-
-interface MediaData {
-    id: string;
-    title: string;
-    description: string;
-    poster_url: string;
-    backdrop_url: string | null;
-    logo_url: string;
-    trailer_url: string;
-    release_date: string;
-    certification: string;
-    type: "tv" | "movie";
-}
+import { MediaData } from "./Mediadata";
 
 
 

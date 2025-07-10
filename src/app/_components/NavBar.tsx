@@ -39,7 +39,7 @@ function Navbar() {
   // Classi per link attivo e non attivo
   const getLinkClasses = (path: string) => {
     const baseClasses = "px-2 rounded py-0.5 transition-all duration-300";
-    const activeClasses = "bg-white text-black shadow-[0_0_10px_4px_rgba(255,255,255,0.3)]";
+    const activeClasses = "text-glow";
     const inactiveClasses = "";
 
     return `${baseClasses} ${isActive(path) ? activeClasses : inactiveClasses}`;
@@ -57,13 +57,13 @@ function Navbar() {
             </Link>
 
 
-            {/* Menu link (desktop only) */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/" className={getLinkClasses('/')}>Home</Link>
-              <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
-              <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
-              <Link href="/archivio" className={getLinkClasses('/archivio')}>Archivio</Link>
-            </nav>
+              {/* Menu link (desktop only) */}
+              <nav className="hidden md:flex items-center gap-6">
+                <Link href="/" className={getLinkClasses('/')}>Home</Link>
+                <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
+                <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
+                <Link href="/archivio" className={getLinkClasses('/archivio')}>Archivio</Link>
+              </nav>
 
           </div>
 

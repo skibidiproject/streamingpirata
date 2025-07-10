@@ -5,19 +5,9 @@ import NavBar from "../_components/NavBar";
 import Loader from "../_components/loader";
 import FilterBar, { FilterOptions } from '../_components/FIlterBar';
 import { useEffect, useState } from "react";
+import { MediaData } from "../_components/Mediadata";
 
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
+
 
 export default function ArchivePage() {
   const [Content, setContent] = useState<MediaData[]>([]);
@@ -120,7 +110,7 @@ export default function ArchivePage() {
       {/* Barra dei filtri */}
       <FilterBar 
         onFiltersChange={handleFiltersChange}
-        showTypeFilter={false} // Nascondo il filtro tipo perché questa pagina è solo per i film
+        showTypeFilter={true} // Nascondo il filtro tipo perché questa pagina è solo per i film
         initialFilters={filters}
       />
       

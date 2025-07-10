@@ -6,20 +6,8 @@ import ExpandableText from "./ExpandableText";
 import YouTubePlayer from "./YoutubePlayer";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  genres_array: Array<string>;
-  type: "tv" | "movie";
-}
+import { MediaData } from "./Mediadata";
+import CircleProgress from "./RatingCircle";
 
 interface HeroMediaCardProps {
   mediaID: string;
@@ -169,9 +157,10 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
         )}
 
 
-        <div className="flex flex-row gap-x-5 text-sm font-bold py-1 flex-wrap gap-y-2 mb-1">
+        <div className="flex flex-row items-center gap-x-5 text-sm font-bold py-1 flex-wrap gap-y-2 mb-1">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
+          <CircleProgress score={mediaData.rating}/>
           {mediaData.certification && (
             <h1
               className={`border px-1 rounded-[5px] text-sm font-bold 

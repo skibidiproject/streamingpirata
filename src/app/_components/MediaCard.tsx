@@ -3,19 +3,7 @@ import { useState } from 'react';
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { ImageLoader } from 'next/image'
-
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
+import { MediaData } from './Mediadata';
 
 interface MediaCardProps {
   mediaData: MediaData;
