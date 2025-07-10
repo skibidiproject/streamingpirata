@@ -34,7 +34,7 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
   return (
     <Link
       href={`/media/${mediaData.type}/${mediaData.id}`}
-      className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end aspect-[9/16] w-[7rem] xl:w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
+      className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end aspect-[9/16] w-[7rem] md:w-[7rem] xl:w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
     >
       {/* Loading spinner */}
       {isLoading && (
@@ -53,9 +53,9 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
         className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-107 group-hover:scale-105"
       />
       
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
-      <div className="relative text-white w-[8rem] m-2">
-        <h1 className="text-[0.9rem] text-wrap font-bold w-full">{mediaData.title}</h1>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent "></div>
+      <div className="relative text-white m-2">
+        <h1 className="text-[0.9rem] text-wrap w-full ">{mediaData.title}</h1>
         <div className="flex flex-row gap-x-1 items-center">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <span className="text-gray-400">|</span>

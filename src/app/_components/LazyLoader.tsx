@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import MediaCard from "./MediaCard";
 import { FixedSizeGrid as Grid } from "react-window";
+import { ListboxButton, Listbox, ListboxOptions, ListboxOption } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 interface MediaData {
     id: string;
@@ -17,12 +19,17 @@ interface MediaData {
     type: "tv" | "movie";
 }
 
+
+
 interface LazyLoaderProps {
     mediaData: MediaData[];
 }
 
 
-
+interface Genre {
+    id: number;
+    genre: string;
+}
 
 
 
@@ -30,6 +37,10 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
 
     const measureCardRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const [genres, setGenres] = useState<Genre[]>([]);
+    const [selectedGenre, setSelectedGenre] = useState("");
 
 
     // Dynamic card dimensions
@@ -115,7 +126,7 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
             // More conservative calculation for mobile
             if (windowWidth < 640) {
                 // On mobile, ensure cards don't get too small and account for browser chrome
-                const minCardWidth = 150; // Minimum card width on mobile
+                const minCardWidth = 100; // Minimum card width on mobile
                 const effectiveCardWidth = Math.max(cardWidth, minCardWidth);
                 const cols = Math.max(1, Math.floor(availableWidth / (effectiveCardWidth + cellGap)));
                 setColumnCount(cols);
@@ -171,60 +182,151 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
     };
 
 
-    
+
+
+
+
+
+
+
+
+
+
+    // Fetch stagioni
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/genres`);
+                if (!res.ok) {
+                    throw new Error("Errore nel fetch delle stagioni");
+                }
+                const data = await res.json();
+                setGenres(data);
+
+                console.log(data)
+                setLoading(false);
+            } catch (e) {
+                console.error(e);
+                setError("Errore nel caricamento delle stagioni");
+                setLoading(false);
+            }
+        };
+
+        fetchGenres();
+
+    }, []);
+
+
+
 
     return (
-    <>
-      
-      
-      {/* Hidden MediaCard for measurement */}
-      {mediaData.length > 0 && (
-        <div 
-          ref={measureCardRef}
-          style={{
-            position: 'absolute',
-            visibility: 'hidden',
-            top: -9999,
-            left: -9999,
-            pointerEvents: 'none'
-          }}
-        >
-          <MediaCard mediaData={mediaData[0]} />
-        </div>
-      )}
+        <>
 
 
-
-
-
-      <div 
-        className="w-full mt-[0rem]"
-        style={{
-          padding: `0 ${containerPadding}px`,
-        }}
-      >
-        <div className="flex justify-center w-full">
-          <Grid
-            columnCount={columnCount}
-            columnWidth={cardWidth + cellGap}
-            height={windowHeight - 85}
-            rowCount={rowCount}
-            rowHeight={cardHeight + cellGap}
-            width={Math.min(
-              windowWidth - (containerPadding * 2),
-              columnCount * (cardWidth + cellGap)
+            {/* Hidden MediaCard for measurement */}
+            {mediaData.length > 0 && (
+                <div
+                    ref={measureCardRef}
+                    style={{
+                        position: 'absolute',
+                        visibility: 'hidden',
+                        top: -9999,
+                        left: -9999,
+                        pointerEvents: 'none'
+                    }}
+                >
+                    <MediaCard mediaData={mediaData[0]} />
+                </div>
             )}
-            style={{
-              scrollbarWidth: 'none', /* Firefox */
-              msOverflowStyle: 'none', /* IE and Edge */
-            }}
-            className="hide-scrollbar"
-          >
-            {Cell}
-          </Grid>
-        </div>
-      </div>
-    </>
-  );
+
+
+
+            <Listbox value={selectedGenre} onChange={setSelectedGenre}>
+                <div className="relative h-50">
+                    <ListboxButton className="
+                                    flex items-center justify-between
+                                    w-35 px-4 py-1
+                                    bg-[#0a0a0a] 
+                                    border border-[#212121]
+                                    rounded-lg
+                                    text-left text-white
+                                    transition-all
+                                  ">
+                                    <span className="block truncate">
+                                      asd
+                                    </span>
+                                    <ChevronDownIcon
+                                      className="w-5 h-5 text-gray-400"
+                                      aria-hidden="true"
+                                    />
+                                  </ListboxButton>
+
+                    <ListboxOptions className="
+                              absolute mt-1 w-48 max-h-60
+                              bg-[#0a0a0a]
+                              border border-[#212121]
+                              rounded-lg
+                              overflow-auto
+                              z-10
+                              shadow-lg shadow-black/50
+                              focus:outline-none
+                            ">
+                        {genres.map((genre) => (
+                            <ListboxOption
+                                key={genre.id}
+                                value={genre.genre}
+                                className={({ active, selected }) => `
+                            relative cursor-pointer py-1 h-10 pl-4 pr-4
+                            ${selected ? 'bg-gray-900 text-blue-400' : ''}
+                            ${active && !selected ? 'bg-[#212121] text-white' : ''}
+                            transition-colors
+                          `}
+                            >
+                                
+                                    
+                                       {({ selected }) => (
+                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                        {genre.genre}
+                      </span>
+                    )}
+                                    
+                                
+                            </ListboxOption>
+                        ))}
+                    </ListboxOptions>
+
+
+                </div>
+            </Listbox>
+
+            <div
+                className="w-full mt-[0rem]"
+                style={{
+                    padding: `0 ${containerPadding}px`,
+                }}
+            >
+                <div className="flex justify-center w-full">
+                    <Grid
+                        columnCount={columnCount}
+                        columnWidth={cardWidth + cellGap}
+                        height={windowHeight - 85}
+                        rowCount={rowCount}
+                        rowHeight={cardHeight + cellGap}
+                        width={Math.min(
+                            windowWidth - (containerPadding * 2),
+                            columnCount * (cardWidth + cellGap)
+                        )}
+                        style={{
+                            scrollbarWidth: 'none', /* Firefox */
+                            msOverflowStyle: 'none', /* IE and Edge */
+                        }}
+                        className="hide-scrollbar"
+                    >
+                        {Cell}
+                    </Grid>
+                </div>
+            </div>
+        </>
+    );
 
 }
