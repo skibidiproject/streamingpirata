@@ -42,7 +42,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
         <ListboxButton className="
           flex items-center justify-between
           w-full px-4 py-2
-          bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-sm
+          bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-lg
           text-left text-white
           transition-all
         ">
@@ -56,7 +56,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
           absolute mt-1 w-full max-h-60
           overflow-auto
           z-[60]
-          bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-sm
+          bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-lg
           shadow-2xl shadow-black/50
           focus:outline-none
         ">
@@ -75,7 +75,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
               value={option.value}
               className={({ active, selected }) => `
                 relative cursor-pointer py-2 pl-4 pr-4
-                ${selected ? 'bg-gray-900 text-blue-400' : ''}
+                ${selected ? 'bg-[#0a0a0a]  text-glow-sm shadow-md' : ''}
                 ${active && !selected ? 'bg-[#212121] text-white' : ''}
               `}
             >

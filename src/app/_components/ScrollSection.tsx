@@ -71,6 +71,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:opacity-0
             before:transition-opacity before:duration-300
             hover:before:opacity-100 
+            cursor-pointer
             transition-opacity duration-700 ease-in-out
           `}
         >
@@ -110,6 +111,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
             before:opacity-0
             before:transition-opacity before:duration-300
             hover:before:opacity-100 
+            cursor-pointer
             transition-opacity duration-700 ease-in-out
           `}
         >
