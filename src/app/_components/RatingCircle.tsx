@@ -16,7 +16,7 @@ const ScoreLine: React.FC<ScoreLineProps> = ({ score }) => {
   return (
     <div className="relative w-[4rem] h-10 flex items-center justify-center">
       {/* linea grigia dietro */}
-      <div className="absolute w-full h-1 bg-gray-700 rounded"></div>
+      <div className="absolute w-full h-1 bg-zinc-700 rounded"></div>
 
       {/* progress bar dietro */}
       <div
@@ -29,7 +29,7 @@ const ScoreLine: React.FC<ScoreLineProps> = ({ score }) => {
       ></div>
 
       {/* numero sopra */}
-      <div className="text-white bg-transparent  border border-white text-center px-1 rounded-md z-10 backdrop-blur-[3px]">{score.toFixed(1)}</div>
+      <div className="text-white bg-transparent  border border-white/45 text-center px-1 rounded-md z-10 backdrop-blur-[3px]">{score.toFixed(1)}</div>
     </div>
   );
 };

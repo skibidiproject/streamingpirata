@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
 
     const typeQuery = searchParams.get("type")?.trim() || "";
     const orderbyQuery = searchParams.get("orderby")?.trim() || "";
-    const genreQuery = searchParams.get("genre")?.trim() || "";
+    // Fix: Check for both 'genre' and 'genreId' parameters
+    const genreQuery = searchParams.get("genreId")?.trim() || searchParams.get("genre")?.trim() || "";
     const ratingQuery = searchParams.get("rating")?.trim() || "";
     const ratingDirection = searchParams.get("rating_dir")?.trim() || "gte"; // gte = maggiore/uguale, lte = minore/uguale
     const orderDirection = searchParams.get("order_dir")?.trim() || "asc"; // asc o desc

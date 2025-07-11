@@ -1,14 +1,24 @@
 // middleware.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getIronSession } from "iron-session";
-import { sessionOptions, SessionData } from "./src/app/lib/session";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    const session = await getIronSession<SessionData>(request, NextResponse.next(), sessionOptions);
+export function middleware(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+  
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    const allowedOrigins = ['https://riccardocinaglia.it', 'localhost:3000'];
     
-    if (!session.isLoggedIn) {
-      return NextResponse.redirect(new URL("/login", request.url));
+    if (!origin || !allowedOrigins.includes(origin)) {
+      return NextResponse.json(
+        { error: 'Forbidden origin' },
+        { status: 403 }
+      );
     }
   }
+  
+  return NextResponse.next();
 }
+
+export const config = {
+  matcher: '/api/:path*'
+};

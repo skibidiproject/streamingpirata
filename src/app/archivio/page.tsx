@@ -18,16 +18,15 @@ export default function ArchivePage() {
   // Funzione per costruire la query string dai filtri
   const buildQueryString = (filters: FilterOptions): string => {
     const params = new URLSearchParams();
-    
+
     // Aggiungi sempre il filtro tipo per i film (dato che questa è l'archive dei film)
-    // CLAUDE HA SBAGLIATO LUCIANI QUI TU METTI IL FITRO 
-    params.append('type', 'movie');
-    
+
     // Aggiungi gli altri filtri solo se definiti
-    if (filters.year) params.append('year', filters.year);
-    if (filters.genreId) params.append('genre', filters.genreId);
-    if (filters.rating) params.append('rating', filters.rating);
-    
+    if (filters.year) params.append("year", filters.year);
+    if (filters.genreId) params.append("genreId", filters.genreId);
+    if (filters.type && filters.type !== "all") params.append("type", filters.type);
+    if (filters.rating) params.append("rating", filters.rating);
+
     return params.toString();
   };
 
@@ -36,18 +35,18 @@ export default function ArchivePage() {
     try {
       setLoading(true);
       setError(false);
-      
+
       const queryString = buildQueryString(currentFilters);
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents?${queryString}`;
-      
+
       const res = await fetch(url, {
         cache: "no-store",
       });
-      
+
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      
+
       const data: MediaData[] = await res.json();
       setContent(data);
     } catch (e) {
@@ -74,7 +73,7 @@ export default function ArchivePage() {
     return (
       <>
         <NavBar />
-        <hr className="mt-[5rem] text-[#212121]"/>
+        <hr className="mt-[5rem] text-[#212121]" />
         <Loader />
       </>
     );
@@ -84,7 +83,7 @@ export default function ArchivePage() {
     return (
       <>
         <NavBar />
-        <hr className="mt-[5rem] text-[#212121]"/>
+        <hr className="mt-[5rem] text-[#212121]" />
         <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -98,24 +97,24 @@ export default function ArchivePage() {
 
   return (
     <>
-    <div className=" overflow-y-hidden">
-      <style jsx>{`
+      <div className=" overflow-y-hidden">
+        <style jsx>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
       `}</style>
-      <NavBar />
-      <hr className="mt-[5rem] text-[#212121]"/>
-      
-      {/* Barra dei filtri */}
-      <FilterBar 
-        onFiltersChange={handleFiltersChange}
-        showTypeFilter={true} // Nascondo il filtro tipo perché questa pagina è solo per i film
-        initialFilters={filters}
-      />
-      
-      <LazyLoader mediaData={Content}/>
-    </div>
+        <NavBar />
+        <hr className="mt-[5rem] text-[#212121]" />
+
+        {/* Barra dei filtri */}
+        <FilterBar
+          onFiltersChange={handleFiltersChange}
+          showTypeFilter={true} // Nascondo il filtro tipo perché questa pagina è solo per i film
+          initialFilters={filters}
+        />
+
+        <LazyLoader mediaData={Content} />
+      </div>
     </>
   );
 }

@@ -203,8 +203,8 @@ export default function FilterBar({
 
   return (
     <div className={`bg-[#0a0a0a] backdrop-blur-md shadow-2xl  sticky top-[5rem] z-30 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
-      <div className="px-4 py-3">
-        <div className="flex items-center justify-between">
+      <div className="">
+        <div className="flex items-center justify-between px-4 my-2">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -234,6 +234,8 @@ export default function FilterBar({
             </button>
           )}
         </div>
+        <hr className="w-full text-[#212121]"/>
+
 
         <Transition
           show={isOpen}
@@ -245,11 +247,11 @@ export default function FilterBar({
           leaveTo="transform scale-y-95 opacity-0 -translate-y-2"
         >
           <div className="
-            absolute left-0 right-0 top-full
+            absolute left-0 right-0 top-full p-1
             
             shadow-black/50
             z-[45]
-            overflow-visible bg-[#0a0a0a]/95 backdrop-blur-md shadow-md
+            overflow-visible bg-[#0a0a0a]/90 backdrop-blur-md shadow-md
           ">
             <div className="px-4 py-4">
               {error && (

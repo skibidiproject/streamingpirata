@@ -5,6 +5,7 @@ import Loader from "../_components/loader";
 import LazyLoader from "../_components/LazyLoader";
 import FilterBar from "../_components/FIlterBar";
 import React from "react";
+import { MediaData } from "../_components/Mediadata";
 
 export interface FilterOptions {
   year?: string;
@@ -13,25 +14,14 @@ export interface FilterOptions {
   rating?: string;
 }
 
-interface Media {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
+
 
 interface Props {
   searchParams: Promise<{ q: string }>;
 }
 
 export default function Search({ searchParams }: Props) {
-  const [results, setResults] = useState<Media[]>([]);
+  const [results, setResults] = useState<MediaData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({});

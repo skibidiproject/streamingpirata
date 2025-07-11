@@ -175,7 +175,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
                     // VERDE/BIANCO: Tutti pubblici o generici
                     : ['T', 'PG', 'TV-G', 'TV-Y', 'TV-Y7', 'E10+', 'G'].includes(mediaData.certification)
-                      ? 'bg-transparent border-white text-white'
+                      ? 'bg-white border-white text-black'
 
                       : null
                 }
