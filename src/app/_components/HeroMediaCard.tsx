@@ -160,7 +160,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
         <div className="flex flex-row items-center gap-x-5 text-sm font-bold py-1 flex-wrap gap-y-2 mb-1">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
-          <CircleProgress score={mediaData.rating}/>
+          { mediaData.rating && <CircleProgress score={mediaData.rating}/>}
           {mediaData.certification && (
             <h1
               className={`border px-1 rounded-[5px] text-sm font-bold 

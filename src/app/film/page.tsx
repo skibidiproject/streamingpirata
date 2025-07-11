@@ -1,4 +1,3 @@
-import MediaCard from "../_components/MediaCard";
 import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
@@ -8,38 +7,66 @@ import { MediaData } from "../_components/Mediadata";
 
 export default async function FilmPage() {
   let latestMedia: MediaData[] = [];
+  let genreResults: any[]= [];
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest/movie`, {
       cache: "no-store",
     });
     latestMedia = await res.json();
+
+
+    const genres = [
+      { id: 28, name: "Azione" },
+      { id: 12, name: "Avventura" },
+      { id: 10749, name: "Romance" },
+      { id: 27, name: "Horror" },
+      { id: 14, name: "Fantasy" },
+      { id: 878, name: "Fantascienza" },
+      { id: 35, name: "Commedia" },
+      { id: 53, name: "Thriller" },
+      { id: 16, name: "Animazione" },
+    ];
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    genreResults = await Promise.all(
+      genres.map(async ({ id, name }) => {
+        const resGenres = await fetch(`${baseUrl}/api/contents/latest/movie?genre=${id}`, {
+          cache: "no-store",
+        });
+        const data = await resGenres.json();
+        return {
+          id,
+          name,
+          items: data,
+        };
+      })
+    );
+
+
+
   } catch (error) {
     console.error("Errore nel fetch:", error);
   }
 
-  // Filtra solo i film
-  const films = latestMedia.filter(media => media.type === "movie");
 
   return (
     <>
       <NavBar />
-      
+
       {/* Hero Section con un film random o featured */}
-      {films.length > 0 && (
-        <HeroMediaCard mediaID={films[0].id} type={'movie'}/>
+      {latestMedia.length > 0 && (
+        <HeroMediaCard mediaID={latestMedia[0].id} type={'movie'} />
       )}
 
-      <h1 className="text-2xl font-bold ml-8 mt-10  mt-[-3rem]">Azione</h1>
-      <ScrollSection media={films} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Avventura</h1>
-      <ScrollSection media={films} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Amore</h1>
-      <ScrollSection media={films} />
-      <h1 className="text-2xl font-bold ml-8 mt-10  ">Drama</h1>
-      <ScrollSection media={films} />
-      <h1 className="text-2xfilms ml-8 mt-10  ">Thriller</h1>
-      <ScrollSection media={films} />
+      {genreResults.map(({ name, items }) => (
+        <div key={name}>
+          <h1 className="text-2xl font-bold ml-6 mt-10">{name}</h1>
+          <ScrollSection media={items} />
+        </div>
+      ))}
+
 
       <Footer />
     </>
