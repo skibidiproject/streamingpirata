@@ -4,19 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import MediaCard from "./MediaCard";
 import Script from "next/script";
 import { RedirectType } from "next/navigation";
+import { MediaData } from "./Mediadata";
 
-interface MediaData {
-  id: string;
-  title: string;
-  description: string;
-  poster_url: string;
-  backdrop_url: string | null;
-  logo_url: string;
-  trailer_url: string;
-  release_date: string;
-  certification: string;
-  type: "tv" | "movie";
-}
 
 export default function ScrollSection({ media }: { media: MediaData[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
