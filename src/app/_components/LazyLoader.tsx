@@ -127,8 +127,7 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
             <>
                 <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
                     <div className="text-center">
-                        <div className="text-gray-400 text-6xl mb-4">🎬</div>
-                        <p className="text-gray-500 text-xl">Nessun film disponibile</p>
+                        <p className="text-white text-xl">Nessun film disponibile</p>
                     </div>
                 </div>
             </>

@@ -1,7 +1,3 @@
-# DEPRECATED
-# -------------------------------------------------
-# bloccano i nodi tor
-
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import requests
@@ -14,9 +10,6 @@ import time
 import logging
 from urllib.parse import urlparse, urljoin, quote, unquote
 from typing import Dict, List, Tuple, Optional
-
-import socket
-import socks
 
 # =========================
 # Logging configuration
@@ -33,12 +26,6 @@ CORS(app)
 # =========================
 # HLS Proxy Class
 # =========================
-# Aggiungi queste importazioni in alto
-import socket
-import socks  # Richiede pip install pysocks
-
-# ... (il resto delle importazioni rimane uguale)
-
 class HLSProxy:
     """Gestisce il proxy HLS per playlist, segmenti, chiavi, audio e sottotitoli."""
 
@@ -57,54 +44,17 @@ class HLSProxy:
         }
         self.timeout = 30
         self.max_retries = 3
-        
-        # Configurazione Tor
-        self.tor_proxy = "socks5h://127.0.0.1:9050"  # socks5h risolve DNS tramite Tor
-        self.tor_domains = ["vixsrc.to", "www.vixsrc.to"]  # Domini da instradare via Tor
-
-    def _should_use_tor(self, url: str) -> bool:
-        """Determina se usare Tor per questa URL"""
-        parsed = urlparse(url)
-        return any(domain in parsed.netloc for domain in self.tor_domains)
 
     def _make_request(self, url: str, stream: bool = False, headers: Optional[Dict] = None) -> requests.Response:
-        """Effettua una richiesta HTTP con Tor se necessario"""
-        use_tor = self._should_use_tor(url)
-        
-        # Configura la sessione requests
-        session = requests.Session()
+        """Effettua una richiesta HTTP con retry automatico."""
         request_headers = {**self.headers}
-        
         if headers:
             request_headers.update(headers)
-        
         if 'vixsrc.to' in url:
-            request_headers.update({
-                'Referer': 'https://vixsrc.to/',
-                'Origin': 'https://vixsrc.to'
-            })
-
-        # Configura il proxy per Tor se necessario
-        proxies = {}
-        if use_tor:
-            proxies = {
-                'http': self.tor_proxy,
-                'https': self.tor_proxy
-            }
-            logger.info(f"Usando Tor per: {url}")
-
-        # Effettua la richiesta
+            request_headers.update({'Referer': 'https://vixcloud.co/', 'Origin': 'https://vixcloud.co'})
         for attempt in range(self.max_retries):
             try:
-                response = session.get(
-                    url,
-                    headers=request_headers,
-                    timeout=self.timeout,
-                    stream=stream,
-                    proxies=proxies,
-                    allow_redirects=True
-                )
-                
+                response = requests.get(url, headers=request_headers, timeout=self.timeout, stream=stream, allow_redirects=True)
                 if response.status_code == 200:
                     return response
                 elif response.status_code in [403, 404] and attempt < self.max_retries - 1:
@@ -115,16 +65,10 @@ class HLSProxy:
                     return response
             except Exception as e:
                 logger.error(f"Errore richiesta tentativo {attempt + 1}: {e}")
-                if use_tor:
-                    logger.warning("Potrebbe esserci un problema con la connessione Tor")
-                
                 if attempt == self.max_retries - 1:
                     raise
                 time.sleep(1)
-        
         raise Exception(f"Tutti i tentativi falliti per {url}")
-
-# ... (il resto del codice rimane invariato)
 
     def proxy_playlist(self, url: str) -> Tuple[str, int, Dict]:
         try:
@@ -591,7 +535,7 @@ def proxy_subtitle():
 def vixsrc_key():
     """Endpoint diretto per chiave vixsrc."""
     try:
-        key_url = "https://vixsrc.to/storage/enc.key"
+        key_url = "https://vixcloud.co/storage/enc.key"
         content, status_code, headers = proxy.proxy_key(key_url)
         if status_code != 200:
             return jsonify({'error': content.decode()}), status_code
@@ -643,19 +587,5 @@ def api_docs():
     }
     return jsonify(docs)
 
-# Aggiungi questa verifica all'inizio dell'app
-def check_tor_connection():
-    try:
-        # Prova a risolvere un dominio .onion
-        socket.create_connection(("127.0.0.1", 9050), timeout=5)
-        logger.info("Connessione Tor attiva")
-        return True
-    except Exception as e:
-        logger.error(f"Connessione Tor non disponibile: {str(e)}")
-        return False
-
-
 if __name__ == '__main__':
-    if not check_tor_connection():
-        logger.warning("ATTENZIONE: Tor non è disponibile, le richieste a vixsrc.to potrebbero fallire")
     app.run(host='0.0.0.0', port=5050, debug=True)

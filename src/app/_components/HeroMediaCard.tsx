@@ -142,7 +142,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
 
         {mediaData.logo_url ? (
-          <div className="relative w-[15rem] lg:w-80 aspect-[16/9] mt-[5rem] mb-5">
+          <div className="relative w-[15rem] lg:w-80 aspect-[16/9] mt-[4rem] mb-3">
             <Image
               src={mediaData.logo_url}
               alt={mediaData.title}
@@ -157,7 +157,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
         )}
 
 
-        <div className="flex flex-row items-center gap-x-5 text-sm font-bold py-1 flex-wrap gap-y-2 mb-1">
+        <div className="flex flex-row items-center gap-x-5 text-sm font-bold py-1 flex-wrap mb-2 gap-y-0.5">
           <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
           { mediaData.rating && <CircleProgress score={mediaData.rating}/>}

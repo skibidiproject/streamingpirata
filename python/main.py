@@ -274,42 +274,46 @@ class HLSProxy:
 # =========================
 # M3U8 Extractor Class
 # =========================
+from playwright.sync_api import sync_playwright
+import requests
+import re
+import logging
+
+logger = logging.getLogger(__name__)
+
 class M3U8Extractor:
-    """Estrae URL M3U8 da pagine web tramite Selenium."""
-
-    def __init__(self):
-        self.chrome_options = Options()
-        self.chrome_options.add_argument("--headless")
-        self.chrome_options.add_argument("--no-sandbox")
-        self.chrome_options.add_argument("--disable-dev-shm-usage")
-        self.chrome_options.add_argument("--disable-gpu")
-        self.chrome_options.add_argument("--disable-extensions")
-        self.chrome_options.add_argument("--disable-plugins")
-        self.chrome_options.add_argument("--disable-images")
-        self.chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
-
-    def extract_urls(self, player_url: str) -> List[Dict]:
-        """Estrae URL M3U8 da una pagina web (più veloce)."""
+    def extract_urls(self, player_url: str):
         logger.info(f"Avvio estrazione da: {player_url}")
-        driver = None
+        urls = set()
         try:
-            driver = webdriver.Chrome(options=self.chrome_options)
-            driver.set_page_load_timeout(20)
-            driver.get(player_url)
-            self._trigger_playback_quick(driver)
-            urls = self._extract_from_logs_quick(driver)
-            validated_urls = self._validate_urls(urls)
-            logger.info(f"Trovati {len(validated_urls)} URL validi")
-            return validated_urls
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                context = browser.new_context()
+                page = context.new_page()
+
+                # Intercetta le richieste
+                page.on("request", lambda request: self._handle_request(request, urls))
+
+                page.goto(player_url, wait_until="networkidle")
+
+                self._trigger_playback_quick(page)
+                page.wait_for_timeout(3000)  # attesa per generare richieste .m3u8
+
+                browser.close()
         except Exception as e:
             logger.error(f"Errore durante estrazione: {e}")
             return []
-        finally:
-            if driver:
-                driver.quit()
 
-    def _trigger_playback_quick(self, driver) -> bool:
-        """Avvia la riproduzione del video (più veloce)."""
+        validated = self._validate_urls(list(urls))
+        logger.info(f"Trovati {len(validated)} URL validi")
+        return validated
+
+    def _handle_request(self, request, urls_set):
+        url = request.url
+        if self._is_valid_m3u8_url(url):
+            urls_set.add(url)
+
+    def _trigger_playback_quick(self, page):
         selectors = [
             "button[class*='play']", ".play-button", ".vjs-big-play-button",
             "[aria-label*='play']", "video", ".play-btn", "#play-button",
@@ -317,62 +321,22 @@ class M3U8Extractor:
         ]
         for selector in selectors:
             try:
-                elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                for element in elements:
-                    if element.is_displayed():
-                        # FA PARTIRE IL PLAYER (NO LOG)
-                        driver.execute_script("arguments[0].click();", element)
-                        return True
-            except Exception:
+                if page.query_selector(selector):
+                    page.click(selector, timeout=1000)
+                    return
+            except:
                 continue
-        try:
-            videos = driver.find_elements(By.TAG_NAME, "video")
-            for video in videos:
-                driver.execute_script("arguments[0].play();", video)
-                logger.info("Avviata riproduzione video tramite script")
-                return True
-        except Exception:
-            pass
-        return False
 
-    def _extract_from_logs_quick(self, driver) -> List[str]:
-        """Estrae URL M3U8 dai log di rete (più veloce, meno tentativi)."""
-        urls = set()
         try:
-            logs = driver.get_log('performance')
-            for log in logs:
-                try:
-                    message = json.loads(log['message'])
-                    method = message['message']['method']
-                    if method == 'Network.requestWillBeSent' or method == 'Network.responseReceived':
-                        url = (
-                            message['message']['params']['request']['url']
-                            if method == 'Network.requestWillBeSent'
-                            else message['message']['params']['response']['url']
-                        )
-                        if self._is_valid_m3u8_url(url):
-                            urls.add(url)
-                except (json.JSONDecodeError, KeyError):
-                    log_text = log.get('message', '')
-                    if 'playlist' in log_text or '.m3u8' in log_text:
-                        regex_patterns = [
-                            r'"url":"([^"]*playlist[^"]*\?[^"]*)"',
-                            r'"url":"([^"]*\.m3u8[^"]*\?[^"]*)"',
-                            r'https?://[^"\s]+(?:playlist|\.m3u8)[^"\s]*'
-                        ]
-                        for pattern in regex_patterns:
-                            matches = re.findall(pattern, log_text)
-                            for match in matches:
-                                clean_url = match.replace('\\', '')
-                                if self._is_valid_m3u8_url(clean_url):
-                                    urls.add(clean_url)
-            # Non ripetere la raccolta log, una sola passata
-        except Exception as e:
-            logger.error(f"Errore estrazione log: {e}")
-        return list(urls)
+            videos = page.query_selector_all("video")
+            for video in videos:
+                page.evaluate("el => el.play()", video)
+                logger.info("Avviata riproduzione video tramite script")
+                return
+        except:
+            pass
 
     def _is_valid_m3u8_url(self, url: str) -> bool:
-        """Verifica se un URL è potenzialmente un M3U8 valido."""
         if not url or len(url) < 20:
             return False
         url_lower = url.lower()
@@ -384,13 +348,12 @@ class M3U8Extractor:
         is_excluded = any(exclude in url_lower for exclude in excludes)
         return has_m3u8 and has_params and has_auth and not is_excluded
 
-    def _validate_urls(self, urls: List[str]) -> List[Dict]:
-        """Valida gli URL trovati."""
+    def _validate_urls(self, urls):
         validated = []
         for url in urls:
             try:
                 response = requests.head(url, timeout=10, headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    'User-Agent': 'Mozilla/5.0'
                 })
                 is_valid = response.status_code == 200
                 is_master = 'type=' not in url
