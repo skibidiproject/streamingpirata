@@ -9,6 +9,6 @@ export interface MediaData {
   release_date: string;
   rating: number;
   certification: string;
-  genres_array: Array<string>;
+  genres_array: Array<string> ;
   type: "tv" | "movie";
 }

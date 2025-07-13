@@ -7,7 +7,7 @@ import ScrollSection from "@/app/_components/ScrollSection";
 
 interface MediaPageProps {
   params: {
-    type: string;
+    type: string ;
     id: string;
   };
 }

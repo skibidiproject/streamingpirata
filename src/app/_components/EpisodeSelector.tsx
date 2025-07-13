@@ -108,9 +108,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
               <ListboxButton className="
                 flex items-center justify-between
                 w-35 px-4 py-1
-                bg-[#0a0a0a] 
-                border border-[#212121]
-                rounded-lg
+                bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-lg
                 text-left text-white
                 transition-all
               ">
@@ -125,12 +123,11 @@ export default function EpisodeSelector({ id }: { id: string }) {
 
               <ListboxOptions className="
                 absolute mt-1 w-48 max-h-60
-                bg-[#0a0a0a]
-                border border-[#212121]
-                rounded-lg
+                bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-lg
+          shadow-2xl shadow-black/50
                 overflow-auto
                 z-10
-                shadow-lg shadow-black/50
+                
                 focus:outline-none
               ">
                 {seasons.map((season) => (
@@ -139,7 +136,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
                     value={season.season_number}
                     className={({ active, selected }) => `
               relative cursor-pointer py-1 pl-4 pr-4
-              ${selected ? 'bg-gray-900 text-blue-400' : ''}
+              ${selected ? 'bg-[#0a0a0a]  font-extrabold shadow-md' : ''}
               ${active && !selected ? 'bg-[#212121] text-white' : ''}
               transition-colors
             `}

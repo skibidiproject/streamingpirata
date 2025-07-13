@@ -8,6 +8,9 @@ export default function Footer()
         <small className="text-s">Copyright&copy; 2025 - SuperStream</small>
         <br />
         <small className="text-s underline text-stone-500"><Link href="/disclaimer">DISCLAIMER</Link></small>
+
+        <br />
+        <small className="text-s underline text-stone-500"><Link href="/Autori">Autori</Link></small>
     </div>
     </>
 }

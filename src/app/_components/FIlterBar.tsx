@@ -75,7 +75,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
               value={option.value}
               className={({ active, selected }) => `
                 relative cursor-pointer py-2 pl-4 pr-4
-                ${selected ? 'bg-[#0a0a0a]  text-glow-sm shadow-md' : ''}
+                ${selected ? 'bg-[#0a0a0a] font-extrabold shadow-md' : ''}
                 ${active && !selected ? 'bg-[#212121] text-white' : ''}
               `}
             >
@@ -105,12 +105,12 @@ export default function FilterBar({
   const [error, setError] = useState<string | null>(null);
 
   const ratingRanges = [
-    { value: "9+", label: "9+ ⭐ Eccellente" },
-    { value: "8+", label: "8+ ⭐ Ottimo" },
-    { value: "7+", label: "7+ ⭐ Buono" },
-    { value: "6+", label: "6+ ⭐ Discreto" },
-    { value: "5+", label: "5+ ⭐ Sufficiente" },
-    { value: "0-4", label: "0-4 ⭐ Scarso" }
+    { value: "9+", label: "9+" },
+    { value: "8+", label: "8+" },
+    { value: "7+", label: "7+" },
+    { value: "6+", label: "6+" },
+    { value: "5+", label: "5+" },
+    { value: "0-4", label: "0-4" }
   ];
 
   const typeOptions = [
