@@ -92,7 +92,7 @@ export default function Search({ searchParams }: Props) {
         <hr className="mt-[5rem] text-[#212121]" />
         <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
           <div className="text-center">
-            <p className="text-white text-xl mb-2">Errore nel caricamento dei film</p>
+            <p className="text-white text-xl mb-2">Errore</p>
             <p className="text-white">{error}</p>
           </div>
         </div>
