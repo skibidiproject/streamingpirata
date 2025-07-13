@@ -31,10 +31,12 @@ export default function Disclaimer() {
                         Ai sensi del D.Lgs. 70/2003 e della Direttiva 2000/31/CE, il Sito si configura esclusivamente come fornitore di servizi della società dell’informazione, operando in regime di neutralità, automatismo e assenza di conoscenza effettiva dei contenuti trasmessi.
                     </p>
 
-                    <div className="text-right mt-10 pr-2">
+                    <div className=" mt-10 pr-2 flex flex-col items-end">
                         <small className="text-sm italic">
                             I gestori della piattaforma,<br />03/07/2025
                         </small>
+
+                        <img src="/car/car1.png" alt=""/>
                     </div>
                 </div>
             </main>
