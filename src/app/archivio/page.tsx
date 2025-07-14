@@ -19,13 +19,15 @@ export default function ArchivePage() {
   const buildQueryString = (filters: FilterOptions): string => {
     const params = new URLSearchParams();
 
-    // Aggiungi sempre il filtro tipo per i film (dato che questa è l'archive dei film)
 
-    // Aggiungi gli altri filtri solo se definiti
+    // filtri 
     if (filters.year) params.append("year", filters.year);
     if (filters.genreId) params.append("genreId", filters.genreId);
     if (filters.type && filters.type !== "all") params.append("type", filters.type);
     if (filters.rating) params.append("rating", filters.rating);
+    if (filters.rating_dir) params.append("rating_dir", filters.rating_dir);
+    if (filters.orderby) params.append("orderby", filters.orderby);
+    if (filters.order_dir) params.append("order_dir", filters.order_dir);
 
     return params.toString();
   };

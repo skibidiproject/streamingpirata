@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import Episode from "./Episode"
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+
 interface Season {
   id: string;
   media_id: string;
@@ -101,13 +102,13 @@ export default function EpisodeSelector({ id }: { id: string }) {
     <>
       <div className="w-[95%] h-full mx-auto p-3 rounded-2xl">
         <h1 className="text-2xl mb-2">Episodi</h1>
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-6 flex items-center gap-3" >
           <span className="text-white">Stagione:</span>
           <Listbox value={selectedSeason} onChange={setSelectedSeason}>
             <div className="relative">
               <ListboxButton className="
                 flex items-center justify-between
-                w-35 px-4 py-1
+                w-35 px-4 py-1 focus:outline-none
                 bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-lg
                 text-left text-white
                 transition-all

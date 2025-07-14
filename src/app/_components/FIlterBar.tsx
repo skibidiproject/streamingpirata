@@ -10,6 +10,9 @@ export interface FilterOptions {
   genreId?: string;
   type?: "all" | "movie" | "tv";
   rating?: string;
+  rating_dir?: "gte" | "lte";
+  orderby?: string;
+  order_dir?: "asc" | "desc";
 }
 
 interface Genre {
@@ -33,27 +36,27 @@ interface DropdownProps {
 }
 
 const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProps) => (
-  <div className="w-full ">
-    <label className="block text-sm font-medium text-gray-300 mb-2">
+  <div className="w-full">
+    <label className="block text-sm font-medium text-gray-300 mb-2 md:mb-2">
       {label}
     </label>
     <Listbox value={value} onChange={onChange}>
-      <div className="relative ">
+      <div className="relative">
         <ListboxButton className="
           flex items-center justify-between
-          w-full px-4 py-2
+          w-full px-3 py-2 md:px-4 md:py-2
           bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-lg
-          text-left text-white
+          text-left text-white text-sm md:text-base
           transition-all
         ">
           <span className="block truncate">
             {value ? options.find(opt => opt.value === value)?.label : placeholder}
           </span>
-          <ChevronDownIcon className="w-5 h-5 text-gray-400" />
+          <ChevronDownIcon className="w-4 h-4 md:w-5 md:h-5 text-gray-400 ml-2" />
         </ListboxButton>
 
         <ListboxOptions className="
-          absolute mt-1 w-full max-h-60
+          absolute mt-1 w-full max-h-50
           overflow-auto
           z-[60]
           bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-lg
@@ -63,7 +66,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
           <ListboxOption
             value=""
             className={({ active }) => `
-              relative cursor-pointer py-2 pl-4 pr-4
+              relative cursor-pointer py-2 pl-4 pr-4 text-sm md:text-base
               ${active ? 'bg-[#212121] text-white' : 'text-gray-300'}
             `}
           >
@@ -74,7 +77,7 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
               key={option.value}
               value={option.value}
               className={({ active, selected }) => `
-                relative cursor-pointer py-2 pl-4 pr-4
+                relative cursor-pointer py-2 pl-4 pr-4 text-sm md:text-base
                 ${selected ? 'bg-[#0a0a0a] font-extrabold shadow-md' : ''}
                 ${active && !selected ? 'bg-[#212121] text-white' : ''}
               `}
@@ -105,18 +108,26 @@ export default function FilterBar({
   const [error, setError] = useState<string | null>(null);
 
   const ratingRanges = [
-    { value: "9+", label: "9+" },
-    { value: "8+", label: "8+" },
-    { value: "7+", label: "7+" },
-    { value: "6+", label: "6+" },
-    { value: "5+", label: "5+" },
-    { value: "0-4", label: "0-4" }
+    { value: "9", label: "9+", direction: "gte" },
+    { value: "8", label: "8+", direction: "gte" },
+    { value: "7", label: "7+", direction: "gte" },
+    { value: "6", label: "6+", direction: "gte" },
+    { value: "5", label: "5+", direction: "gte" },
+    { value: "4", label: "4 e sotto", direction: "lte" }
   ];
 
   const typeOptions = [
-    { value: "all", label: "Tutti" },
     { value: "movie", label: "Film" },
     { value: "tv", label: "Serie TV" }
+  ];
+
+  const orderOptions = [
+    { value: "az_asc", label: "A-Z" },
+    { value: "az_desc", label: "Z-A" },
+    { value: "date_desc", label: "Anno di uscita (Decrescente)" },
+    { value: "date_asc", label: "Anno di uscita (Crescente)" },
+    { value: "rating_desc", label: "Voto (Decrescente)" },
+    { value: "rating_asc", label: "Voto (Crescente)" }
   ];
 
   // Fetch dei dati per i filtri
@@ -136,7 +147,7 @@ export default function FilterBar({
         const yearsRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/years`);
         if (!yearsRes.ok) throw new Error("Errore nel fetch degli anni");
         const yearsData = await yearsRes.json();
-        const yearsArray = yearsData.map((item: { year: string }) => item.year);
+        const yearsArray = yearsData.map((item: { year: string }) => item.year).sort((a: string, b: string) => parseInt(b) - parseInt(a));
         setYears(yearsArray);
 
         setLoading(false);
@@ -181,6 +192,58 @@ export default function FilterBar({
     }));
   };
 
+  const handleRatingChange = (value: string) => {
+    if (value === "") {
+      setTempFilters(prev => ({
+        ...prev,
+        rating: undefined,
+        rating_dir: undefined
+      }));
+      return;
+    }
+
+    const ratingOption = ratingRanges.find(r => r.value === value);
+    if (ratingOption) {
+      setTempFilters(prev => ({
+        ...prev,
+        rating: value,
+        rating_dir: ratingOption.direction as "gte" | "lte"
+      }));
+    }
+  };
+
+  const handleOrderChange = (value: string) => {
+    if (value === "") {
+      setTempFilters(prev => ({
+        ...prev,
+        orderby: undefined,
+        order_dir: undefined
+      }));
+      return;
+    }
+
+    const [orderType, direction] = value.split('_');
+    let orderby = "";
+    
+    switch (orderType) {
+      case "az":
+        orderby = "az";
+        break;
+      case "date":
+        orderby = "date";
+        break;
+      case "rating":
+        orderby = "rating";
+        break;
+    }
+
+    setTempFilters(prev => ({
+      ...prev,
+      orderby,
+      order_dir: direction as "asc" | "desc"
+    }));
+  };
+
   const applyFilters = () => {
     setAppliedFilters(tempFilters);
     onFiltersChange(tempFilters);
@@ -200,27 +263,36 @@ export default function FilterBar({
   // Prepara le opzioni per i dropdown
   const yearOptions = years.map(year => ({ value: year, label: year }));
   const genreOptions = genres.map(genre => ({ value: genre.id, label: genre.genre }));
+  const ratingOptions = ratingRanges.map(range => ({ value: range.value, label: range.label }));
+
+  // Ottieni il valore corrente per l'ordinamento
+  const getCurrentOrderValue = () => {
+    if (tempFilters.orderby && tempFilters.order_dir) {
+      return `${tempFilters.orderby}_${tempFilters.order_dir}`;
+    }
+    return "";
+  };
 
   return (
-    <div className={`bg-[#0a0a0a] backdrop-blur-md shadow-2xl  sticky top-[5rem] z-30 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
+    <div className={`bg-[#0a0a0a] backdrop-blur-md shadow-2xl sticky top-[5rem] z-30 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}>
       <div className="">
-        <div className="flex items-center justify-between px-4 my-2">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-3 md:px-6 py-3 md:py-2">
+          <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
+              className="flex items-center gap-1 md:gap-2 text-white hover:text-gray-300 transition-colors"
             >
-              <FunnelIcon className="w-5 h-5 text-white" />
-              <span className="font-medium">Filtri</span>
+              <FunnelIcon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              <span className="font-medium text-sm md:text-base">Filtri</span>
               <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-                <ChevronDownIcon className="w-4 h-4" />
+                <ChevronDownIcon className="w-3 h-3 md:w-4 md:h-4" />
               </span>
             </button>
             
             {hasActiveFilters && (
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-white rounded-full"></span>
-                <span className="text-sm text-gray-400">Filtri attivi</span>
+              <div className="flex items-center gap-1 md:gap-2">
+                <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full"></span>
+                <span className="text-xs md:text-sm text-zinc-400">Filtri attivi</span>
               </div>
             )}
           </div>
@@ -228,14 +300,13 @@ export default function FilterBar({
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-xs md:text-sm text-zinc-400 hover:text-white transition-colors"
             >
-              Pulisci filtri
+              Pulisci
             </button>
           )}
         </div>
         <hr className="w-full text-[#212121]"/>
-
 
         <Transition
           show={isOpen}
@@ -248,12 +319,11 @@ export default function FilterBar({
         >
           <div className="
             absolute left-0 right-0 top-full p-1
-            
             shadow-black/50
             z-[45]
             overflow-visible bg-[#0a0a0a]/90 backdrop-blur-md shadow-md
           ">
-            <div className="px-4 py-4">
+            <div className="px-3 md:px-4 py-3 md:py-4">
               {error && (
                 <div className="text-red-500 text-sm mb-4 text-center">
                   {error}
@@ -261,17 +331,17 @@ export default function FilterBar({
               )}
 
               {loading ? (
-                <div className="text-center text-gray-400 py-8">
+                <div className="text-center text-zinc-400 py-6 md:py-8 text-sm md:text-base">
                   Caricamento filtri...
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     <Dropdown
                       label="Anno"
                       value={tempFilters.year || ""}
                       onChange={(value) => handleTempFilterChange("year", value)}
-                      placeholder="Tutti gli anni"
+                      placeholder="Tutti"
                       options={yearOptions}
                     />
                     
@@ -279,14 +349,14 @@ export default function FilterBar({
                       label="Genere"
                       value={tempFilters.genreId || ""}
                       onChange={(value) => handleTempFilterChange("genreId", value)}
-                      placeholder="Tutti i generi"
+                      placeholder="Tutti"
                       options={genreOptions}
                     />
                     
                     {showTypeFilter && (
                       <Dropdown
                         label="Tipo"
-                        value={tempFilters.type || "all"}
+                        value={tempFilters.type || ""}
                         onChange={(value) => handleTempFilterChange("type", value)}
                         placeholder="Tutti"
                         options={typeOptions}
@@ -294,26 +364,34 @@ export default function FilterBar({
                     )}
                     
                     <Dropdown
-                      label="Valutazione"
+                      label="Rating"
                       value={tempFilters.rating || ""}
-                      onChange={(value) => handleTempFilterChange("rating", value)}
-                      placeholder="Tutte le valutazioni"
-                      options={ratingRanges}
+                      onChange={handleRatingChange}
+                      placeholder="Tutti"
+                      options={ratingOptions}
+                    />
+
+                    <Dropdown
+                      label="Ordina per"
+                      value={getCurrentOrderValue()}
+                      onChange={handleOrderChange}
+                      placeholder="Default"
+                      options={orderOptions}
                     />
                   </div>
 
-                  <div className="flex justify-end gap-3 mt-6">
+                  <div className="flex justify-end gap-2 md:gap-3 mt-4 md:mt-6">
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="px-4 py-2 text-sm bg-[#171717] border-1 border-[#000000ac] text-white rounded-md hover:shadow-[0_0_10px_4px_#171717] transition-all duration-300 cursor-pointer"
+                      className="px-3 md:px-4 py-1.5 text-xs md:text-sm bg-[#303030] text-white rounded-md transition-all duration-300 cursor-pointer"
                     >
                       Annulla
                     </button>
                     <button
                       onClick={applyFilters}
-                      className="px-4 py-2 text-sm bg-white text-black rounded-md hover:shadow-[0_0_10px_4px_rgba(255,255,255,0.3)] transition-all duration-300 cursor-pointer"
+                      className="px-3 md:px-4 py-1.5 text-xs md:text-sm bg-white text-black rounded-md transition-all duration-300 cursor-pointer"
                     >
-                      Applica filtri
+                      Applica
                     </button>
                   </div>
                 </>

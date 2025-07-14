@@ -1,5 +1,4 @@
 'use client'
-
 import PlayButton from "./PlayButton";
 import TrailerButton from "./TrailerButton";
 import ExpandableText from "./ExpandableText";
@@ -105,7 +104,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
   const bgUrl = mediaData.backdrop_url || " ";
 
   return (
-    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full lg:h-[40vw] text-white p-8 mb-1">
+    <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full text-white p-8 mb-1">
 
       {isTrailerPlaying && (
 

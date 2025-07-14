@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: { type: st
         m.id, m.title, m.description, m.release_date, m.type, m.genres_ids, m.rating
       ORDER BY
         latest_season_date DESC, m.rating DESC
-      LIMIT 50
+      LIMIT 25
     `;
 
     result = await pool.query(query, queryParams);
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: { params: { type: st
       queryParams.push(parseInt(genreQuery));
     }
 
-    query += ` ORDER BY m.release_date DESC, m.rating DESC LIMIT 50`;
+    query += ` ORDER BY m.release_date DESC, m.rating DESC LIMIT 25`;
     result = await pool.query(query, queryParams);
   }
 

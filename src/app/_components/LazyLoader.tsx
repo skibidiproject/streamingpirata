@@ -5,24 +5,19 @@ import MediaCard from "./MediaCard";
 import { FixedSizeGrid as Grid } from "react-window";
 import { MediaData } from "./Mediadata";
 
-
-
 interface LazyLoaderProps {
     mediaData: MediaData[];
 }
-
 
 interface Genre {
     id: number;
     genre: string;
 }
 
-
-
 export default function LazyLoader({ mediaData }: LazyLoaderProps) {
-
     const measureCardRef = useRef<HTMLDivElement>(null);
-
+    const [isReady, setIsReady] = useState(false);
+    const [opacity, setOpacity] = useState(0); // Per transizione smooth
 
     // Dynamic card dimensions
     const [cardWidth, setCardWidth] = useState<number>(200);
@@ -35,21 +30,19 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
 
     // Responsive spacing configuration
     const getCellGap = (width: number) => {
-        if (width < 640) return 12; // Small screens: 12px gap (increased from 4px)
-        if (width < 1024) return 8; // Medium screens: 8px gap 
-        return 16; // Large screens: 16px gap
+        if (width < 640) return 12;
+        if (width < 1024) return 8;
+        return 16;
     };
 
     const getContainerPadding = (width: number) => {
-        if (width < 640) return 8; // Small screens: 8px padding
-        if (width < 1024) return 12; // Medium screens: 12px padding
-        return 24; // Large screens: 24px padding
+        if (width < 640) return 8;
+        if (width < 1024) return 12;
+        return 24;
     };
-
 
     const cellGap = getCellGap(windowWidth);
     const containerPadding = getContainerPadding(windowWidth);
-
 
     useEffect(() => {
         const measureCard = () => {
@@ -57,18 +50,21 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
                 const rect = measureCardRef.current.getBoundingClientRect();
                 setCardWidth(rect.width);
                 setCardHeight(rect.height);
+                setIsReady(true);
+                
+                // Transizione smooth
+                setTimeout(() => setOpacity(1), 50);
             }
         };
 
         if (mediaData.length > 0) {
-            // Measure immediately
+            setIsReady(false);
+            setOpacity(0);
             measureCard();
 
-            // Also measure after images load (if MediaCard contains images)
             const timer = setTimeout(measureCard, 100);
             return () => clearTimeout(timer);
         }
-
     }, [mediaData, windowWidth]);
 
     useEffect(() => {
@@ -78,36 +74,31 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
             setWindowWidth(width);
             setWindowHeight(height);
 
-            // Force a recalculation of card dimensions after resize
             if (mediaData.length > 0 && measureCardRef.current) {
-                // Small delay to ensure DOM has updated
+                setOpacity(0); // Fade out durante resize
                 setTimeout(() => {
                     if (measureCardRef.current) {
                         const rect = measureCardRef.current.getBoundingClientRect();
                         setCardWidth(rect.width);
                         setCardHeight(rect.height);
+                        setIsReady(true);
+                        setTimeout(() => setOpacity(1), 50); // Fade in
                     }
                 }, 50);
             }
         }
 
         handleResize();
-
         window.addEventListener("resize", handleResize);
-
-
         return () => window.removeEventListener("resize", handleResize);
-    }, [mediaData]); // Add films as dependency
+    }, [mediaData]);
 
-    // Separate effect for calculating columns (depends on windowWidth)
     useEffect(() => {
         if (windowWidth > 0) {
             const availableWidth = windowWidth - (containerPadding * 2);
 
-            // More conservative calculation for mobile
             if (windowWidth < 640) {
-                // On mobile, ensure cards don't get too small and account for browser chrome
-                const minCardWidth = 100; // Minimum card width on mobile
+                const minCardWidth = 100;
                 const effectiveCardWidth = Math.max(cardWidth, minCardWidth);
                 const cols = Math.max(1, Math.floor(availableWidth / (effectiveCardWidth + cellGap)));
                 setColumnCount(cols);
@@ -118,23 +109,17 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
         }
     }, [windowWidth, cardWidth, cellGap, containerPadding]);
 
-
-
     const rowCount = Math.ceil(mediaData.length / columnCount);
 
     if (mediaData.length === 0) {
         return (
-            <>
-                <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
-                    <div className="text-center">
-                        <p className="text-white text-xl">Nessun film disponibile</p>
-                    </div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+                <div className="text-center">
+                    <p className="text-white text-xl">Nessun film disponibile</p>
                 </div>
-            </>
+            </div>
         );
     }
-
-
 
     const Cell = ({
         columnIndex,
@@ -153,7 +138,7 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
             <div
                 style={{
                     ...style,
-                    padding: `${cellGap / 2}px`, // Half gap on each side
+                    padding: `${cellGap / 2}px`,
                 }}
             >
                 <MediaCard mediaData={film} />
@@ -161,13 +146,8 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
         );
     };
 
-
-
-
     return (
         <>
-
-
             {/* Hidden MediaCard for measurement */}
             {mediaData.length > 0 && (
                 <div
@@ -184,36 +164,47 @@ export default function LazyLoader({ mediaData }: LazyLoaderProps) {
                 </div>
             )}
 
-            
-
-            <div
-                className="w-full mt-[0rem]"
-                style={{
-                    padding: `0 ${containerPadding}px`,
-                }}
-            >
-                <div className="flex justify-center w-full">
-                    <Grid
-                        columnCount={columnCount}
-                        columnWidth={cardWidth + cellGap}
-                        height={windowHeight - 135}
-                        rowCount={rowCount}
-                        rowHeight={cardHeight + cellGap}
-                        width={Math.min(
-                            windowWidth - (containerPadding * 2),
-                            columnCount * (cardWidth + cellGap)
-                        )}
-                        style={{
-                            scrollbarWidth: 'none', /* Firefox */
-                            msOverflowStyle: 'none', /* IE and Edge */
-                        }}
-                        className="hide-scrollbar"
-                    >
-                        {Cell}
-                    </Grid>
+            {/* Loading state */}
+            {!isReady && mediaData.length > 0 && (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
+                        <p className="text-white text-lg">Caricamento...</p>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* Main content with smooth transition */}
+            {isReady && (
+                <div
+                    className="w-full mt-[0rem] transition-opacity duration-300"
+                    style={{
+                        padding: `0 ${containerPadding}px`,
+                        opacity: opacity,
+                    }}
+                >
+                    <div className="flex justify-center w-full">
+                        <Grid
+                            columnCount={columnCount}
+                            columnWidth={cardWidth + cellGap}
+                            height={windowHeight - 135}
+                            rowCount={rowCount}
+                            rowHeight={cardHeight + cellGap}
+                            width={Math.min(
+                                windowWidth - (containerPadding * 2),
+                                columnCount * (cardWidth + cellGap)
+                            )}
+                            style={{
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                            className="hide-scrollbar"
+                        >
+                            {Cell}
+                        </Grid>
+                    </div>
+                </div>
+            )}
         </>
     );
-
 }

@@ -7,7 +7,7 @@ import { MediaData } from "../_components/Mediadata";
 
 export default async function FilmPage() {
   let latestMedia: MediaData[] = [];
-  let genreResults: any[]= [];
+  let genreResults: any[] = [];
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest/movie`, {
@@ -23,7 +23,6 @@ export default async function FilmPage() {
       { id: 27, name: "Horror" },
       { id: 14, name: "Fantasy" },
       { id: 878, name: "Fantascienza" },
-      { id: 35, name: "Commedia" },
       { id: 53, name: "Thriller" },
       { id: 16, name: "Animazione" },
     ];
@@ -59,6 +58,8 @@ export default async function FilmPage() {
       {latestMedia.length > 0 && (
         <HeroMediaCard mediaID={latestMedia[0].id} type={'movie'} />
       )}
+
+      <hr className="text-[#212121] mb-5 mt-5" />
 
       {genreResults.map(({ name, items }) => (
         <div key={name}>

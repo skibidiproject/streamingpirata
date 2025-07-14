@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     SELECT *
     FROM media_with_release_dates
     ORDER BY release_date_for_order DESC
-    LIMIT 50;
+    LIMIT 25;
   `;
 
   const result = await pool.query(query, queryParams);

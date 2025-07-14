@@ -77,7 +77,7 @@ export default function Episode({ id, season, episode, title, description, still
         </div>
       </div>
       <div className="flex-1">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold line-clamp-1">
           {title}
         </h2>
         <ExpandableText lines={2} text={description} />

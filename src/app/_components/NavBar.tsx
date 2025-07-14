@@ -39,7 +39,7 @@ function Navbar() {
   // Classi per link attivo e non attivo
   const getLinkClasses = (path: string) => {
     const baseClasses = "px-2 rounded py-0.5 transition-all duration-300";
-    const activeClasses = "text-glow";
+    const activeClasses = "";
     const inactiveClasses = "";
 
     return `${baseClasses} ${isActive(path) ? activeClasses : inactiveClasses}`;

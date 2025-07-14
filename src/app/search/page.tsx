@@ -3,17 +3,9 @@ import { useEffect, useState } from "react";
 import NavBar from "../_components/NavBar";
 import Loader from "../_components/loader";
 import LazyLoader from "../_components/LazyLoader";
-import FilterBar from "../_components/FIlterBar";
+import FilterBar, {FilterOptions} from "../_components/FIlterBar";
 import React from "react";
 import { MediaData } from "../_components/Mediadata";
-
-export interface FilterOptions {
-  year?: string;
-  genreId?: string;
-  type?: "all" | "movie" | "tv";
-  rating?: string;
-}
-
 
 
 interface Props {
@@ -25,7 +17,7 @@ export default function Search({ searchParams }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({});
-  
+
   // Use React.use() to unwrap searchParams
   const params = React.use(searchParams);
   const query = (params.q || "").trim();
@@ -44,23 +36,25 @@ export default function Search({ searchParams }: Props) {
         // Costruiamo i parametri di ricerca
         const params = new URLSearchParams();
         params.append("search", query);
-        
-        // Aggiungiamo i filtri se presenti
+
         if (filters.year) params.append("year", filters.year);
         if (filters.genreId) params.append("genreId", filters.genreId);
         if (filters.type && filters.type !== "all") params.append("type", filters.type);
         if (filters.rating) params.append("rating", filters.rating);
+        if (filters.rating_dir) params.append("rating_dir", filters.rating_dir);
+        if (filters.orderby) params.append("orderby", filters.orderby);
+        if (filters.order_dir) params.append("order_dir", filters.order_dir);
 
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents?${params.toString()}`,
           { cache: "no-store" }
         );
-        
+
         if (!res.ok) {
           const errData = await res.json();
           throw new Error(errData.error || "Errore nella fetch");
         }
-        
+
         const data = await res.json();
         setResults(data);
       } catch (e) {
@@ -104,15 +98,15 @@ export default function Search({ searchParams }: Props) {
     <>
       <NavBar />
       <hr className="mt-[5rem] text-[#212121]" />
-      
+
       {/* Barra dei filtri (mostrata solo se c'è una query) */}
       {query && (
-        <FilterBar 
+        <FilterBar
           onFiltersChange={setFilters}
           initialFilters={filters}
         />
       )}
-      
+
       {/* Risultati della ricerca */}
       <LazyLoader mediaData={results} />
     </>
