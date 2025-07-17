@@ -12,8 +12,8 @@ export default function Donations() {
   return (
     <>
       <Navbar />
-      <div className="text-white px-4 py-8 mt-40 w-screen">
-        <div className="mx-auto w-[20rem] sm:w-[30rem] md:w-[40rem] lg:w-[51rem]  text-center">
+      <div className="text-white px-4 py-8 mt-25 w-screen">
+        <div className="mx-auto w-[20rem] sm:w-[30rem] md:w-[40rem] lg:w-[55rem]  text-center">
 
           <h1 className="text-2xl md:text-3xl font-bold mb-4 ">Supporta il Progetto</h1>
           <p className="  text-white text-sm mb-6 px-2">
@@ -38,7 +38,15 @@ export default function Donations() {
             Ogni contributo, anche piccolo, ci aiuta a mantenere il servizio attivo e gratuito per tutti.
           </p>
 
-          <h1 className='italic mt-[5rem] md:mt-[7rem] lg:mt-[10rem] xl:mt-[15rem] text-3xl font-bold'>"culture shouldn't exist only for those who can afford it"</h1>
+          <div className='w-full flex items-center justify-center '>
+            <img src="./Car/car.jpg" className='mt-15 aspect-auto h-[20rem]  ' />
+          </div>
+
+          <p className="text-white mt-6 px-2">Dexter ringrazia</p>
+
+          <h1 className='italic mt-[5rem] md:mt-[7rem] lg:mt-[10rem] xl:mt-[12rem] text-3xl font-bold'>"culture shouldn't exist only for those who can afford it"</h1>
+
+          
         </div>
       </div>
     </>
