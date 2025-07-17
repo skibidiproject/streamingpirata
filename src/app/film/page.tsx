@@ -68,7 +68,6 @@ export default async function FilmPage() {
         </div>
       ))}
 
-
       <Footer />
     </>
   );

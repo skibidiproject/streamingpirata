@@ -61,6 +61,7 @@ export default async function Media({ params }: MediaPageProps) {
       <h1 className="text-2xl font-bold ml-6 mt-10">Correlati</h1>
       <ScrollSection media={dataCorrelati} />
 
+      <Footer/>
     </>
   );
 }

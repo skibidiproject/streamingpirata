@@ -1,14 +1,24 @@
-import Link from "next/link"
-export default function Footer()
-{
-    return <>
-    <div className="w-full text-center h-50 mt-12 mb-8">
-      <hr className="text-[#212121]"/>
-        <img src="/logo.png" alt="Logo" className="w-32 mx-auto mt-15 text-white"/>
-        <small className="text-s">Copyright&copy; 2025 - SuperStream</small>
-        <br />
-        <small className="text-s mx-2"><Link href="/disclaimer">Disclaimer</Link></small>
-        <small className="text-s mx-2"><Link href="/Autori">Autori</Link></small>
-    </div>
-    </>
+import Link from "next/link";
+import { Button } from "@headlessui/react";
+
+export default function Footer() {
+  return (
+    <footer className="w-full text-center mt-12 sm:">
+      <hr className="text-[#212121]" />
+      <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-6">
+        <div className="flex items-center mb-4 md:mb-0">
+          <h1 className="text-sm">
+            Ogni contributo, anche piccolo, ci aiuta a mantenere il servizio attivo e gratuito per tutti.
+          </h1>
+        </div>
+        <Link href="/info">
+          <Button
+            className="inline-flex items-center gap-2 rounded bg-white px-3 py-1.5 text-sm font-semibold text-black cursor-pointer sm:mb-0 mb-4 sm:mr-4"
+          >
+            Supporta il Progetto
+          </Button>
+        </Link>
+      </div>
+    </footer>
+  );
 }
