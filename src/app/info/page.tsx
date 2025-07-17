@@ -39,12 +39,12 @@ export default function Donations() {
           </p>
 
           <div className='w-full flex items-center justify-center '>
-            <img src="./Car/car.jpg" className='mt-15 aspect-auto h-[20rem]  ' />
+            <img src="./Car/Car.jpg" className='mt-15 aspect-auto h-[20rem]  ' />
           </div>
 
           <p className="text-white mt-6 px-2">Dexter ringrazia</p>
 
-          <h1 className='italic mt-[5rem] md:mt-[7rem] lg:mt-[10rem] xl:mt-[12rem] text-3xl font-bold'>"culture shouldn't exist only for those who can afford it"</h1>
+          <h1 className='italic mt-[5rem] md:mt-[5rem] lg:mt-[5rem] xl:mt-[4rem] text-2xl font-bold mb-5'>"Culture shouldn't exist only for those who can afford it"</h1>
 
           
         </div>
