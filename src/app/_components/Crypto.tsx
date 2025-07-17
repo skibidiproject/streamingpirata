@@ -51,32 +51,33 @@ export default function Crypto({ name, symbol, address }: Wallet) {
 
 
 
-    return <div className="w-[80%] sm:w-[52%] mx-auto rounded-lg p-3 backdrop-blur-sm h-[5rem]">
-        <div className="flex flex-row items-center w-full justify-between h-full">
-            <div className="flex flex-row h-full items-center gap-2">
-                <CryptoIcon symbol={symbol} className="aspect-square h-[75%]" />
-                <div className="flex flex-col justify-center">
-                    <h3 className="text-white font-medium text-sm md:text-base text-left">{name}</h3>
-                    <code className="text-stone-300 text-xs font-mono truncate block max-w-[120px] md:max-w-[175px] lg:max-w-[200px] xl:max-w-[300px]">
-                        {address}
-                    </code>
-                </div>
+    return <div className="w-[90%] sm:w-[80%] md:w-[65%] lg:w-[52%] mx-auto rounded-lg p-3 backdrop-blur-sm h-auto min-h-[5rem]">
+    <div className="flex flex-row items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+        <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
+            <CryptoIcon symbol={symbol} className="aspect-square h-10 sm:h-[2.5rem]" />
+            <div className="flex flex-col justify-center min-w-0">
+                <h3 className="text-white font-medium text-sm md:text-base text-left truncate">{name}</h3>
+                <code className="text-stone-300 text-xs font-mono truncate block max-w-[150px] sm:max-w-[175px] md:max-w-[200px] lg:max-w-[300px]">
+                    {address}
+                </code>
             </div>
-            {copiedWallet === symbol ? (
-                <div className="gap-1 text-green-500 text-xs font-medium aspect-square h-full flex justify-center items-center">
-                    <Check size={14} />
-                </div>
-            ) : (
-                <button
-                    onClick={() => copyToClipboard(address, symbol)}
-                    className="text-stone-300 hover:text-white transition-colors cursor-pointer aspect-square h-full flex justify-center items-center"
-                    aria-label={`Copia indirizzo ${name}`}
-                >
-                    <Copy size={16} />
-                </button>
-            )}
         </div>
+        {copiedWallet === symbol ? (
+            <div className="text-green-500 text-xs font-medium flex justify-center items-center h-8 w-8 sm:h-10 sm:w-10">
+                <Check size={14} />
+            </div>
+        ) : (
+            <button
+                onClick={() => copyToClipboard(address, symbol)}
+                className="text-stone-300 hover:text-white transition-colors cursor-pointer h-8 w-8 sm:h-10 sm:w-10 flex justify-center items-center"
+                aria-label={`Copia indirizzo ${name}`}
+            >
+                <Copy size={16} />
+            </button>
+        )}
     </div>
+</div>
+
 
 
 

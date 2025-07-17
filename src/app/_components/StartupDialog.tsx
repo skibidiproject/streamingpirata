@@ -30,7 +30,7 @@ export default function MyModal() {
   }
 
   function handleDontShowAgain() {
-    const twelveHoursFromNow = Date.now() + 12 * 60 * 60 * 1000 // 12 ore in ms
+    const twelveHoursFromNow = Date.now() + 1 * 60 * 60 * 1000 // 1 ora in ms
     localStorage.setItem(HIDE_KEY, twelveHoursFromNow.toString())
     close()
   }
