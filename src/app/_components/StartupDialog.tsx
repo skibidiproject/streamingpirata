@@ -1,14 +1,24 @@
 'use client'
 import { Button } from '@headlessui/react'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+const HIDE_KEY = 'hideWelcomeModalUntil'
 
 export default function MyModal() {
   const [isOpen, setIsOpen] = useState<boolean | null>(null)
   const [isClosing, setIsClosing] = useState(false)
+  const router = useRouter();
 
   useEffect(() => {
-    const hidden = localStorage.getItem('hideWelcomeModal')
-    setIsOpen(hidden !== 'true')
+    const saved = localStorage.getItem(HIDE_KEY)
+    if (saved) {
+      const hideUntil = parseInt(saved, 10)
+      const now = Date.now()
+      setIsOpen(now > hideUntil) // mostra solo se la data è passata
+    } else {
+      setIsOpen(true) // nessuna preferenza salvata, mostra il modal
+    }
   }, [])
 
   function close() {
@@ -20,44 +30,45 @@ export default function MyModal() {
   }
 
   function handleDontShowAgain() {
-    localStorage.setItem('hideWelcomeModal', 'true')
+    const twelveHoursFromNow = Date.now() + 12 * 60 * 60 * 1000 // 12 ore in ms
+    localStorage.setItem(HIDE_KEY, twelveHoursFromNow.toString())
     close()
   }
 
   function openBanner() {
-    console.log('Apri info o banner...')
+    router.push('/info')
   }
 
-  if (isOpen === null) return null // non mostrare nulla finché non abbiamo letto le preferenze
+  if (isOpen === null) return null
   if (!isOpen) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 pointer-events-none">
+    <div className="fixed bottom-4 sm:right-4 z-50 pointer-events-none flex">
       <div
         className={`
-          w-full max-w-md rounded-xl bg-[#0a0a0a]/70 border border-zinc-800 p-6 backdrop-blur-2xl 
+          w-[95%] mx-auto sm:w-full max-w-md rounded-xl bg-[#0a0a0a]/80 border border-zinc-800 p-6 backdrop-blur-2xl 
           transition-all duration-300 ease-in-out pointer-events-auto
           ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}
         `}
       >
         <h3 className="text-base font-medium text-white">
-          Benvenuto su PEZZ8!
+          Benvenuto su Streaming ITA 🇮🇹
         </h3>
         <p className="mt-2 text-sm text-white/50">
-          Siamo una piattaforma di streaming pirata, senza annunci, quindi dona cazzo se non vuoi le pubblicità!
+          Aiutaci a mantenere questo servizio completamente gratuito e senza pubblicità. Se apprezzi il nostro lavoro, considera una donazione per sostenere i costi di mantenimento e sviluppo.
         </p>
         <div className="mt-4 flex gap-x-2">
           <Button
-            className="inline-flex items-center gap-2 rounded bg-white px-3 py-1.5 text-sm font-semibold text-black hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center gap-2 rounded bg-white px-3 py-1.5 text-sm font-semibold text-black cursor-pointer"
             onClick={openBanner}
           >
-            Maggiori informazioni
+            Supporta il Progetto
           </Button>
           <Button
-            className="inline-flex items-center gap-2 rounded bg-[#303030] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#404040] transition-colors"
+            className="inline-flex items-center gap-2 rounded bg-[#404040] px-3 py-1.5 text-sm font-semibold text-white cursor-pointer "
             onClick={handleDontShowAgain}
           >
-            Non mostrare più
+            Non ora
           </Button>
         </div>
       </div>

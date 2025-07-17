@@ -45,7 +45,7 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
       <div className="relative text-white m-2">
         <h1 className="text-[0.9rem] text-wrap w-full mb-1 leading-4">{mediaData.title}</h1>
         <div className="flex flex-row gap-x-1 items-center sm:text-[0.7rem] text-[0.5rem]">
-          <h1>{new Date(mediaData.release_date).toLocaleDateString()}</h1>
+          <h1>{new Date(mediaData.release_date).toLocaleDateString('it-IT')}</h1>
           <span className="text-gray-400">|</span>
           <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
         </div>
