@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
           orderBy = "ORDER BY m.title ASC";
       }
     } else {
-      orderBy = "ORDER BY m.title ASC";
+      orderBy = "ORDER BY m.release_date DESC";
     }
 
     // Costruzione query finale

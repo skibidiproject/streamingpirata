@@ -63,13 +63,13 @@ export default function Crypto({ name, symbol, address }: Wallet) {
                 </div>
             </div>
             {copiedWallet === symbol ? (
-                <div className="flex items-center gap-1 text-green-500 text-xs font-medium flex-shrink-0">
+                <div className="gap-1 text-green-500 text-xs font-medium aspect-square h-full flex justify-center items-center">
                     <Check size={14} />
                 </div>
             ) : (
                 <button
                     onClick={() => copyToClipboard(address, symbol)}
-                    className="text-stone-300 hover:text-white transition-colors cursor-pointer aspect-square h-full flex justify-center items-center flex-shrink-0"
+                    className="text-stone-300 hover:text-white transition-colors cursor-pointer aspect-square h-full flex justify-center items-center"
                     aria-label={`Copia indirizzo ${name}`}
                 >
                     <Copy size={16} />

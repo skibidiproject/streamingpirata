@@ -2,9 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import MediaCard from "./MediaCard";
-import Script from "next/script";
-import { RedirectType } from "next/navigation";
 import { MediaData } from "./Mediadata";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 
 export default function ScrollSection({ media }: { media: MediaData[] }) {
@@ -73,9 +72,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           />
 
           <h1 className="absolute z-10 left-5 text-2xl font-bold invisible group-hover:visible h-fit ">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
+            <ChevronLeftIcon className="w-8 text-white"/>
           </h1>
 
 
@@ -113,9 +110,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           />
 
           <h1 className="absolute z-10 right-5 text-2xl font-bold invisible group-hover:visible h-fit ">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="white" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRightIcon className="w-8 text-white"/>
 
           </h1>
 

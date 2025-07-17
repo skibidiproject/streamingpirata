@@ -4,6 +4,7 @@ import HeroMediaCard from "./_components/HeroMediaCard";
 import ScrollSection from "./_components/ScrollSection";
 import { MediaData } from "./_components/Mediadata";
 import StartupDialog from "./_components/StartupDialog";
+import { shuffle } from "./shuffle";
 
 type Genre = {
   id: number;
@@ -53,7 +54,7 @@ export default async function Home() {
           return {
             id,
             name,
-            items: data, // vedere se randomizzare per estetica
+            items: shuffle(data), // vedere se randomizzare per estetica
           };
         } catch (err) {
           console.error(`Errore nel fetch del genere ${name}:`, err);

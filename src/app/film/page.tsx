@@ -3,6 +3,7 @@ import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 import ScrollSection from "../_components/ScrollSection";
 import { MediaData } from "../_components/Mediadata";
+import { shuffle } from "../shuffle";
 
 
 export default async function FilmPage() {
@@ -38,7 +39,7 @@ export default async function FilmPage() {
         return {
           id,
           name,
-          items: data,
+          items: shuffle(data),
         };
       })
     );

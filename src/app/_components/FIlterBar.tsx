@@ -78,8 +78,8 @@ const Dropdown = ({ label, value, onChange, placeholder, options }: DropdownProp
               value={option.value}
               className={({ active, selected }) => `
                 relative cursor-pointer py-2 pl-4 pr-4 text-sm md:text-base
-                ${selected ? 'bg-[#0a0a0a] font-extrabold shadow-md' : ''}
-                ${active && !selected ? 'bg-[#212121] text-white' : ''}
+                ${selected ? 'bg-[#0a0a0a]/80 font-extrabold shadow-md' : ''}
+                ${active && !selected ? 'bg-[#212121]/80 text-white' : ''}
               `}
             >
               {option.label}

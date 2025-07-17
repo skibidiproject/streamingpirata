@@ -36,6 +36,8 @@ export default function MyModal() {
   }
 
   function openBanner() {
+    const twelveHoursFromNow = Date.now() + 24 * 60 * 60 * 1000 // 24 ore in ms
+    localStorage.setItem(HIDE_KEY, twelveHoursFromNow.toString())
     router.push('/info')
   }
 
@@ -43,7 +45,7 @@ export default function MyModal() {
   if (!isOpen) return null
 
   return (
-    <div className="fixed bottom-4 sm:right-4 z-50 pointer-events-none flex">
+    <div className="fixed bottom-4 sm:right-4 z-35 pointer-events-none flex">
       <div
         className={`
           w-[95%] mx-auto sm:w-full max-w-md rounded-xl bg-[#0a0a0a]/80 border border-zinc-800 p-6 backdrop-blur-2xl 
