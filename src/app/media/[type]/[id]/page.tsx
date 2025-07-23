@@ -6,16 +6,16 @@ import EpisodeSelector from "@/app/_components/EpisodeSelector";
 import ScrollSection from "@/app/_components/ScrollSection";
 
 interface MediaPageProps {
-  params: {
+  params: Promise<{
     type: string ;
     id: string;
-  };
+  }>;
 }
 
 
 export default async function Media({ params }: MediaPageProps) {
-  const id = params.id;
-  const type = params.type;
+
+  const {id, type}  = await params;
 
   let data: any;
   let dataCorrelati: any;

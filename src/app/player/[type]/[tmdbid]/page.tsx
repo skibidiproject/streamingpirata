@@ -5,12 +5,12 @@ import PlayerLoader from '@/app/_components/PlayerLoader';
 import { Metadata } from 'next';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     type: string;
     tmdbid: string;
     season?: string;
     episode?: string;
-  };
+  }>;
 }
 
 interface StreamData {
@@ -42,8 +42,8 @@ export function generateMetadata(): Metadata {
 }
 
 // Costruisce l'URL del player basandosi sui parametri
-function buildPlayerUrl(params: PageProps['params']): string | null {
-  const { type, tmdbid, season, episode } = params;
+async function buildPlayerUrl(params: PageProps['params']): Promise<string | null>  {
+  const{ type, tmdbid, season, episode } = await params;
   
   if (type === 'movie') {
     return `https://vixsrc.to/movie/${tmdbid}?lang=it`;
@@ -88,7 +88,7 @@ async function extractStream(playerUrl: string): Promise<StreamData> {
 
 // Componente per il contenuto del player
 async function PlayerContent({ params }: { params: PageProps['params'] }) {
-  const playerUrl = buildPlayerUrl(params);
+  const playerUrl =  await buildPlayerUrl(params);
   
   if (!playerUrl) {
     notFound();

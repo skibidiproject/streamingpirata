@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/database";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const mediaId = parseInt(params.id);
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
+  // Await params before accessing its properties
+  const { id } = await params;
+  const mediaId = parseInt(id);
+  
   const { searchParams } = new URL(request.url);
   const limit = parseInt(searchParams.get("limit") || "50");
 
