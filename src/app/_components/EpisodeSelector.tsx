@@ -109,7 +109,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
               <ListboxButton className="
                 flex items-center justify-between
                 w-35 px-4 py-1 focus:outline-none
-                bg-[#171717] border-1 border-[#000000ac] backdrop-blur-[16px] rounded-lg
+                bg-[#171717] border-1 border-[#272727ac] backdrop-blur-[16px] rounded-lg
                 text-left text-white
                 transition-all
               ">
@@ -124,7 +124,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
 
               <ListboxOptions className="
                 absolute mt-1 w-48 max-h-60
-                bg-[#171717]/80 border border-[#00000083] backdrop-blur-[16px] rounded-lg
+                bg-[#202020] border border-[#272727ac] backdrop-blur-[16px] rounded-lg
           shadow-2xl shadow-black/50
                 overflow-auto
                 z-10
@@ -174,6 +174,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
           )}
         </div>
       </div>
+      <hr className="text-[#212121] mb-5 mt-5" />
     </>
   );
 }

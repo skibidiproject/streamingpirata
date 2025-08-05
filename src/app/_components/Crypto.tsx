@@ -51,13 +51,13 @@ export default function Crypto({ name, symbol, address }: Wallet) {
 
 
 
-    return <div className="w-[90%] sm:w-[80%] md:w-[65%] lg:w-[52%] mx-auto rounded-lg p-3 backdrop-blur-sm h-auto min-h-[5rem]">
+    return <div className="w-[95%] sm:w-[80%] md:w-[65%] lg:w-[48%] mx-auto rounded-lg p-3 backdrop-blur-sm h-auto min-h-[5rem]">
     <div className="flex flex-row items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
         <div className="flex flex-row items-center gap-3 flex-1 min-w-0">
             <CryptoIcon symbol={symbol} className="aspect-square h-10 sm:h-[2.5rem]" />
             <div className="flex flex-col justify-center min-w-0">
                 <h3 className="text-white font-medium text-sm md:text-base text-left truncate">{name}</h3>
-                <code className="text-stone-300 text-xs font-mono truncate block max-w-[150px] sm:max-w-[175px] md:max-w-[200px] lg:max-w-[300px]">
+                <code className="text-stone-300 text-xs font-mono truncate block max-w-[50vw]">
                     {address}
                 </code>
             </div>
@@ -77,8 +77,4 @@ export default function Crypto({ name, symbol, address }: Wallet) {
         )}
     </div>
 </div>
-
-
-
-
 }

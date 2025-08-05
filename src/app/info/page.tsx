@@ -2,7 +2,7 @@
 
 import Crypto, { Wallets } from '../_components/Crypto'
 import Navbar from '../_components/NavBar'
-
+import Link from 'next/link'
 
 
 export default function Donations() {
@@ -11,8 +11,8 @@ export default function Donations() {
   return (
     <>
       <Navbar />
-      <div className="text-white px-4 py-8 mt-25 w-screen">
-        <div className="mx-auto w-[90%] sm:w-[30rem] md:w-[40rem] lg:w-[55rem]  text-center">
+      <div className="text-white px-4 py-8 mt-24 w-screen">
+        <div className="mx-auto w-[97%] sm:w-[30rem] md:w-[40rem] lg:w-[55rem]  text-center">
 
           <h1 className="text-2xl md:text-3xl font-bold mb-4 ">Supporta il Progetto</h1>
           <p className="  text-white text-sm mb-6 px-2">
@@ -29,23 +29,21 @@ export default function Donations() {
 
           <div className="space-y-3 px-2">
             {Wallets.map((wallet) => (
-              <Crypto name={wallet.name} address={wallet.address} symbol={wallet.symbol} key={wallet.symbol}/>
+              <Crypto name={wallet.name} address={wallet.address} symbol={wallet.symbol} key={wallet.symbol} />
             ))}
           </div>
 
-          <p className="text-white mt-6 px-2 text-sm">
+          <p className="text-white mt-6 mb-4 px-2 text-sm">
             Ogni contributo, anche piccolo, ci aiuta a mantenere il servizio attivo e gratuito per tutti.
           </p>
-          { /*page autori con dexter*/}
-          <div className='w-full flex items-center justify-center '>
-            <img src="./Car/Car.jpg" className='mt-15 aspect-auto h-[20rem]' />
+          <div className="w-full italic mt-3">
+            <Link href="/info/gestori">
+              <small>I gestori della piattaforma</small>
+            </Link>
           </div>
 
-          <p className="text-white mt-4 px-2">Dexter ringrazia</p>
+          <h1 className='italic mt-10 mb-8 text-2xl'>"Culture shouldn't exist only for those who can afford it"</h1>
 
-          <h1 className='italic mt-[5rem] md:mt-[7rem] lg:mt-[10rem] xl:mt-[12rem] text-2xl font-medium'>"Culture shouldn't exist only for those who can afford it"</h1>
-
-          
         </div>
       </div>
     </>

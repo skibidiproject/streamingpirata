@@ -9,13 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "@silvermine/videojs-chromecast": "^1.5.0",
+    "@videojs/http-streaming": "^3.17.2",
+    "@vidstack/react": "^1.12.13",
     "bcryptjs": "^3.0.2",
     "cryptocurrency-icons": "^0.18.1",
+    "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
     "hls": "^0.0.1",
-    "hls.js": "^1.6.6",
+    "hls.js": "^1.6.7",
     "iron-session": "^8.0.4",
     "lucide-react": "^0.525.0",
     "mysql": "^2.18.1",
@@ -24,8 +32,10 @@
     "pg": "^8.16.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-native-google-cast": "^4.9.0",
     "react-virtualized-auto-sizer": "^1.0.26",
-    "react-window": "^1.8.11"
+    "react-window": "^1.8.11",
+    "video.js": "^8.23.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import Script from 'next/script';
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -11,7 +12,7 @@ const dmSans = DM_Sans({
 export function generateMetadata(): Metadata {
   return {
     title: 'Streaming Platform',
-    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo vuoi di più? Mettiti seduto e prendi i popcorn! 🍿",
+    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo di più? Mettiti seduto e prendi i popcorn! 🍿",
   };
 }
 
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} antialiased overflow-x-hidden`}
       >
+        
         {children}
       </body>
     </html>

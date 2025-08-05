@@ -45,32 +45,32 @@ export default function Episode({ id, season, episode, title, description, still
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         )}
-        {stillUrl ? 
-        <Image
-          loading="lazy"
-          fill
-          src={stillUrl}
-          loader={myLoader}
-          onLoad={() => setIsLoading(false)}
-          onError={() => setIsLoading(false)}
-          className="object-cover rounded-md"
-          alt={title}
-          sizes="160px"
-        /> : 
+        {stillUrl ?
+          <Image
+            loading="lazy"
+            fill
+            src={stillUrl}
+            loader={myLoader}
+            onLoad={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
+            className="object-cover rounded-md"
+            alt={title}
+            sizes="160px"
+          /> :
 
-        <Image
-          loading="lazy"
-          fill
-          src={stillUrl ? stillUrl : "https://www.hfrance.fr/wp-content/uploads/2025/06/1750435121218.jpg"}
-          loader={myLoader}
-          onLoad={() => setIsLoading(false)}
-          onError={() => setIsLoading(false)}
-          className="object-cover rounded-md"
-          alt={title}
-          sizes="160px"
-        />
+          <Image
+            loading="lazy"
+            fill
+            src={stillUrl ? stillUrl : "https://www.hfrance.fr/wp-content/uploads/2025/06/1750435121218.jpg"}
+            loader={myLoader}
+            onLoad={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
+            className="object-cover rounded-md"
+            alt={title}
+            sizes="160px"
+          />
         }
-        
+
         <div className="absolute inset-0 flex items-center justify-center rounded-md opacity-0 hover:opacity-100 transition-opacity">
           <div className="absolute inset-0 bg-black bg-opacity-50 opacity-60 rounded-md"></div>
           <PlayIcon className="relative w-10 h-10 text-white" />
@@ -78,7 +78,7 @@ export default function Episode({ id, season, episode, title, description, still
       </div>
       <div className="flex-1">
         <h2 className="text-lg font-semibold line-clamp-1">
-          {title}
+          {episode + ". " + title}
         </h2>
         <ExpandableText lines={2} text={description} />
       </div>

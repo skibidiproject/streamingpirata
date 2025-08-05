@@ -11,4 +11,11 @@ export interface MediaData {
   certification: string;
   genres_array: Array<string> ;
   type: "tv" | "movie";
+  label_info: LabelData | null;
+}
+
+export interface LabelData
+{
+  label: boolean;
+  text: string;
 }

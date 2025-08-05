@@ -2,159 +2,66 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import VideoPlayer from '@/app/_components/VideoPlayer';
 import PlayerLoader from '@/app/_components/PlayerLoader';
-import { Metadata } from 'next';
 
 interface PageProps {
-  params: Promise<{
+  params: {
     type: string;
     tmdbid: string;
-    season?: string;
-    episode?: string;
-  }>;
-}
-
-interface StreamData {
-  success: boolean;
-  proxy_url?: string;
-  error?: string;
-  all_urls?: Array<{
-    url: string;
-    status: string;
-    is_master: boolean;
-  }>;
-  stats?: {
-    total_found: number;
-    working: number;
-    master_playlists: number;
+    season?: number;
+    episode?: number;
   };
 }
 
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Player',
-    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo vuoi di più? Mettiti seduto e prendi i popcorn! 🍿",
-    icons: {
-      icon: './logo.png',
-      shortcut: './logo.png',
-      apple: './logo.png',
-    },
-  };
-}
+// Traccia la visualizzazione
+async function insertViewRecord({ tmdbid, type }: PageProps['params']) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const url = `${baseUrl}/api/analytics`;
 
-// Costruisce l'URL del player basandosi sui parametri
-async function buildPlayerUrl(params: PageProps['params']): Promise<string | null>  {
-  const{ type, tmdbid, season, episode } = await params;
-  
-  if (type === 'movie') {
-    return `https://vixsrc.to/movie/${tmdbid}?lang=it`;
-  } else if (type === 'tv' && season && episode) {
-    return `https://vixsrc.to/tv/${tmdbid}/${season}/${episode}?lang=it`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: tmdbid, type }),
+  });
+
+  if (!response.ok) {
+    console.error(`Errore registrazione visualizzazione: ${response.status}`);
   }
-  
-  return null;
 }
 
-// Estrae lo stream dal server (lato server)
-async function extractStream(playerUrl: string): Promise<StreamData> {
-  const apiUrl = process.env.API_BASE_URL || 'http://localhost:5000';
-  
-  try {
-    const response = await fetch(`${apiUrl}/api/v1/extract`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: playerUrl }),
-      cache: 'no-store'
-    });
+// Ottiene lo stream
+async function extractStream({
+  type,
+  tmdbid,
+  season,
+  episode,
+}: PageProps['params']): Promise<string | null> {
+  const url = `https://devtunnel.riccardocinaglia.it/api/stream/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
+  console.log(url);
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    redirect: 'follow',
+  });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) {
+    console.error(`Errore nel recupero dello stream: ${response.status}`);
+    return null;
+  }
+
+  const data = await response.json(); // supponiamo che il backend restituisca `{ streamUrl: string }`
+  return data.url ?? null;
+}
+
+// Ottiene il titolo del contenuto
+async function getTitle({ type, tmdbid, season, episode }: PageProps['params']): Promise<string> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    let url = `${baseUrl}/api/contents/${type}/${tmdbid}`;
+    if (type === 'tv' && season && episode) {
+      url += `/episode/${season}/${episode}`;
     }
 
-    const data: StreamData = await response.json();
-    
-    // Modifica l'URL proxy per essere relativo al nostro dominio
-    if (data.proxy_url) {
-      const proxyUrl = data.proxy_url.startsWith('http') ?
-        data.proxy_url : `${apiUrl}${data.proxy_url}`;
-      data.proxy_url = proxyUrl;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Errore estrazione:', error);
-    throw error;
-  }
-}
-
-// Componente per il contenuto del player
-async function PlayerContent({ params }: { params: PageProps['params'] }) {
-  const playerUrl =  await buildPlayerUrl(params);
-  
-  if (!playerUrl) {
-    notFound();
-  }
-
-  try {
-    const streamData = await extractStream(playerUrl);
-    
-    if (!streamData.success || !streamData.proxy_url) {
-      return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4">
-          <div className="text-center max-w-md">
-            <div className="text-red-500 text-4xl md:text-6xl mb-4">⚠️</div>
-            <h2 className="text-white text-xl md:text-2xl mb-2 font-semibold">
-              Contenuto non disponibile
-            </h2>
-            <p className="text-gray-400 text-sm md:text-base">
-              {streamData.error || 'Nessun stream trovato per questo contenuto'}
-            </p>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="min-h-screen bg-black">
-        <VideoPlayer
-          streamUrl={streamData.proxy_url}
-          title={await getTitle(params)}
-        />
-      </div>
-    );
-  } catch (error) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="text-red-500 text-4xl md:text-6xl mb-4">❌</div>
-          <h2 className="text-white text-xl md:text-2xl mb-2 font-semibold">
-            Errore di caricamento
-          </h2>
-          <p className="text-gray-400 text-sm md:text-base">
-            Si è verificato un errore durante il caricamento del contenuto
-          </p>
-        </div>
-      </div>
-    );
-  }
-}
-
-// Componente principale con Suspense
-export default function PlayerPage({ params }: PageProps) {
-  return (
-    <Suspense fallback={<PlayerLoader />}>
-      <PlayerContent params={params} />
-    </Suspense>
-  );
-}
-
-
-async function getTitle(params: PageProps['params']): Promise<string> {
-  const { type, tmdbid, season, episode } = await params;
-  
-  try {
-    // Chiamata fetch all'API passando tmdbid come id
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/movie/${tmdbid}`);
-
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Errore nel fetch API');
 
     const data = await res.json();
@@ -162,11 +69,38 @@ async function getTitle(params: PageProps['params']): Promise<string> {
     if (type === 'movie') {
       return data.title || `Film ${tmdbid}`;
     } else if (type === 'tv' && season && episode) {
-      return `${data.title || 'Serie TV'} - S${season}E${episode}`;
+      return `${data.media_title || `Serie TV ${tmdbid}`} - ${data.title} (S${season}E${episode})`;
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
   }
 
   return `Streaming ${tmdbid}`;
+}
+
+// Componente player
+async function PlayerContent({ params }: { params: PageProps['params'] }) {
+  const streamUrl = await extractStream(params);
+  console.log(streamUrl);
+  if (!streamUrl) {
+    notFound();
+  }
+
+  await insertViewRecord(params);
+  const title = await getTitle(params);
+
+  return (
+    <div className="min-h-screen bg-black">
+      <VideoPlayer streamUrl={streamUrl} title={title} />
+    </div>
+  );
+}
+
+// Componente principale
+export default function PlayerPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<PlayerLoader />}>
+      <PlayerContent params={params} />
+    </Suspense>
+  );
 }

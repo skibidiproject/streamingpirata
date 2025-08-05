@@ -10,10 +10,13 @@ import {
     ArrowsPointingOutIcon,
     ArrowsPointingInIcon,
     XMarkIcon,
-    PauseIcon
+    PauseIcon,
+    ForwardIcon,
+    BackwardIcon
 } from '@heroicons/react/24/solid';
 
-import { } from '@heroicons/react/24/solid';
+import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
+import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
 
 interface VideoPlayerProps {
     streamUrl: string;
@@ -243,8 +246,6 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             hlsRef.current.destroy();
         }
 
-        setLoadingMessage('Inizializzazione player...');
-
         if (Hls.isSupported()) {
             const hls = new Hls({
                 debug: false,
@@ -270,9 +271,6 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                     bitrate: level.bitrate
                 }));
                 setQualityLevels(levels);
-
-                setIsLoading(false);
-                setError(null);
 
             });
 
@@ -341,23 +339,56 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             hls.on(Hls.Events.ERROR, (event, data) => {
                 console.error('HLS Error:', data);
 
+                // Gestione errori in base al tipo di dettaglio
+                if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
+                    // Errore nel caricamento del manifest (spesso 404)
+                    setError(`Impossibile caricare il contenuto. Potrebbe non essere disponibile`);
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT) {
+                    setError('Timeout nel caricamento del contenuto');
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Gestione errori fatali
                 if (data.fatal) {
                     switch (data.type) {
                         case Hls.ErrorTypes.NETWORK_ERROR:
+
                             setLoadingMessage('Errore di rete, tentativo di ripristino...');
-                            hls.startLoad();
+                            setTimeout(() => {
+                                if (hlsRef.current) {
+                                    hls.startLoad();
+                                }
+                            }, 2000);
+
                             break;
+
                         case Hls.ErrorTypes.MEDIA_ERROR:
                             setLoadingMessage('Errore media, tentativo di ripristino...');
-                            hls.recoverMediaError();
+                            setTimeout(() => {
+                                if (hlsRef.current) {
+                                    hls.recoverMediaError();
+                                }
+                            }, 1000);
                             break;
+
                         default:
                             setError('Errore fatale durante la riproduzione');
                             setIsLoading(false);
                             break;
                     }
+                } else {
+                    // Errori non fatali - gestisci silenziosamente o con retry
+                    if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                        console.warn('Errore di rete non fatale, continuando...');
+                    }
                 }
             });
+
 
             hls.loadSource(url);
             hls.attachMedia(videoRef.current);
@@ -393,6 +424,17 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
         const handleLoadedMetadata = () => {
             setDuration(video.duration);
+
+            // Aggiungi questa condizione per completare il caricamento
+            if (video.duration > 0 && video.readyState >= 3) {
+                setIsLoading(false);
+                setError(null);
+
+                // Autoplay dopo il caricamento completo
+                video.play().catch(error => {
+                    console.log('Autoplay prevented:', error);
+                });
+            }
 
             const nativeTracks: SubtitleTrack[] = [];
             for (let i = 0; i < video.textTracks.length; i++) {
@@ -436,10 +478,15 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
         const handlePause = () => setIsPlaying(false);
         const handleEnded = () => setIsPlaying(false);
         const handleVolumeChange = () => setVolume(video.volume);
-        const handleCanPlay = () => {
-            setIsLoading(false);
+        const handleCanPlay = () => { };
+        const handleCanPlayThrough = () => {
+            if (video.duration > 0) {
+                setIsLoading(false);
+                setError(null);
+            }
         };
 
+        video.addEventListener('canplaythrough', handleCanPlayThrough);
         video.addEventListener('loadedmetadata', handleLoadedMetadata);
         video.addEventListener('timeupdate', handleTimeUpdate);
         video.addEventListener('play', handlePlay);
@@ -463,6 +510,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
             video.removeEventListener('ended', handleEnded);
             video.removeEventListener('volumechange', handleVolumeChange);
             video.removeEventListener('canplay', handleCanPlay);
+            video.removeEventListener('canplaythrough', handleCanPlayThrough);
         };
     }, []);
 
@@ -477,6 +525,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
     }, []);
 
     // Keyboard shortcuts
+    // Sostituisci l'useEffect per i keyboard shortcuts con questo:
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!videoRef.current || e.target instanceof HTMLInputElement) return;
@@ -485,6 +534,12 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                 case ' ':
                     e.preventDefault();
                     togglePlay();
+                    break;
+                case 'ArrowLeft':
+                    skipBackward();
+                    break;
+                case 'ArrowRight':
+                    skipForward();
                     break;
                 case 'f':
                 case 'F':
@@ -509,7 +564,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [showSettings]);
+    }, [showSettings, duration]); // Aggiungi 'duration' alle dipendenze
 
     // Settings panel toggle handler
     const handleClickSettings = (e?: React.MouseEvent) => {
@@ -606,6 +661,24 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
         }
     }
 
+    // SKIP DI 10 SECONDI ANVATI O INDIETROF
+    const skipBackward = () => {
+        if (!videoRef.current) return;
+
+        const newTime = Math.max(videoRef.current.currentTime - 10, 0);
+        videoRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+    };
+
+    const skipForward = () => {
+        if (!videoRef.current) return;
+
+        const newTime = Math.min(videoRef.current.currentTime + 10, duration);
+        console.log(newTime);
+        videoRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+    };
+
     // Modifica la funzione changeQuality
     const changeQuality = (levelId: number) => {
         if (hlsRef.current) {
@@ -662,7 +735,6 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center p-4">
                 <div className="text-center max-w-md">
-                    <div className="text-blue-500 text-4xl md:text-6xl mb-4">⚠️</div>
                     <h2 className="text-white text-xl md:text-2xl mb-2 font-semibold">Errore di riproduzione</h2>
                     <p className="text-gray-400 text-sm md:text-base">{error}</p>
                 </div>
@@ -689,6 +761,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                 preload="auto"
                 muted={volume === 0}
                 crossOrigin="anonymous"
+                autoPlay
             />
 
             {/* Sottotitoli con posizione dinamica */}
@@ -713,10 +786,10 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
             {/* Enhanced Loading Overlay */}
             {isLoading && (
-                <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-30">
+                <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
                     <div className="text-center">
-                        <p className="text-white text-lg md:text-xl mb-2">Caricamento contenuto...</p>
-                        <p className="text-blue-300 text-sm md:text-base">{loadingMessage}</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+                        <p className="text-white text-lg">{loadingMessage}</p>
                     </div>
                 </div>
             )}
@@ -906,7 +979,8 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
                     {/* Control Buttons */}
                     <div className="flex items-center justify-between px-2 pb-1">
-                        <div className="flex items-center gap-4 md:gap-6">
+                        <div className="flex items-center gap-4">
+
                             {/* Play/Pause */}
                             <button
                                 onClick={(e) => {
@@ -917,10 +991,34 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                                 aria-label={isPlaying ? "Pausa" : "Riproduci"}
                             >
                                 {isPlaying ? (
-                                    <PauseIcon className="w-8 h-8 md:w-7 md:h-7" />
+                                    <PauseIcon className="w-7 h-7" />
                                 ) : (
-                                    <PlayIcon className="w-8 h-8 md:w-7 md:h-7" />
+                                    <PlayIcon className="w-7 h-7" />
                                 )}
+                            </button>
+
+                            {/* Skip Bakcward */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    skipBackward();
+                                }}
+                                className="text-white control-element sm:block hidden"
+                                aria-label="Indietro 10 secondi"
+                            >
+                                <Replay10RoundedIcon style={{ fontSize: 28 }} />
+                            </button>
+
+                            {/* Skip Forward */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    skipForward();
+                                }}
+                                className="text-white control-element sm:block hidden"
+                                aria-label="Avanti 10 secondi"
+                            >
+                                <Forward10RoundedIcon style={{ fontSize: 28 }} />
                             </button>
 
                             <div className="flex items-center gap-2">
@@ -967,6 +1065,8 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
                         {/* Right Controls */}
                         <div className="flex items-center gap-3 md:gap-4">
+
+
                             {/* Settings */}
                             <button
                                 onClick={handleClickSettings}

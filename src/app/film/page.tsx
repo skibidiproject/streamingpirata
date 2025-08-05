@@ -2,20 +2,31 @@ import NavBar from "../_components/NavBar";
 import Footer from "../_components/Footer";
 import HeroMediaCard from "../_components/HeroMediaCard";
 import ScrollSection from "../_components/ScrollSection";
+import ScrollSectionTOP from "../_components/ScrollSectionTOP";
 import { MediaData } from "../_components/Mediadata";
 import { shuffle } from "../shuffle";
 
 
 export default async function FilmPage() {
+
+  let top10: MediaData[] = [];
   let latestMedia: MediaData[] = [];
   let genreResults: any[] = [];
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/latest/movie`, {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    const res = await fetch(`${baseUrl}/api/contents/latest/movie`, {
       cache: "no-store",
     });
     latestMedia = await res.json();
 
+
+    // Fetch "TOP 10"
+    const resTop = await fetch(`${baseUrl}/api/analytics/top/movie`, {
+      cache: "no-store",
+    });
+    top10 = await resTop.json();
 
     const genres = [
       { id: 28, name: "Azione" },
@@ -28,7 +39,6 @@ export default async function FilmPage() {
       { id: 16, name: "Animazione" },
     ];
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
     genreResults = await Promise.all(
       genres.map(async ({ id, name }) => {
@@ -56,11 +66,18 @@ export default async function FilmPage() {
       <NavBar />
 
       {/* Hero Section con un film random o featured */}
-      {latestMedia.length > 0 && (
-        <HeroMediaCard mediaID={latestMedia[0].id} type={'movie'} />
-      )}
+      {top10.length > 0 ? (<HeroMediaCard mediaID={shuffle(top10)[0].id} type={'movie'} />) :
+        (latestMedia.length > 0 && <HeroMediaCard mediaID={shuffle(latestMedia)[0].id} type={'movie'} />)
+      }
 
-      <hr className="text-[#212121] mb-5 mt-5" />
+      {/* top 10*/}
+      {
+        top10.length === 10 && (
+          <div>
+            <h1 className="text-2xl font-bold ml-6 mt-10">Film più visti questa settimana</h1>
+            <ScrollSectionTOP media={top10} />
+          </div>)
+      }
 
       {genreResults.map(({ name, items }) => (
         <div key={name}>

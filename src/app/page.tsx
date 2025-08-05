@@ -18,6 +18,7 @@ type GenreSection = {
 };
 
 export default async function Home() {
+
   let latestMedia: MediaData[] = [];
   let genreResults: GenreSection[] = [];
   let heroMedia: MediaData | null = null;
@@ -42,6 +43,7 @@ export default async function Home() {
       cache: "no-store",
     });
     latestMedia = await resLatest.json();
+
 
     // Fetch per ogni genere
     genreResults = await Promise.all(
@@ -78,21 +80,21 @@ export default async function Home() {
   return (
     <>
       <NavBar />
-      <StartupDialog />
+      {/*<StartupDialog />*/}
 
       {/* Hero Section */}
       {heroMedia && (
         <HeroMediaCard mediaID={heroMedia.id} type={heroMedia.type} />
       )}
 
-      <hr className="text-[#212121] mb-5 mt-5" />
-
+      
 
       {/* Nuovi arrivi */}
       <div>
         <h1 className="text-2xl font-bold ml-6 mt-10">Nuovi arrivi</h1>
         <ScrollSection media={latestMedia} />
       </div>
+
 
       {/* Sezioni per genere */}
       {genreResults.map(({ id, name, items }) => (

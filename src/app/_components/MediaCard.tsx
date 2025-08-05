@@ -19,18 +19,21 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
     return `${src}?w=${width}&q=${quality || 75}`
   }
 
+
   return (
     <Link
       href={`/media/${mediaData.type}/${mediaData.id}`}
       className="relative overflow-hidden shadow-2xl transition-all duration-300 text-xs flex flex-col text-left justify-end aspect-[9/16] w-[7rem] md:w-[7rem] xl:w-[10rem] rounded-t-md mt-8 group flex-shrink-0 bg-[#090909]"
     >
+      { }
+
       {/* Loading spinner */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
       )}
-      
+
       <Image
         src={coverURL}
         alt={mediaData.title}
@@ -40,7 +43,17 @@ export default function MediaCard({ mediaData }: MediaCardProps) {
         onError={() => setIsLoading(false)}
         className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-300 scale-107 group-hover:scale-105"
       />
-      
+
+      { mediaData.label_info && mediaData.label_info.label && (
+        <div className="absolute top-2 left-1.5 z-5">
+          <span className="bg-blue-800 text-white text-[0.65rem] sm:text-[0.90rem] font-bold rounded px-2 py-1 shadow-md">
+            {mediaData.label_info.text}
+          </span>
+        </div>
+      )
+      }
+
+
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent "></div>
       <div className="relative text-white m-2">
         <h1 className="text-[0.9rem] text-wrap w-full mb-1 leading-4">{mediaData.title}</h1>

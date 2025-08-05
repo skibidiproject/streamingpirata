@@ -46,8 +46,8 @@ export default function AdminLogin() {
           {/* Login card */}
           <div className="rounded-lg p-8 shadow-2xl border-[#191919] border">
             <div className="text-center mb-8">
-              <img src="logo.jpeg" alt="Logo" className='mx-auto mb-6 w-60'/>
-              <h2 className="text-2xl font-bold text-white mb-2">Accesso Admin</h2>
+              <img src="/logo.png" alt="Logo" className='mx-auto mb-6 w-60'/>
+              <h2 className="text-2xl font-bold text-white mb-2">Accesso</h2>
               <p className="text-gray-400">Inserisci le tue credenziali per accedere</p>
             </div>
 
