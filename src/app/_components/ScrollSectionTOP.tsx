@@ -108,7 +108,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           {media.map((m, index) => (
             <div key={m.type + m.id} className="inline-block relative">
               {/* Numerone gigante posizionato a sinistra sovrapposto */}
-              <div className="absolute left-0 md:top-20 top-15 z-10 -translate-x-3/7">
+              <div className="absolute left-0 md:top-38 top-20 z-10 -translate-x-3/7">
                 <span
                   className="md:text-[10rem] text-[7rem] font-extrabold text-black leading-none"
                   style={{
@@ -125,7 +125,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
               </div>
 
               {/* Media Card */}
-              <MediaCard mediaData={m} />
+              <MediaCard mediaData={m} variant="fixed" />
             </div>
           ))}
         </div>

@@ -38,7 +38,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
 
 
   return (
-    <div className="relative  w-full px-5">
+    <div className="relative w-full px-5">
 
 
 
@@ -72,7 +72,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           />
 
           <h1 className="absolute z-10 left-5 text-2xl font-bold invisible group-hover:visible h-fit ">
-            <ChevronLeftIcon className="w-8 text-white"/>
+            <ChevronLeftIcon className="w-8 text-white" />
           </h1>
 
 
@@ -110,14 +110,14 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           />
 
           <h1 className="absolute z-10 right-5 text-2xl font-bold invisible group-hover:visible h-fit ">
-            <ChevronRightIcon className="w-8 text-white"/>
+            <ChevronRightIcon className="w-8 text-white" />
 
           </h1>
 
 
 
         </button>
-        
+
       </div>
 
 
@@ -128,28 +128,22 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
       {/* Container scrollabile */}
       <div
         ref={scrollRef}
-        className=" overflow-y-hidden scroll-smooth overflow-x-auto  "
+        className="overflow-y-hidden scroll-smooth overflow-x-auto"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-
-        <div className="flex flex-row gap-x-5 pb-4 whitespace-nowrap mx-1 duration-300 ">
-
-          {
-
-            media.map((m) => (
-
-              <div key={m.type + m.id} className="inline-block">
-                <MediaCard mediaData={m} />
-              </div>
-            )
-            )
-
-          }
+        <div className="flex flex-row gap-x-5 pb-4 whitespace-nowrap mx-1 duration-300">
+          {media.map((m) => (
+            <div
+              key={m.type + m.id}
+            >
+              <MediaCard mediaData={m} variant="fixed" />
+            </div>
+          ))}
         </div>
-
       </div>
 
-
     </div>
+
+
   );
 }

@@ -1,114 +1,142 @@
 "use client";
 import { useEffect, useState } from "react";
 import NavBar from "../_components/NavBar";
-import Loader from "../_components/loader";
 import LazyLoader from "../_components/LazyLoader";
-import FilterBar, {FilterOptions} from "../_components/FIlterBar";
-import React from "react";
+import FilterBar, { FilterOptions } from "../_components/FIlterBar";
+import { useSearchParams } from "next/navigation";
 import { MediaData } from "../_components/Mediadata";
 
+export default function Search() {
+    const [results, setResults] = useState<MediaData[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState<FilterOptions>({});
 
-interface Props {
-  searchParams: Promise<{ q: string }>;
-}
+    const searchParams = useSearchParams();
+    const query = searchParams.get("q") || "";
 
-export default function Search({ searchParams }: Props) {
-  const [results, setResults] = useState<MediaData[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState<FilterOptions>({});
-
-  // Use React.use() to unwrap searchParams
-  const params = React.use(searchParams);
-  const query = (params.q || "").trim();
-
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      setError(null);
-      return;
-    }
-
-    const fetchResults = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Costruiamo i parametri di ricerca
-        const params = new URLSearchParams();
-        params.append("search", query);
-
-        if (filters.year) params.append("year", filters.year);
-        if (filters.genreId) params.append("genreId", filters.genreId);
-        if (filters.type && filters.type !== "all") params.append("type", filters.type);
-        if (filters.rating) params.append("rating", filters.rating);
-        if (filters.rating_dir) params.append("rating_dir", filters.rating_dir);
-        if (filters.orderby) params.append("orderby", filters.orderby);
-        if (filters.order_dir) params.append("order_dir", filters.order_dir);
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents?${params.toString()}`,
-          { cache: "no-store" }
-        );
-
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "Errore nella fetch");
-        }
-
-        const data = await res.json();
-        setResults(data);
-      } catch (e) {
-        setError((e as Error).message);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
+    // Handler per i cambiamenti dei filtri
+    const handleFiltersChange = (newFilters: FilterOptions) => {
+        setFilters(newFilters);
     };
 
-    fetchResults();
-  }, [query, filters]); // Aggiunto filters come dipendenza
+    useEffect(() => {
+        if (!query.trim()) {
+            setResults([]);
+            setError(null);
+            return;
+        }
 
-  // Show loader while loading
-  if (loading) {
-    return (
-      <>
-        <NavBar />
-        <hr className="mt-[5rem] text-[#212121]" />
-        <Loader />
-      </>
-    );
-  }
+        const fetchResults = async () => {
+            setLoading(true);
+            setError(null);
+            
+            try {
+                const urlParams = new URLSearchParams();
+                urlParams.append("search", query);
+                
+                if (filters.year) urlParams.append("year", filters.year);
+                if (filters.genreId) urlParams.append("genreId", filters.genreId);
+                if (filters.type && filters.type !== "all") urlParams.append("type", filters.type);
+                if (filters.rating) urlParams.append("rating", filters.rating);
+                if (filters.rating_dir) urlParams.append("rating_dir", filters.rating_dir);
+                if (filters.orderby) urlParams.append("orderby", filters.orderby);
+                if (filters.order_dir) urlParams.append("order_dir", filters.order_dir);
 
-  if (error) {
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents?${urlParams.toString()}`,
+                    { cache: "no-store" }
+                );
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+                    throw new Error(errData.error || "Errore nella ricerca");
+                }
+
+                const data = await res.json();
+                
+                if (data && typeof data === 'object') {
+                    if (Array.isArray(data)) {
+                        setResults(data);
+                    } else if (data.data && Array.isArray(data.data)) {
+                        setResults(data.data);
+                    } else {
+                        console.warn('Formato risposta inaspettato:', data);
+                        setResults([]);
+                    }
+                } else {
+                    setResults([]);
+                }
+
+            } catch (e) {
+                console.error('Errore nella ricerca:', e);
+                setError((e as Error).message);
+                setResults([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [query, filters]);
+
     return (
-      <>
-        <NavBar />
-        <hr className="mt-[5rem] text-[#212121]" />
-        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
-          <div className="text-center">
-            <p className="text-white text-xl mb-2">Errore</p>
-            <p className="text-white">{error}</p>
-          </div>
+        <div className="min-h-screen bg-[#0a0a0a]">
+            <style jsx>{`
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .hide-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
+            <NavBar alwaysTransparent={true}/>
+            
+            {/* Barra dei filtri - SEMPRE presente come in archive */}
+            <FilterBar
+                onFiltersChange={handleFiltersChange}
+                showTypeFilter={true}
+                initialFilters={filters}
+            />
+
+            {/* Mostra query e numero risultati */}
+            {query && !error && (
+                <div className="px-4 sm:px-6 lg:px-8 pt-5">
+                    <p className="text-white text-sm">
+                        Risultati per: <span className="text-white font-medium">"{query}"</span>
+                        {results.length > 0 && (
+                            <span className="ml-2">
+                                ({results.length} {results.length === 1 ? 'risultato' : 'risultati'})
+                            </span>
+                        )}
+                    </p>
+                </div>
+            )}
+
+            {/* Contenuto principale - ora LazyLoader gestisce tutto */}
+            {!query ? (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+                    <div className="text-center">
+                        <p className="text-white text-lg">Inserisci un termine di ricerca</p>
+                    </div>
+                </div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] w-full px-4">
+                    <div className="text-center max-w-md">
+                        <h2 className="text-white text-xl mb-3 font-semibold">
+                            Errore nella ricerca
+                        </h2>
+                        <p className="text-white mb-6 text-sm">{error}</p>
+                    </div>
+                </div>
+            ) : loading ? (
+                <div className="flex justify-center items-center min-h-[50vh]">
+                    <div className="text-gray-400">Caricamento...</div>
+                </div>
+            ) : (
+                <LazyLoader mediaData={results} />
+            )}
         </div>
-      </>
     );
-  }
-
-  return (
-    <>
-      <NavBar />
-      <hr className="mt-[5rem] text-[#212121]" />
-
-      {/* Barra dei filtri (mostrata solo se c'è una query) */}
-      {query && (
-        <FilterBar
-          onFiltersChange={setFilters}
-          initialFilters={filters}
-        />
-      )}
-
-      {/* Risultati della ricerca */}
-      <LazyLoader mediaData={results} />
-    </>
-  );
 }

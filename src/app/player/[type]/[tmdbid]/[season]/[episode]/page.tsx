@@ -79,22 +79,25 @@ async function getTitle({ type, tmdbid, season, episode }: PageProps['params']):
 }
 
 // Ottiene il titolo del contenuto
-async function getNextEpisode({ type, tmdbid, season, episode }: PageProps['params']) {
+async function getNextEpisode({ type, tmdbid, season, episode  }: PageProps['params']) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    let url = `${baseUrl}/api/contents/nextepisode/${type}/${tmdbid}`;
+    let url = `${baseUrl}/api/nextepisode/${tmdbid}`;
     if (type === 'tv' && season && episode) {
-      url += `/episode/${season}/${episode}`;
+      url += `/${season}/${episode}`;
     }
 
     const res = await fetch(url);
     if (!res.ok) throw new Error('Errore nel fetch API');
 
     const data = await res.json();
+    return data;
+
   } catch (err) {
     console.error(err);
+    return null;
   }
-
+  
 }
 
 // Componente player
@@ -107,10 +110,10 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
 
   await insertViewRecord(params);
   const title = await getTitle(params);
-
+  console.log(await getNextEpisode(params));
   return (
-    <div className="min-h-screen bg-black">
-      <VideoPlayer streamUrl={streamUrl} title={title} />
+    <div className="min-h-screen bg-black"> 
+      <VideoPlayer streamUrl={streamUrl} title={title} nextEpisode={await getNextEpisode(params)}/>
     </div>
   );
 }

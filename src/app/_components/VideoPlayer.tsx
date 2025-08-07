@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import DisableContextMenu from './DisableContextMenu'
 import Hls from 'hls.js';
 import {
@@ -17,10 +18,12 @@ import {
 
 import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
 import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
+import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 
 interface VideoPlayerProps {
     streamUrl: string;
     title: string;
+    nextEpisode: any;
 }
 
 interface AudioTrack {
@@ -47,7 +50,9 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
 );
 
-export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
+export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlayerProps) {
+    const router = useRouter();
+
     const videoRef = useRef<HTMLVideoElement>(null);
     const hlsRef = useRef<Hls | null>(null);
     const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -578,6 +583,11 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
 
     };
 
+    const handleClickNextEpisode = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        router.push(`/player/tv/${nextEpisode.id}/${nextEpisode.season}/${nextEpisode.episode}`);
+    };
+
     // Auto-hide controls e chiusura impostazioni
     // 4. Modifica l'useEffect per auto-hide controls
     useEffect(() => {
@@ -1066,6 +1076,16 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                         {/* Right Controls */}
                         <div className="flex items-center gap-3 md:gap-4">
 
+                            {/* NEXT EP */}
+                            {nextEpisode &&
+                                <button
+                                    onClick={handleClickNextEpisode}
+                                    className={`text-white control-element sm:block hidden`}
+                                    aria-label="Impostazioni"
+                                >
+                                    <SkipNextRoundedIcon style={{ fontSize: 34 }} />
+                                </button>
+                            }
 
                             {/* Settings */}
                             <button
@@ -1075,6 +1095,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
                             >
                                 <Cog6ToothIcon className="w-6 h-6" />
                             </button>
+
 
                             {/* Fullscreen */}
                             <button

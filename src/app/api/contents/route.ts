@@ -9,12 +9,24 @@ export async function GET(request: NextRequest) {
 
     const typeQuery = searchParams.get("type")?.trim() || "";
     const orderbyQuery = searchParams.get("orderby")?.trim() || "";
-    // Fix: Check for both 'genre' and 'genreId' parameters
     const genreQuery = searchParams.get("genreId")?.trim() || searchParams.get("genre")?.trim() || "";
     const ratingQuery = searchParams.get("rating")?.trim() || "";
-    const ratingDirection = searchParams.get("rating_dir")?.trim() || "gte"; // gte = maggiore/uguale, lte = minore/uguale
-    const orderDirection = searchParams.get("order_dir")?.trim() || "asc"; // asc o desc
+    const ratingDirection = searchParams.get("rating_dir")?.trim() || "gte";
+    const orderDirection = searchParams.get("order_dir")?.trim() || "asc";
     const yearQuery = searchParams.get("year")?.trim() || "";
+
+    // PARAMETRI PER LA PAGINAZIONE
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const offset = (page - 1) * limit;
+
+    // Validazione parametri paginazione
+    if (page < 1 || limit < 1 || limit > 100) {
+      return NextResponse.json(
+        { error: "Parametri di paginazione non validi" },
+        { status: 400 }
+      );
+    }
 
     function normalizeString(s: string): string {
       return s
@@ -24,9 +36,98 @@ export async function GET(request: NextRequest) {
         .trim();
     }
 
-    // Costruzione dinamica della query
-    let baseQuery = `SELECT DISTINCT m.* FROM media m`;
-    let joins = ""; // Vuoto ora
+    // Costruzione dinamica della query con CTE per label
+    let baseQuery = `
+      WITH streamable_seasons AS (
+        SELECT
+          media_id,
+          media_type,
+          MAX(release_date) AS max_season_release_date
+        FROM tv_seasons
+        WHERE streamable = TRUE
+        GROUP BY media_id, media_type
+      ),
+      latest_episodes AS (
+        SELECT
+          ts.media_id,
+          MAX(te.release_date) AS max_episode_release_date
+        FROM tv_episodes te
+        INNER JOIN tv_seasons ts ON ts.id = te.season_id
+        WHERE ts.streamable = TRUE
+        GROUP BY ts.media_id
+      ),
+      media_with_labels AS (
+        SELECT
+          m.*,
+          ss.max_season_release_date,
+          le.max_episode_release_date,
+          CASE
+            -- Per TV: controlla nuova uscita, nuova stagione, nuovo episodio
+            WHEN m.type = 'tv' THEN
+              CASE
+                WHEN DATE(m.release_date) >= CURRENT_DATE - INTERVAL '14 days'
+                  AND DATE(m.release_date) <= CURRENT_DATE
+                THEN json_build_object('label', true, 'text', 'Nuova uscita')
+                WHEN DATE(ss.max_season_release_date) >= CURRENT_DATE - INTERVAL '14 days'
+                  AND DATE(ss.max_season_release_date) <= CURRENT_DATE
+                THEN json_build_object('label', true, 'text', 'Nuova stagione')
+                WHEN DATE(le.max_episode_release_date) >= CURRENT_DATE - INTERVAL '7 days'
+                  AND DATE(le.max_episode_release_date) <= CURRENT_DATE
+                THEN json_build_object('label', true, 'text', 'Nuovo episodio')
+                ELSE json_build_object('label', false)
+              END
+            -- Per Movies: solo nuova uscita
+            WHEN m.type = 'movie' THEN
+              CASE
+                WHEN DATE(m.release_date) >= CURRENT_DATE - INTERVAL '7 days'
+                  AND DATE(m.release_date) <= CURRENT_DATE
+                THEN json_build_object('label', true, 'text', 'Nuova uscita')
+                ELSE json_build_object('label', false)
+              END
+            ELSE json_build_object('label', false)
+          END AS label_info
+        FROM media m
+        LEFT JOIN streamable_seasons ss ON (
+          ss.media_id = m.id
+          AND ss.media_type = m.type
+        )
+        LEFT JOIN latest_episodes le ON le.media_id = m.id
+      )
+      SELECT m.*, label_info FROM media_with_labels m`;
+
+    let countQuery = `
+      WITH streamable_seasons AS (
+        SELECT
+          media_id,
+          media_type,
+          MAX(release_date) AS max_season_release_date
+        FROM tv_seasons
+        WHERE streamable = TRUE
+        GROUP BY media_id, media_type
+      ),
+      latest_episodes AS (
+        SELECT
+          ts.media_id,
+          MAX(te.release_date) AS max_episode_release_date
+        FROM tv_episodes te
+        INNER JOIN tv_seasons ts ON ts.id = te.season_id
+        WHERE ts.streamable = TRUE
+        GROUP BY ts.media_id
+      ),
+      media_with_labels AS (
+        SELECT
+          m.*,
+          ss.max_season_release_date,
+          le.max_episode_release_date
+        FROM media m
+        LEFT JOIN streamable_seasons ss ON (
+          ss.media_id = m.id
+          AND ss.media_type = m.type
+        )
+        LEFT JOIN latest_episodes le ON le.media_id = m.id
+      )
+      SELECT COUNT(*) as total FROM media_with_labels m`;
+
     let whereConditions = ["m.streamable = TRUE"];
     let queryParams: any[] = [];
     let paramCounter = 1;
@@ -54,6 +155,8 @@ export async function GET(request: NextRequest) {
       whereConditions.push(`m.type = $${paramCounter}`);
       queryParams.push('tv');
       paramCounter++;
+      // Per TV, assicurati che ci siano stagioni streamabili
+      whereConditions.push(`(m.type = 'movie' OR m.max_season_release_date IS NOT NULL)`);
     }
 
     // Filtro per rating
@@ -87,6 +190,9 @@ export async function GET(request: NextRequest) {
       paramCounter++;
     }
 
+    // Costruzione WHERE clause
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
     // Ordinamento
     let orderBy = "";
     if (orderbyQuery) {
@@ -107,17 +213,6 @@ export async function GET(request: NextRequest) {
       orderBy = "ORDER BY m.release_date DESC";
     }
 
-    // Costruzione query finale
-    const finalQuery = `
-      ${baseQuery}
-      ${joins}
-      WHERE ${whereConditions.join(' AND ')}
-      ${orderBy}
-    `;
-
-    console.log('Final query:', finalQuery);
-    console.log('Query params:', queryParams);
-
     // Validazione per ricerca testuale
     if (rawSearchQuery !== null && searchQuery.length < 3) {
       return NextResponse.json(
@@ -126,16 +221,54 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const result = await pool.query(finalQuery, queryParams);
-    const medias = result.rows;
+    // Query per il conteggio totale (per la paginazione)
+    const countFinalQuery = `${countQuery} ${whereClause}`;
+    
+    // Query per i dati paginati
+    const dataFinalQuery = `
+      ${baseQuery}
+      ${whereClause}
+      ${orderBy}
+      LIMIT $${paramCounter} OFFSET $${paramCounter + 1}
+    `;
 
-    console.log('Results found:', medias.length);
-    return NextResponse.json(medias);
+    // Aggiungi parametri per LIMIT e OFFSET
+    const finalQueryParams = [...queryParams, limit, offset];
+
+    console.log('Count query:', countFinalQuery);
+    console.log('Data query:', dataFinalQuery);
+    console.log('Query params:', finalQueryParams);
+
+    // Esegui entrambe le query in parallelo
+    const [countResult, dataResult] = await Promise.all([
+      pool.query(countFinalQuery, queryParams),
+      pool.query(dataFinalQuery, finalQueryParams)
+    ]);
+
+    const totalItems = parseInt(countResult.rows[0].total);
+    const medias = dataResult.rows;
+    const totalPages = Math.ceil(totalItems / limit);
+    const hasMore = page < totalPages;
+
+    console.log(`Page ${page}/${totalPages}, showing ${medias.length}/${totalItems} items`);
+
+    // Ritorna i dati con metadati di paginazione
+    return NextResponse.json({
+      data: medias,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasMore,
+        itemsOnPage: medias.length
+      }
+    });
 
   } catch (error) {
     console.error('API Error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
