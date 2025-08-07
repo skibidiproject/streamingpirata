@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 
 interface MediaPageProps {
   params: Promise<{
-    type: string ;
+    type: string;
     id: string;
   }>;
 }
@@ -16,7 +16,7 @@ interface MediaPageProps {
 
 export default async function Media({ params }: MediaPageProps) {
 
-  const {id, type}  = await params;
+  const { id, type } = await params;
 
   let data: any;
   let dataCorrelati: any;
@@ -51,19 +51,21 @@ export default async function Media({ params }: MediaPageProps) {
       <HeroMediaCard mediaID={id} type={type} />
 
       <section id="episodi">
-      {data.type == "tv" &&
-        <div>
-          <EpisodeSelector id={id} />
-        </div>
-      }
-      
+        {data.type == "tv" &&
+          <div>
+            <EpisodeSelector id={id} />
+          </div>
+        }
+
       </section>
 
 
-      <h1 className="text-2xl font-bold ml-6 mt-10">Correlati</h1>
-      <ScrollSection media={dataCorrelati} />
+      <div>
+        <h1 className="text-2xl font-bold ml-6 mt-10">Correlati</h1>
+        <ScrollSection media={dataCorrelati} />
+      </div>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }

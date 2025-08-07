@@ -55,7 +55,7 @@ export default function EpisodeSelector({ id }: { id: string }) {
     const fetchEpisodes = async () => {
       setEpisodesLoading(true);
       setEpisodes([]); // Reset episodes immediately
-      
+
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/tv/${id}/episodes/${selectedSeason}`);
         if (!res.ok) {
@@ -100,29 +100,30 @@ export default function EpisodeSelector({ id }: { id: string }) {
 
   return (
     <>
-      <div className="w-[95%] h-full mx-auto p-3 rounded-2xl">
-        <h1 className="text-2xl mb-2">Episodi</h1>
-        <div className="mb-6 flex items-center gap-3" >
-          <span className="text-white">Stagione:</span>
-          <Listbox value={selectedSeason} onChange={setSelectedSeason}>
-            <div className="relative">
-              <ListboxButton className="
+      <div className="border-b-1 border-b-[#212121]">
+        <div className="w-[95%] h-full mx-auto p-3 rounded-2xl py-15">
+          <h1 className="text-2xl mb-2">Episodi</h1>
+          <div className="mb-6 flex items-center gap-3" >
+            <span className="text-white">Stagione:</span>
+            <Listbox value={selectedSeason} onChange={setSelectedSeason}>
+              <div className="relative">
+                <ListboxButton className="
                 flex items-center justify-between
                 w-35 px-4 py-1 focus:outline-none
                 bg-[#171717] border-1 border-[#272727ac] backdrop-blur-[16px] rounded-lg
                 text-left text-white
                 transition-all
               ">
-                <span className="block truncate">
-                  {selectedSeason == 0 ? 'Episodi Speciali' : `Stagione ${selectedSeason}`}
-                </span>
-                <ChevronDownIcon
-                  className="w-5 h-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </ListboxButton>
+                  <span className="block truncate">
+                    {selectedSeason == 0 ? 'Episodi Speciali' : `Stagione ${selectedSeason}`}
+                  </span>
+                  <ChevronDownIcon
+                    className="w-5 h-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </ListboxButton>
 
-              <ListboxOptions className="
+                <ListboxOptions className="
                 absolute mt-1 w-48 max-h-60
                 bg-[#202020] border border-[#272727ac] backdrop-blur-[16px] rounded-lg
           shadow-2xl shadow-black/50
@@ -131,50 +132,50 @@ export default function EpisodeSelector({ id }: { id: string }) {
                 
                 focus:outline-none
               ">
-                {seasons.map((season) => (
-                  <ListboxOption
-                    key={season.id}
-                    value={season.season_number}
-                    className={({ active, selected }) => `
+                  {seasons.map((season) => (
+                    <ListboxOption
+                      key={season.id}
+                      value={season.season_number}
+                      className={({ active, selected }) => `
               relative cursor-pointer py-1 pl-4 pr-4
               ${selected ? 'bg-[#0a0a0a]  font-extrabold shadow-md' : ''}
               ${active && !selected ? 'bg-[#212121] text-white' : ''}
               transition-colors
             `}
-                  >
-                    {({ selected }) => (
-                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                        {season.season_number == 0 ? 'Episodi Speciali' : `Stagione ${season.season_number}`}
-                      </span>
-                    )}
-                  </ListboxOption>
-                ))}
-              </ListboxOptions>
-            </div>
-          </Listbox>
-        </div>
+                    >
+                      {({ selected }) => (
+                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                          {season.season_number == 0 ? 'Episodi Speciali' : `Stagione ${season.season_number}`}
+                        </span>
+                      )}
+                    </ListboxOption>
+                  ))}
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
 
-        <div className="episodes-list">
-          {episodesLoading ? (
-            <div className="py-8">
-              <LoadingDots />
-            </div>
-          ) : (
-            episodes.map((episode) => (
-              <Episode
-                key={episode.episode_number}
-                id={id}
-                season={selectedSeason}
-                episode={episode.episode_number}
-                title={episode.title}
-                description={episode.description}
-                stillUrl={episode.still_url}
-              />
-            ))
-          )}
+          <div className="episodes-list">
+            {episodesLoading ? (
+              <div className="py-8">
+                <LoadingDots />
+              </div>
+            ) : (
+              episodes.map((episode) => (
+                <Episode
+                  key={episode.episode_number}
+                  id={id}
+                  season={selectedSeason}
+                  episode={episode.episode_number}
+                  title={episode.title}
+                  description={episode.description}
+                  stillUrl={episode.still_url}
+                />
+              ))
+            )}
+          </div>
         </div>
       </div>
-      <hr className="text-[#212121] mb-5 mt-5" />
     </>
   );
 }

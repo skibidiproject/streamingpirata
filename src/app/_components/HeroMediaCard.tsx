@@ -80,13 +80,15 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center gap-y-3 text-5xl w-full h-[30rem] bg-black text-white p-8">
-        <div className="relative">
-          {/* Pulsing dots */}
-          <div className="flex space-x-2 justify-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+      <div className="flex flex-col justify-center items-center text-5xl w-full h-[30rem] bg-black text-white p-8 border-b-1 border-b-[#212121]">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
+          <div className="text-center">
+            <div className="flex space-x-1 justify-center items-center mb-4">
+              <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="h-3 w-3 bg-white rounded-full animate-bounce"></div>
+            </div>
+            <p className="text-white text-lg">Caricamento...</p>
           </div>
         </div>
       </div>
@@ -105,7 +107,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
   return (
     <>
-      <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full lg:h-[40vw] text-white p-8 mb-1">
+      <div className="transition-all duration-500 ease-in-out relative flex flex-col justify-center gap-y-3 text-4xl w-full py-30 h-full lg:h-[40vw] text-white p-8 mb-1 border-b-1 border-b-[#212121]">
 
         {isTrailerPlaying && (
 
@@ -160,10 +162,10 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
 
           <div className="flex flex-row items-center gap-x-5 text-sm font-bold py-1 flex-wrap mb-2 gap-y-0.5">
-            { mediaData.label_info && mediaData.label_info.label && (
-                <h1 className="bg-white text-black font-semibold rounded px-1 py-0.5 shadow-md">
-                  {mediaData.label_info.text}
-                </h1>
+            {mediaData.label_info && mediaData.label_info.label && (
+              <h1 className="bg-white text-black font-semibold rounded px-1 py-0.5 shadow-md">
+                {mediaData.label_info.text}
+              </h1>
             )}
             <h1>{new Date(mediaData.release_date).toLocaleDateString('it-IT')}</h1>
             <h1>{mediaData.type == "tv" ? <span>Serie TV</span> : <span>Film</span>}</h1>
@@ -204,7 +206,6 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
         </div>
 
       </div>
-      <hr className="text-[#212121] mb-5 mt-5" />
     </>
   );
 }

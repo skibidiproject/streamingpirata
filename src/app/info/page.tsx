@@ -11,7 +11,7 @@ export default function Donations() {
   return (
     <>
       <Navbar />
-      <div className="text-white px-4 py-8 mt-24 w-screen">
+      <div className="text-white px-4 py-8 w-screen pt-30">
         <div className="mx-auto w-[97%] sm:w-[30rem] md:w-[40rem] lg:w-[55rem]  text-center">
 
           <h1 className="text-2xl md:text-3xl font-bold mb-4 ">Supporta il Progetto</h1>

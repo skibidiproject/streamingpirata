@@ -23,7 +23,7 @@ import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 interface VideoPlayerProps {
     streamUrl: string;
     title: string;
-    nextEpisode: any;
+    nextEpisode?: any;
 }
 
 interface AudioTrack {

@@ -3,8 +3,7 @@ import { Button } from "@headlessui/react";
 
 export default function Footer() {
   return (
-    <footer className="w-full text-center mt-12 sm:">
-      <hr className="text-[#212121]" />
+    <footer className="w-full text-center mt-12 border-t-1 border-t-[#212121]">
       <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-6">
         <div className="flex items-center mb-4 md:mb-0">
           <h1 className="text-sm">

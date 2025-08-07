@@ -8,7 +8,7 @@ export default function Donations() {
     return (
         <>
             <Navbar />
-            <div className="text-white px-4 py-8 mt-25 w-screen text-center">
+            <div className="text-white px-4 py-8 pt-30 w-screen text-center">
 
                 { /*page autori con dexter*/}
                 <div className='w-full flex items-center justify-center '>

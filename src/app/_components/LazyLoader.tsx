@@ -211,13 +211,7 @@ export default function LazyLoader({ mediaData, filters = {} }: LazyLoaderProps)
                     <h2 className="text-white text-xl mb-3 font-semibold">
                         Errore nel caricamento
                     </h2>
-                    <p className="text-gray-400 mb-6 text-sm">{error}</p>
-                    <button
-                        onClick={() => fetchData(1, false, filters)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
-                    >
-                        Riprova
-                    </button>
+                    <p className="text-white mb-6 text-sm">{error}</p>
                 </div>
             </div>
         );
