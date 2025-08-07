@@ -1,3 +1,5 @@
+// DEPRECATED
+
 import pool from '@/app/lib/database';
 import { NextRequest } from 'next/server';
 
