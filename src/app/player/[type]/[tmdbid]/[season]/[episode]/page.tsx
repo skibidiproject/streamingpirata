@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
 import VideoPlayer from '@/app/_components/VideoPlayer';
-import PlayerLoader from '@/app/_components/PlayerLoader';
 
 interface PageProps {
   params: {
@@ -121,8 +119,6 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
 // Componente principale
 export default function PlayerPage({ params }: PageProps) {
   return (
-    <Suspense fallback={<PlayerLoader />}>
       <PlayerContent params={params} />
-    </Suspense>
   );
 }

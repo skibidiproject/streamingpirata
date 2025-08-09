@@ -76,7 +76,7 @@ function Navbar({alwaysTransparent = false}: NavBarProps) {
               {
 
                   !loading && (isLoggedIn && user ? (
-                    <a href="/account" className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">Account</a>
+                    <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">Account</a>
                   ) : (
                     <a
                       href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}

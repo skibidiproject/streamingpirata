@@ -67,6 +67,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
     const [showControls, setShowControls] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [volume, setVolume] = useState(1);
+    const [isMuted, setIsMuted] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [buffered, setBuffered] = useState(0);
@@ -94,11 +95,10 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
 
     // Posizione dinamica sottotitoli
     const subtitlePosition = useMemo(() => {
-        return showControls ? "bottom-28" : "bottom-10";
+        return showControls ? "bottom-28" : "bottom-18";
     }, [showControls]);
 
     const progressRef = useRef<HTMLDivElement>(null);
-    const isDragging = useRef(false);
     const isDraggingRef = useRef(false);
 
     const [isBuffering, setIsBuffering] = useState(false);
@@ -120,6 +120,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         videoRef.current.volume = newVolume;
         videoRef.current.muted = newVolume === 0;
         setVolume(newVolume);
+        setIsMuted(newVolume === 0 || videoRef.current.muted);
     };
 
     const updateVolumeFromEvent = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) => {
@@ -141,6 +142,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         videoRef.current.volume = newVolume;
         videoRef.current.muted = newVolume === 0;
         setVolume(newVolume);
+        setIsMuted(newVolume === 0 || videoRef.current.muted);
     };
 
     const handleVolumeDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
@@ -348,7 +350,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                 // Gestione errori in base al tipo di dettaglio
                 if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
                     // Errore nel caricamento del manifest (spesso 404)
-                    setError(`Impossibile caricare il contenuto. Potrebbe non essere disponibile`);
+                    setError(`Impossibile caricare il contenuto. Potrebbe non essere disponibile.`);
                     setIsLoading(false);
                     return;
                 }
@@ -483,7 +485,10 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         const handlePlay = () => setIsPlaying(true);
         const handlePause = () => setIsPlaying(false);
         const handleEnded = () => setIsPlaying(false);
-        const handleVolumeChange = () => setVolume(video.volume);
+        const handleVolumeChange = () => {
+            setVolume(video.volume);
+            setIsMuted(video.muted);
+        }
         const handleCanPlay = () => { };
         const handleCanPlayThrough = () => {
             if (video.duration > 0) {
@@ -816,8 +821,9 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             `}</style>
 
             {/* Enhanced Loading Overlay */}
+
             {isLoading && (
-                <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+                <div className="absolute inset-0 bg-[#0a0a0a] bg-opacity-90 flex items-center justify-center z-50 cursor-default">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
                         <p className="text-white text-lg">{loadingMessage}</p>
@@ -825,7 +831,11 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                 </div>
             )}
 
+
+
+
             {/* Buffering Overlay */}
+
             {isBuffering && !isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none">
                     <div className="bg-black/50 rounded-full p-4">
@@ -835,133 +845,178 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             )}
 
             {/* Settings Panel */}
-            {showSettings && (
-                <div
-                    ref={settingsRef}
-                    className={` absolute bottom-24 lg:bottom-28 flex flex-col h-[15rem] lg:h-[20rem] right-2 bg-[#0a0a0a]/70 border-2 border-[#0f0f0f] backdrop-blur-sm rounded-xl p-4 z-40 shadow-2xl w-[80%] max-w-md sm:w-96 sm:right-4 lg:right-6 md:w-80 lg:w-80 settings-panel cursor-default`}
-
-                >
-                    <div className="flex justify-between items-center mb-4 h-fit bg">
-                        {/* Tabs a sinistra */}
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={() => setSettingsTab('quality')}
-                                className={`px-3 py-1.5 rounded-lg cursor-pointer text-sm font-medium transition-all control-element ${settingsTab === 'quality'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-white/25'
-                                    }`}
-                            >
-                                Qualità
-                            </button>
-                            <button
-                                onClick={() => setSettingsTab('audio')}
-                                className={`px-3 py-1.5 rounded-lg cursor-pointer text-sm font-medium transition-all  control-element ${settingsTab === 'audio'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-white/25'
-                                    }`}
-                            >
-                                Audio
-                            </button>
-                            <button
-                                onClick={() => setSettingsTab('subtitles')}
-                                className={`px-3 py-1.5 rounded-lg cursor-pointer text-sm font-medium transition-all control-element ${settingsTab === 'subtitles'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'text-gray-300 hover:bg-white/25'
-                                    }`}
-                            >
-                                Sottotitoli
-                            </button>
-                        </div>
-
-                        {/* Bottone X a destra */}
+            <div
+                ref={settingsRef}
+                className={`fixed bottom-24 lg:bottom-28 right-2 sm:right-4 lg:right-6 
+        bg-[#0a0a0a]/95 backdrop-blur-md border border-zinc-800 
+        cursor-auto
+        rounded-xl shadow-2xl z-40 w-[85%] max-w-sm sm:max-w-md
+        transition-all duration-300 ease-in-out
+        ${showSettings ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
+        h-[50vh] sm:h-[65vh] lg:h-[40vh]
+        flex flex-col`}
+            >
+                {/* Header with tabs and close button */}
+                <div className="flex justify-between items-center p-4 border-b border-zinc-800 flex-shrink-0">
+                    {/* Tabs */}
+                    <div className="flex space-x-1 bg-zinc-800/60 rounded-lg p-1">
                         <button
-                            onClick={() => setShowSettings(false)}
-                            className="p-2 rounded-full  text-gray-300 transition-colors cursor-pointer hover:bg-white/25 "
-                            aria-label="Chiudi impostazioni"
+                            onClick={() => setSettingsTab('quality')}
+                            className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${settingsTab === 'quality'
+                                ? 'bg-white text-black shadow-sm'
+                                : 'text-gray-300 hover:bg-white/10'
+                                }`}
                         >
-                            <XMarkIcon className="w-5 h-5" />
+                            Qualità
+                        </button>
+                        <button
+                            onClick={() => setSettingsTab('audio')}
+                            className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${settingsTab === 'audio'
+                                ? 'bg-white text-black shadow-sm'
+                                : 'text-gray-300 hover:bg-white/10'
+                                }`}
+                        >
+                            Audio
+                        </button>
+                        <button
+                            onClick={() => setSettingsTab('subtitles')}
+                            className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${settingsTab === 'subtitles'
+                                ? 'bg-white text-black shadow-sm'
+                                : 'text-gray-300 hover:bg-white/10'
+                                }`}
+                        >
+                            Sottotitoli
                         </button>
                     </div>
 
+                    {/* Close button */}
+                    <button
+                        onClick={() => setShowSettings(false)}
+                        className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                        aria-label="Chiudi impostazioni"
+                    >
+                        <XMarkIcon className="w-5 h-5" />
+                    </button>
+                </div>
 
-                    <div className="flex-1 pr-2 custom-scrollbar overflow-y-auto  ">
-                        {settingsTab === 'quality' && (
-                            <div className="space-y-2 h-50 ">
-                                <button
-                                    onClick={() => changeQuality(-1)}
-                                    className={`w-full text-left cursor-pointer px-3 py-2.5 rounded-lg flex items-center transition-all control-element ${isAutoQuality ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/25'
-                                        }`}
-                                >
-                                    Automatico
-                                </button>
-                                {qualityLevels.length > 1 ? (
-                                    qualityLevels.map((level) => (
-                                        <button
-                                            key={level.id}
-                                            onClick={() => changeQuality(level.id)}
-                                            className={`w-full text-left cursor-pointer px-3 py-2.5 rounded-lg flex justify-between items-center transition-all control-element ${!isAutoQuality && currentQuality === level.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/25'
-                                                }`}
-                                        >
-                                            <span>{level.height}p</span>
-                                            <span className="text-xs opacity-80">{formatBitrate(level.bitrate)}</span>
-                                        </button>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-400 text-sm px-3 py-2">Nessuna qualità disponibile oltre a quella automatica</p>
-                                )}
-                            </div>
-                        )}
+                {/* Content area with proper scrolling */}
+                <div className="flex-1 overflow-auto">
+                    <div className="h-full">
+                        <div className="p-4 space-y-2">
+                            {settingsTab === 'quality' && (
+                                <>
+                                    <button
+                                        onClick={() => changeQuality(-1)}
+                                        className={`w-full text-left px-3 py-3 rounded-lg flex items-center justify-between transition-all duration-200 ${isAutoQuality
+                                            ? 'bg-white text-black shadow-sm'
+                                            : 'text-gray-300 hover:bg-white/10 active:bg-white/20'
+                                            }`}
+                                    >
+                                        <span className="font-medium">Automatico</span>
 
-                        {settingsTab === 'audio' && (
-                            <div className="space-y-2 h-50">
-                                {audioTracks.length === 0 ? (
-                                    <p className="text-gray-400 text-sm px-3 py-2">Nessuna traccia audio aggiuntiva</p>
-                                ) : (
-                                    audioTracks.map((track) => (
-                                        <button
-                                            key={track.id}
-                                            onClick={() => changeAudioTrack(track.id)}
-                                            className={`w-full text-left px-3 cursor-pointer py-2.5 rounded-lg flex items-center transition-all control-element ${currentAudioTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/25'}`}
-                                        >
-                                            <span>
-                                                {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}
-                                            </span>
-                                        </button>
-                                    ))
-                                )}
-                            </div>
-                        )}
+                                    </button>
 
-                        {settingsTab === 'subtitles' && (
-                            <div className="space-y-2 overflow-auto h-50">
-                                {subtitleTracks.length === 0 ? (
-                                    <p className="text-gray-400 text-sm px-3 py-2">Nessun sottotitolo disponibile</p>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={() => changeSubtitleTrack(-1)}
-                                            className={`w-full text-left px-3 py-2.5 cursor-pointer rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === -1 ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/25'}`}
-                                        >
-                                            Disattivati
-                                        </button>
-                                        {subtitleTracks.map((track) => (
+                                    {qualityLevels.length > 1 ? (
+                                        qualityLevels.map((level) => (
+                                            <button
+                                                key={level.id}
+                                                onClick={() => changeQuality(level.id)}
+                                                className={`w-full text-left px-3 py-3 rounded-lg flex justify-between items-center transition-all duration-200 ${!isAutoQuality && currentQuality === level.id
+                                                    ? 'bg-white text-black shadow-sm'
+                                                    : 'text-gray-300 hover:bg-white/10 active:bg-white/20'
+                                                    }`}
+                                            >
+                                                <span className="font-medium">{level.height}p</span>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="text-xs opacity-70">{formatBitrate(level.bitrate)}</span>
+
+                                                </div>
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                            Nessuna qualità aggiuntiva disponibile
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {settingsTab === 'audio' && (
+                                <>
+                                    {audioTracks.length === 0 ? (
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                            Nessuna traccia audio aggiuntiva
+                                        </div>
+                                    ) : (
+                                        audioTracks.map((track) => (
                                             <button
                                                 key={track.id}
-                                                onClick={() => changeSubtitleTrack(track.id)}
-                                                className={`w-full text-left px-3 cursor-pointer py-2.5 rounded-lg flex items-center transition-all control-element ${currentSubtitleTrack === track.id ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/25'}`}
+                                                onClick={() => changeAudioTrack(track.id)}
+                                                className={`w-full text-left px-3 py-3 rounded-lg flex justify-between items-center transition-all duration-200 ${currentAudioTrack === track.id
+                                                    ? 'bg-white text-black shadow-sm'
+                                                    : 'text-gray-300 hover:bg-white/10 active:bg-white/20'
+                                                    }`}
                                             >
-                                                <span>
-                                                    {track.name} {track.language && <span className="text-xs opacity-70">({track.language})</span>}
-                                                </span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{track.name}</span>
+                                                    {track.language && (
+                                                        <span className="text-xs opacity-70 mt-0.5">
+                                                            {track.language}
+                                                        </span>
+                                                    )}
+                                                </div>
+
                                             </button>
-                                        ))}
-                                    </>
-                                )}
-                            </div>
-                        )}
+                                        ))
+                                    )}
+                                </>
+                            )}
+
+                            {settingsTab === 'subtitles' && (
+                                <>
+                                    {subtitleTracks.length === 0 ? (
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                            Nessun sottotitolo disponibile
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => changeSubtitleTrack(-1)}
+                                                className={`w-full text-left px-3 py-3 rounded-lg flex justify-between items-center transition-all duration-200 ${currentSubtitleTrack === -1
+                                                    ? 'bg-white text-black shadow-sm'
+                                                    : 'text-gray-300 hover:bg-white/10 active:bg-white/20'
+                                                    }`}
+                                            >
+                                                <span className="font-medium">Disattivati</span>
+                                            </button>
+
+                                            {subtitleTracks.map((track) => (
+                                                <button
+                                                    key={track.id}
+                                                    onClick={() => changeSubtitleTrack(track.id)}
+                                                    className={`w-full text-left px-3 py-3 rounded-lg flex justify-between items-center transition-all duration-200 ${currentSubtitleTrack === track.id
+                                                        ? 'bg-white text-black shadow-sm'
+                                                        : 'text-gray-300 hover:bg-white/10 active:bg-white/20'
+                                                        }`}
+                                                >
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">{track.name}</span>
+                                                        {track.language && (
+                                                            <span className="text-xs opacity-70 mt-0.5">
+                                                                {track.language}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
-            )}
+            </div>
 
             {/* Controls Overlay */}
             <div
@@ -972,26 +1027,18 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                 <div className={`absolute top-0 left-0 right-0 p-4 md:p-6 transition-transform duration-300 ${showControls ? 'translate-y-0' : '-translate-y-full'} flex items-center gap-4 `}>
                     <button
                         onClick={() => window.history.back()}
-                        className="text-white hover:text-gray-300 transition-colors control-element hover:bg-white/25 rounded-full p-1"
+                        className="text-white hover:text-gray-300 transition-all control-element hover:bg-white/18 rounded-lg p-1 hover:scale-110 duration-100"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </button>
-                    <img src="/logo.png" alt="logo" className='w-15' />
+                    {/*<img src="/logo.png" alt="logo" className='w-15' />*/}
                     <h1 className="text-white text-lg md:text-xl font-semibold truncate drop-shadow-lg flex-1">
                         {title}
                     </h1>
                 </div>
 
-                {showSkipAnimation && (
-                    <img
-                        key={skipAnimKey} // forza il remount
-                        src="https://cdn.iconscout.com/icon/free/png-256/free-replay-10s-1781691-1518370.png"
-                        alt=""
-                        className="absolute top-1/2 right-50 -translate-y-1/2 z-50 fadeInOut w-[5vw] aspect-square  "
-                    />
-                )}
 
 
                 {/* Bottom Controls */}
@@ -1000,17 +1047,17 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                     {/* Progress Bar */}
                     <div
                         ref={progressRef}
-                        className={`w-full   bg-zinc-700/50  rounded-full cursor-pointer relative mb-3 md:mb-4 hover:h-2.5 ${isDraggingRef.current ? "h-2.5" : "h-2 md:h-1.5"} duration-200 transition-all`}
+                        className={`w-full   bg-white/15  rounded-full cursor-pointer relative mb-3 md:mb-4 duration-200 transition-all h-1.5`}
                         onClick={handleSeek}
                         onMouseDown={handleDragStart}
                         onTouchStart={handleDragStart}
                     >
                         <div
-                            className="h-full bg-zinc-500/50 rounded-full absolute"
+                            className="h-full bg-white/25 rounded-full absolute"
                             style={{ width: `${buffered}%` }}
                         />
                         <div
-                            className="h-full bg-blue-500 rounded-full absolute"
+                            className="h-full bg-white rounded-full absolute"
                             style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                         >
                         </div>
@@ -1028,7 +1075,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                     e.stopPropagation();
                                     togglePlay();
                                 }}
-                                className="text-white p-1 control-element cursor-pointer hover:bg-white/25 hover:scale-110 rounded-md duration-100 transition-all"
+                                className="text-white p-1 control-element cursor-pointer hover:bg-white/20 hover:scale-110 rounded-md duration-100 transition-all"
                                 aria-label={isPlaying ? "Pausa" : "Riproduci"}
                             >
                                 {isPlaying ? (
@@ -1038,19 +1085,22 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                 )}
                             </button>
 
-                            {/* Skip Bakcward */}
+                            {
+                                /*
+                                    TASTI SKIP
+
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     skipBackward();
                                 }}
-                                className="text-white control-element sm:block hidden "
+                                className="text-white control-element sm:block hidden p-1"
                                 aria-label="Indietro 10 secondi"
                             >
                                 <Replay10RoundedIcon style={{ fontSize: 28 }} />
                             </button>
 
-                            {/* Skip Forward */}
+ 
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -1061,6 +1111,12 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             >
                                 <Forward10RoundedIcon style={{ fontSize: 28 }} />
                             </button>
+                                
+
+
+                                */
+                            }
+
 
                             <div className={`items-center gap-2 transition-all duration-200 ${isVolumeSliderDragging.current ? "w-30" : "w-10 hover:w-31"} md:flex hidden`}>
                                 {/*Volume control*/}
@@ -1070,13 +1126,15 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (videoRef.current) {
-                                            videoRef.current.muted = !videoRef.current.muted
+                                            const newMutedState = !videoRef.current.muted;
+                                            videoRef.current.muted = newMutedState;
+                                            setIsMuted(newMutedState); // Aggiungi questa riga
                                         }
                                     }}
-                                    className="text-white p-1 control-element"
+                                    className="text-white p-1 control-element hover:bg-white/20 hover:scale-110 rounded-md duration-100 transition-all"
                                     aria-label={videoRef.current?.muted ? "Riattiva audio" : "Disattiva audio"}
                                 >
-                                    {volume === 0 || videoRef.current?.muted ? (
+                                    {volume === 0 || isMuted ? (
                                         <SpeakerXMarkIcon className="w-6 h-6" />
                                     ) : volume < 0.5 ? (
                                         <SpeakerWaveIcon className="w-6 h-6" />
@@ -1088,13 +1146,13 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                 {/* Custom Volume Slider */}
                                 <div
                                     ref={volumeSliderRef}
-                                    className={`w-16 md:w-20 bg-zinc-700 rounded-full cursor-pointer relative control-element ${isVolumeSliderDragging.current ? "h-2.5" : "h-1.5 hover:h-2.5"} duration-200 transition-all`}
+                                    className={`w-16 md:w-20 bg-white/15 rounded-full cursor-pointer relative control-element h-1.5 duration-200 transition-all`}
                                     onClick={handleVolumeSeek}
                                     onMouseDown={handleVolumeDragStart}
                                     onTouchStart={handleVolumeDragStart}
                                 >
                                     <div
-                                        className=" bg-blue-500 rounded-full absolute h-full"
+                                        className=" bg-white rounded-full absolute h-full"
                                         style={{ width: `${volume * 100}%` }}
                                     />
                                 </div>
@@ -1113,7 +1171,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             {nextEpisode &&
                                 <button
                                     onClick={handleClickNextEpisode}
-                                    className={`text-white control-element sm:block hidden`}
+                                    className={`text-white control-element sm:block hidden hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
                                     aria-label="Impostazioni"
                                 >
                                     <SkipNextRoundedIcon style={{ fontSize: 34 }} />
@@ -1123,7 +1181,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             {/* Settings */}
                             <button
                                 onClick={handleClickSettings}
-                                className={`text-white p-1 control-element ${showSettings ? 'text-blue-400' : ''} hover:bg-white/25 hover:scale-110 rounded-md duration-100 transition-all`}
+                                className={`text-white p-1 control-element ${showSettings ? 'text-blue-400' : ''} hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
                                 aria-label="Impostazioni"
                             >
                                 <Cog6ToothIcon className="w-6 h-6" />
@@ -1136,7 +1194,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                     e.stopPropagation();
                                     toggleFullscreen();
                                 }}
-                                className="text-white p-1 control-element hover:bg-white/25 hover:scale-110 rounded-md duration-100 transition-all"
+                                className="text-white p-1 control-element hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all"
                                 aria-label={isFullscreen ? "Esci da schermo intero" : "Schermo intero"}
                             >
                                 {isFullscreen ? (

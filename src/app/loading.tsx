@@ -2,7 +2,7 @@
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
       <div className="text-center max-w-md">
         {/* Spinner animato */}
         <div className="relative w-16 h-16 mx-auto mb-6">
