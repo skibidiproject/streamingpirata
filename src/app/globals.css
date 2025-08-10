@@ -97,8 +97,5 @@ video::cue(b) {
 }
 
 .fadeInOut {
-  animation: fadeInOut 1s ease forwards;
+  animation: fadeInOut 0.5s ease forwards;
 }
-
-
-

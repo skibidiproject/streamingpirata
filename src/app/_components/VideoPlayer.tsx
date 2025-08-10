@@ -19,6 +19,9 @@ import {
 
 import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
 import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
+import FastForwardRoundedIcon from '@mui/icons-material/FastForwardRounded';
+
+
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 
 interface VideoPlayerProps {
@@ -80,6 +83,18 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
     const [currentSubtitleTrack, setCurrentSubtitleTrack] = useState(-1);
     const [currentQuality, setCurrentQuality] = useState(-1);
 
+
+    //gestures
+    const lastTapRef = useRef<number | null>(null);
+
+
+
+    //forward backward icons state
+    const [skipDirection, setSkipDirection] = React.useState<"forward" | "backward" | null>(null);
+    const [skipAnimKey, setSkipAnimKey] = React.useState(0);
+    const [showPlayingIcon, setShowPlayingIcon] = React.useState<boolean | null>(null);
+
+
     // Settings panel
     const [showSettings, setShowSettings] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'quality' | 'audio' | 'subtitles'>('quality');
@@ -122,6 +137,59 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         setVolume(newVolume);
         setIsMuted(newVolume === 0 || videoRef.current.muted);
     };
+
+    const handleTap = (event: React.MouseEvent | React.TouchEvent) => {
+        if (!containerRef.current) return;
+
+        const now = Date.now();
+        const rect = containerRef.current.getBoundingClientRect();
+
+        let tapX: number;
+        let tapY: number;
+
+
+        if ("touches" in event && event.touches.length > 0) {
+            tapX = event.touches[0].clientX;
+            tapY = event.touches[0].clientY;
+        } else if ("clientX" in event) {
+            tapX = event.clientX;
+            tapY = event.clientY;
+        } else {
+            return; // non gestiamo altro
+        }
+
+        const relativeX = tapX - rect.left;
+        const relativeY = tapY - rect.top
+        const halfWidth = rect.width / 2;
+        const halfHeight = rect.height / 2;
+
+        // Rileva doppio tap entro 300ms
+        if (lastTapRef.current && (now - lastTapRef.current) < 300) {
+            // Prendo la posizione X del tap/click
+
+
+            if (relativeX < halfWidth) {
+                skipBackward();
+            } else {
+                skipForward();
+            }
+
+
+            lastTapRef.current = null; // resetto dopo doppio tap
+        } else {
+
+            if (relativeX > halfWidth - 100 && relativeX < halfWidth + 100 && relativeY > halfHeight - 100 && relativeY < halfHeight + 100 && showControls)
+                togglePlay()
+            else
+            {
+                lastTapRef.current = now;
+                setShowControls(true)
+            }   
+                
+        }
+    };
+
+
 
     const updateVolumeFromEvent = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) => {
         if (!videoRef.current || !volumeSliderRef.current) return;
@@ -229,20 +297,16 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
 
     // Gestione interazione container
     const handleContainerInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+
         const target = e.target as HTMLElement;
 
         if (showSettings || target.closest('.control-element') || target.closest('.settings-panel')) {
             return;
         }
 
-        setShowControls(true);
+        handleTap(e);
 
-        if (isPlaying) {
-            if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
-            controlsTimeoutRef.current = setTimeout(() => {
-                setShowControls(false);
-            }, 3000);
-        }
+    
     };
 
     // Configure HLS with proxy support
@@ -482,8 +546,14 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             }
         };
 
+
+
         const handlePlay = () => setIsPlaying(true);
+
+
         const handlePause = () => setIsPlaying(false);
+
+
         const handleEnded = () => setIsPlaying(false);
         const handleVolumeChange = () => {
             setVolume(video.volume);
@@ -628,13 +698,21 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
     const togglePlay = () => {
         if (!videoRef.current) return;
 
+
         if (videoRef.current.paused) {
             videoRef.current.play();
             setIsPlaying(true);
+            setShowPlayingIcon(false)
+            
         } else {
             videoRef.current.pause();
             setIsPlaying(false);
+            setShowPlayingIcon(true)
         }
+
+
+        setShowControls(true);
+
     };
 
 
@@ -677,20 +755,19 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         }
     }
 
-    // SKIP DI 10 SECONDI ANVATI O INDIETROF
+
+
     const skipBackward = () => {
         if (!videoRef.current) return;
 
         const newTime = Math.max(videoRef.current.currentTime - 10, 0);
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
+
+        setSkipDirection("backward");
+        setSkipAnimKey(prev => prev + 1);
+
     };
-
-    const [showSkipAnimation, setShowSkipAnimation] = React.useState(false);
-
-    const timeoutRef = React.useRef<number | null>(null);
-
-    const [skipAnimKey, setSkipAnimKey] = React.useState(0);
 
     const skipForward = () => {
         if (!videoRef.current) return;
@@ -699,18 +776,10 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         videoRef.current.currentTime = newTime;
         setCurrentTime(newTime);
 
-        setShowSkipAnimation(true);
+        setSkipDirection("forward");
+        setSkipAnimKey(prev => prev + 1);
 
-        setSkipAnimKey(prev => prev + 1); // cambia key per rimontare immagine
 
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = window.setTimeout(() => {
-            setShowSkipAnimation(false);
-            timeoutRef.current = null;
-        }, 1000);
     };
 
     // Modifica la funzione changeQuality
@@ -773,7 +842,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                     <p className="text-gray-400 text-sm md:text-base">{error}</p>
                 </div>
             </div>
-        );
+        );;
     }
 
 
@@ -786,7 +855,6 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             onMouseMove={() => setShowControls(true)}
             onMouseLeave={handleMouseLeave} // AGGIUNGI QUESTA RIGA
             onClick={handleContainerInteraction}
-            onTouchEnd={handleContainerInteraction}
         >
             <DisableContextMenu />
             {/* Video Element */}
@@ -831,14 +899,39 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                 </div>
             )}
 
+            {skipDirection === "forward" && (
+                <FastForwardRoundedIcon
+                    key={skipAnimKey}
+                    className="absolute top-1/2 right-[10vw] -translate-y-1/2 z-50 fadeInOut aspect-square"
+                    style={{ fontSize: "3rem" }}
+                />
+            )}
+
+            {skipDirection === "backward" && (
+                <FastForwardRoundedIcon
+                    key={skipAnimKey}
+                    className="absolute top-1/2 left-[10vw] rotate-180 -translate-y-1/2 z-50 fadeInOut aspect-square"
+                    style={{ fontSize: "3rem" }}
+                />
+            )}
 
 
+            {showPlayingIcon === true && !isLoading && (
+
+                <PauseIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2   fadeInOut aspect-square w-[5vw] pointer-events-none" />
+            )}
+
+
+            {showPlayingIcon === false && !isLoading && (
+
+                <PlayIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2 fadeInOut aspect-square w-[5vw] pointer-events-none" />
+            )}
 
             {/* Buffering Overlay */}
 
-            {isBuffering && !isLoading && (
+            {isBuffering && !isLoading && isPlaying && (
                 <div className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none">
-                    <div className="bg-black/50 rounded-full p-4">
+                    <div className="rounded-full p-4">
                         <LoadingSpinner />
                     </div>
                 </div>
@@ -1020,7 +1113,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
 
             {/* Controls Overlay */}
             <div
-                className={`cursor-auto absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent duration-300 ${showControls || showSkipAnimation ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                className={`cursor-auto absolute inset-0 bg-gradient-to-t from-black/90   via-black/40 to-transparent duration-300 ${showControls ? 'opacity-100 ' : 'opacity-0 pointer-events-none'
                     }`}
             >
                 {/* Top Bar con freccia indietro */}
@@ -1047,7 +1140,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                     {/* Progress Bar */}
                     <div
                         ref={progressRef}
-                        className={`w-full   bg-white/15  rounded-full cursor-pointer relative mb-3 md:mb-4 duration-200 transition-all h-1.5`}
+                        className={`w-full   bg-white/15  rounded-full cursor-pointer relative mb-3 md:mb-4 duration-200 transition-all ${isDraggingRef.current ? "h-2" : "hover:h-2 h-1.5"} `}
                         onClick={handleSeek}
                         onMouseDown={handleDragStart}
                         onTouchStart={handleDragStart}
@@ -1131,7 +1224,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                             setIsMuted(newMutedState); // Aggiungi questa riga
                                         }
                                     }}
-                                    className="text-white p-1 control-element hover:bg-white/20 hover:scale-110 rounded-md duration-100 transition-all"
+                                    className="text-white p-1 control-element hover:bg-white/20 hover:scale-110 rounded-md duration-100 transition-all cursor-pointer "
                                     aria-label={videoRef.current?.muted ? "Riattiva audio" : "Disattiva audio"}
                                 >
                                     {volume === 0 || isMuted ? (
@@ -1171,7 +1264,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             {nextEpisode &&
                                 <button
                                     onClick={handleClickNextEpisode}
-                                    className={`text-white control-element sm:block hidden hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
+                                    className={`text-white control-element sm:block hidden cursor-pointer  hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
                                     aria-label="Impostazioni"
                                 >
                                     <SkipNextRoundedIcon style={{ fontSize: 34 }} />
@@ -1181,7 +1274,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             {/* Settings */}
                             <button
                                 onClick={handleClickSettings}
-                                className={`text-white p-1 control-element ${showSettings ? 'text-blue-400' : ''} hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
+                                className={`text-white p-1 control-element cursor-pointer  ${showSettings ? 'text-blue-400' : ''} hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all`}
                                 aria-label="Impostazioni"
                             >
                                 <Cog6ToothIcon className="w-6 h-6" />
@@ -1194,7 +1287,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                                     e.stopPropagation();
                                     toggleFullscreen();
                                 }}
-                                className="text-white p-1 control-element hover:bg-white/18 hover:scale-110 rounded-md duration-100 transition-all"
+                                className="text-white p-1 control-element hover:bg-white/18 hover:scale-110 cursor-pointer  rounded-md duration-100 transition-all"
                                 aria-label={isFullscreen ? "Esci da schermo intero" : "Schermo intero"}
                             >
                                 {isFullscreen ? (
