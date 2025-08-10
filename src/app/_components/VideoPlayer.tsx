@@ -250,6 +250,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
         if (!videoRef.current || !duration || !progressRef.current) return;
 
         let clientX: number;
+
         if ('touches' in e && e.touches.length > 0) {
             clientX = e.touches[0].clientX;
         } else if ('clientX' in e) {
@@ -902,7 +903,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             {skipDirection === "forward" && (
                 <FastForwardRoundedIcon
                     key={skipAnimKey}
-                    className="absolute top-1/2 right-[10vw] -translate-y-1/2 z-50 fadeInOut aspect-square"
+                    className="absolute top-1/2 right-[9vw] -translate-y-1/2 z-50 fadeInOut aspect-square"
                     style={{ fontSize: "3rem" }}
                 />
             )}
@@ -910,7 +911,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             {skipDirection === "backward" && (
                 <FastForwardRoundedIcon
                     key={skipAnimKey}
-                    className="absolute top-1/2 left-[10vw] rotate-180 -translate-y-1/2 z-50 fadeInOut aspect-square"
+                    className="absolute top-1/2 left-[9vw] rotate-180 -translate-y-1/2 z-50 fadeInOut aspect-square"
                     style={{ fontSize: "3rem" }}
                 />
             )}
@@ -918,19 +919,19 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
 
             {showPlayingIcon === true && !isLoading && (
 
-                <PauseIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2   fadeInOut aspect-square w-[5vw] pointer-events-none" />
+                <PauseIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2   fadeInOut aspect-square w-[6rem] pointer-events-none" />
             )}
 
 
             {showPlayingIcon === false && !isLoading && (
 
-                <PlayIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2 fadeInOut aspect-square w-[5vw] pointer-events-none" />
+                <PlayIcon className="absolute top-1/2  -translate-y-1/2 z-50 left-1/2 -translate-x-1/2 fadeInOut aspect-square w-[6rem] pointer-events-none" />
             )}
 
             {/* Buffering Overlay */}
 
             {isBuffering && !isLoading && isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none">
+                <div className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none  ">
                     <div className="rounded-full p-4">
                         <LoadingSpinner />
                     </div>
