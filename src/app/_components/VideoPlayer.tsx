@@ -28,6 +28,8 @@ interface VideoPlayerProps {
     streamUrl: string;
     title: string;
     nextEpisode?: any;
+    type: string;
+    id: string;
 }
 
 interface AudioTrack {
@@ -54,7 +56,7 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
 );
 
-export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlayerProps) {
+export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id }: VideoPlayerProps) {
     const router = useRouter();
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -110,7 +112,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
 
     // Posizione dinamica sottotitoli
     const subtitlePosition = useMemo(() => {
-        return showControls ? "bottom-28" : "bottom-18";
+        return showControls ? "bottom-28" : "bottom-14";
     }, [showControls]);
 
     const progressRef = useRef<HTMLDivElement>(null);
@@ -406,7 +408,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
             });
 
             hls.on(Hls.Events.FRAG_LOADING, () => {
-                setLoadingMessage('Caricamento segmenti...');
+                setLoadingMessage('Quasi fatto...');
             });
 
             hls.on(Hls.Events.ERROR, (event, data) => {
@@ -1120,7 +1122,9 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                 {/* Top Bar con freccia indietro */}
                 <div className={`absolute top-0 left-0 right-0 p-4 md:p-6 transition-transform duration-300 ${showControls ? 'translate-y-0' : '-translate-y-full'} flex items-center gap-4 `}>
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => {
+                            router.push(`/media/${type}/${id}`);
+                        }}
                         className="text-white hover:text-gray-300 transition-all control-element hover:bg-white/18 rounded-lg p-1 hover:scale-110 duration-100"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1212,7 +1216,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode }: VideoPlay
                             }
 
 
-                            <div className={`items-center gap-2 transition-all duration-200 ${isVolumeSliderDragging.current ? "w-30" : "w-10 hover:w-31"} md:flex hidden`}>
+                            <div className={`items-center gap-2 transition-all duration-200 ${isVolumeSliderDragging.current ? "w-30" : "w-10 hover:w-31"} hidden lg:flex`}>
                                 {/*Volume control*/}
                                 <button
 

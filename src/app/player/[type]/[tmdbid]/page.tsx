@@ -89,7 +89,7 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
 
   return (
     <div className="min-h-screen bg-black">
-      <VideoPlayer streamUrl={streamUrl} title={title} />
+      <VideoPlayer streamUrl={streamUrl} type={params.type} id={params.tmdbid} title={title} />
     </div>
   );
 }

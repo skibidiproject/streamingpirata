@@ -50,6 +50,7 @@ async function extractStream({
   return data.url ?? null;
 }
 
+
 // Ottiene il titolo del contenuto
 async function getTitle({ type, tmdbid, season, episode }: PageProps['params']): Promise<string> {
   try {
@@ -111,7 +112,7 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
   console.log(await getNextEpisode(params));
   return (
     <div className="min-h-screen bg-black"> 
-      <VideoPlayer streamUrl={streamUrl} title={title} nextEpisode={await getNextEpisode(params)}/>
+      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)}/>
     </div>
   );
 }
