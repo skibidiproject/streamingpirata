@@ -10,9 +10,9 @@ interface PageProps {
   };
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // Traccia la visualizzazione
 async function insertViewRecord({ tmdbid, type }: PageProps['params']) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const url = `${baseUrl}/api/analytics`;
 
   const response = await fetch(url, {
@@ -33,7 +33,7 @@ async function extractStream({
   season,
   episode,
 }: PageProps['params']): Promise<string | null> {
-  const url = `https://devtunnel.riccardocinaglia.it/api/stream/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
+  const url = `${baseUrl}/api/stream/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
   console.log(url);
   const response = await fetch(url, {
     method: 'GET',
@@ -54,7 +54,6 @@ async function extractStream({
 // Ottiene il titolo del contenuto
 async function getTitle({ type, tmdbid, season, episode }: PageProps['params']): Promise<string> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     let url = `${baseUrl}/api/contents/${type}/${tmdbid}`;
     if (type === 'tv' && season && episode) {
       url += `/episode/${season}/${episode}`;
@@ -78,9 +77,8 @@ async function getTitle({ type, tmdbid, season, episode }: PageProps['params']):
 }
 
 // Ottiene il titolo del contenuto
-async function getNextEpisode({ type, tmdbid, season, episode  }: PageProps['params']) {
+async function getNextEpisode({ type, tmdbid, season, episode }: PageProps['params']) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     let url = `${baseUrl}/api/nextepisode/${tmdbid}`;
     if (type === 'tv' && season && episode) {
       url += `/${season}/${episode}`;
@@ -96,7 +94,7 @@ async function getNextEpisode({ type, tmdbid, season, episode  }: PageProps['par
     console.error(err);
     return null;
   }
-  
+
 }
 
 // Componente player
@@ -111,8 +109,8 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
   const title = await getTitle(params);
   console.log(await getNextEpisode(params));
   return (
-    <div className="min-h-screen bg-black"> 
-      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)}/>
+    <div className="min-h-screen bg-black">
+      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)} />
     </div>
   );
 }
@@ -120,6 +118,6 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
 // Componente principale
 export default function PlayerPage({ params }: PageProps) {
   return (
-      <PlayerContent params={params} />
+    <PlayerContent params={params} />
   );
 }

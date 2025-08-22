@@ -6,13 +6,12 @@ import { usePathname } from "next/navigation";
 import Search from "./Search";
 import { useAuth } from "@/app/hooks/useAuth";
 
-interface NavBarProps
-{
+interface NavBarProps {
   alwaysTransparent?: boolean;
 }
 
-function Navbar({alwaysTransparent = false}: NavBarProps) {
-  const { user, isLoggedIn, loading } = useAuth(); 
+function Navbar({ alwaysTransparent = false }: NavBarProps) {
+  const { user, isLoggedIn, loading } = useAuth();
   console.log(user, isLoggedIn, loading)
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -57,13 +56,15 @@ function Navbar({alwaysTransparent = false}: NavBarProps) {
 
   return (
     <>
-      <header className={`fixed z-50 duration-500 ${!alwaysTransparent ? (scrolled ? 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]' : 'bg-transparent  border-b-transparent') : 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]'} w-screen text-white px-5 md:px-8 lg:px-8 py-4.5 h-20 border-b-1`}>
+      <header className={`fixed z-50 duration-500 ${!alwaysTransparent ? (scrolled ? 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]' : 'bg-transparent  border-b-transparent') : 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]'} w-screen text-white px-5 md:px-8 lg:px-8 py-2 h-23 lg:py-4.5 border-b-1`}>
         <div className="flex  justify-between items-center  md:gap-12">
 
           <div className="flex justify-center gap-x-10">
 
             <Link href="/">
-              <img src="/logo.png" alt="Logo" className="w-26 h-auto" />
+              <img src="/logo_fcnet.svg" alt="Logo" className="w-70 h-auto lg:block hidden" />
+              <img src="/logo_fcnet_mobile.svg" alt="Logo" className="w-32 h-auto lg:hidden block" />
+
             </Link>
 
 
@@ -75,20 +76,20 @@ function Navbar({alwaysTransparent = false}: NavBarProps) {
               <a href="/archivio" className={getLinkClasses('/archivio')}>Archivio</a>
               {
 
-                  !loading && (isLoggedIn && user ? (
-                    <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">Account</a>
-                  ) : (
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}
-                      className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">
-                      Login
-                    </a>
-                  ))
+                !loading && (isLoggedIn && user ? (
+                  <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">Account</a>
+                ) : (
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}
+                    className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">
+                    Login
+                  </a>
+                ))
               }
             </nav>
-              
+
           </div>
-          
+
           {/* Search (desktop) */}
           <div className=" md:float-end " suppressHydrationWarning>
             <Search />

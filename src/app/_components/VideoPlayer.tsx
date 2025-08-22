@@ -1131,7 +1131,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id }:
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </button>
-                    {/*<img src="/logo.png" alt="logo" className='w-15' />*/}
+                    {/*<img src="/logo_fcnet.svg" alt="logo" className='w-15' />*/}
                     <h1 className="text-white text-lg md:text-xl font-semibold truncate drop-shadow-lg flex-1">
                         {title}
                     </h1>
