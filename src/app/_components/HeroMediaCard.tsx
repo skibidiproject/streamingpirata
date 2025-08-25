@@ -88,7 +88,6 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
               <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
               <div className="h-3 w-3 bg-white rounded-full animate-bounce"></div>
             </div>
-            <p className="text-white text-lg">Caricamento...</p>
           </div>
         </div>
       </div>

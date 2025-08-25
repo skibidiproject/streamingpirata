@@ -1,4 +1,4 @@
-// app/page.tsx o app/(home)/page.tsx
+// app/(home)/[type]/[id]/page.tsx
 import NavBar from "../../../_components/NavBar";
 import HeroMediaCard from "../../../_components/HeroMediaCard";
 import Footer from "../../../_components/Footer";
@@ -7,42 +7,27 @@ import ScrollSection from "@/app/_components/ScrollSection";
 import { notFound } from "next/navigation";
 
 interface MediaPageProps {
-  params: Promise<{
-    type: string;
-    id: string;
-  }>;
+  params: { type: string; id: string };
+  searchParams: { season?: string };
 }
 
+export default async function Media({ params, searchParams }: MediaPageProps) {
+  const { id, type } = params;
+  const season = searchParams.season ? parseInt(searchParams.season, 10) : undefined;
 
-export default async function Media({ params }: MediaPageProps) {
-
-  const { id, type } = await params;
-
-  let data: any;
-  let dataCorrelati: any;
+  let data: any = null;
+  let dataCorrelati: any = null;
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${type}/${id}`);
-    if (!res.ok) {
-      notFound();
-    }
+    if (!res.ok) notFound();
     data = await res.json();
 
-
     const resCorrelati = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/correlati/${type}/${id}`);
-    if (!resCorrelati.ok) {
-      throw new Error("Errore durante fetch api");
-    }
-    dataCorrelati = await resCorrelati.json();
-
-
-
-
-
+    if (resCorrelati.ok) dataCorrelati = await resCorrelati.json();
   } catch (e) {
     console.error(e);
   }
-
 
   return (
     <>
@@ -51,14 +36,8 @@ export default async function Media({ params }: MediaPageProps) {
       <HeroMediaCard mediaID={id} type={type} />
 
       <section id="episodi">
-        {data.type == "tv" &&
-          <div>
-            <EpisodeSelector id={id} />
-          </div>
-        }
-
+        {data?.type === "tv" && <EpisodeSelector id={id} season={season} />}
       </section>
-
 
       <div>
         <h1 className="text-2xl font-bold ml-6 mt-10">Correlati</h1>

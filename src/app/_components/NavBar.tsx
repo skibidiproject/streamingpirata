@@ -56,46 +56,52 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
 
   return (
     <>
-      <header className={`fixed z-50 duration-500 ${!alwaysTransparent ? (scrolled ? 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]' : 'bg-transparent  border-b-transparent') : 'bg-black/80 backdrop-blur-md shadow-md  border-b-[#212121]'} w-screen text-white px-5 md:px-8 lg:px-8 py-2 h-23 lg:py-4.5 border-b-1`}>
-        <div className="flex  justify-between items-center  md:gap-12">
+      <header
+        className={`fixed z-50 duration-500 
+    ${!alwaysTransparent
+            ? (scrolled
+              ? 'bg-black/80 backdrop-blur-md shadow-md border-b-[#212121]'
+              : 'bg-transparent border-b-transparent')
+            : 'bg-black/80 backdrop-blur-md shadow-md border-b-[#212121]'
+          } 
+    w-screen text-white px-5 md:px-8 lg:px-8 h-24 border-b flex items-center justify-between`}
+      >
+        {/* SINISTRA: Logo + Menu link */}
+        <div className="flex items-center gap-x-10">
+          <Link href="/">
+            <img src="/logo.svg" alt="Logo" className="w-85 h-auto lg:block hidden" />
+            <img src="/logo_m.svg" alt="Logo" className="w-32 h-auto lg:hidden block" />
+          </Link>
 
-          <div className="flex justify-center gap-x-10">
+          {/* Menu link (desktop only) */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/" className={getLinkClasses('/')}>Home</Link>
+            <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
+            <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
+            <a href="/archivio" className={getLinkClasses('/archivio')}>Archivio</a>
 
-            <Link href="/">
-              <img src="/logo_fcnet.svg" alt="Logo" className="w-70 h-auto lg:block hidden" />
-              <img src="/logo_fcnet_mobile.svg" alt="Logo" className="w-32 h-auto lg:hidden block" />
+            { /*
+            !loading && (isLoggedIn && user ? (
+              <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">
+                Account
+              </a>
+            ) : (
+              <a
+                href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}
+                className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer"
+              >
+                Login
+              </a>
+            ))
+              */}
+          </nav>
+        </div>
 
-            </Link>
-
-
-            {/* Menu link (desktop only) */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/" className={getLinkClasses('/')}>Home</Link>
-              <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
-              <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
-              <a href="/archivio" className={getLinkClasses('/archivio')}>Archivio</a>
-              {
-
-                !loading && (isLoggedIn && user ? (
-                  <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">Account</a>
-                ) : (
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}
-                    className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">
-                    Login
-                  </a>
-                ))
-              }
-            </nav>
-
-          </div>
-
-          {/* Search (desktop) */}
-          <div className=" md:float-end " suppressHydrationWarning>
+        {/* DESTRA: Search + hamburger */}
+        <div className="flex items-center gap-4">
+          <div className="block" suppressHydrationWarning>
             <Search />
           </div>
-
-
 
           {/* Hamburger */}
           <button
@@ -112,10 +118,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
               </svg>
             )}
           </button>
-
-
         </div>
-
       </header>
 
       {/* Mobile fullscreen menu */}
@@ -136,9 +139,13 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
           <li>
             <Link href="/archivio" onClick={closeMenu} className="hover:underline">Archivio</Link>
           </li>
+          {
+            /*
           <li>
             <a href={`/login`}>Login</a>
           </li>
+          */
+          }
         </ul>
       </div>
 

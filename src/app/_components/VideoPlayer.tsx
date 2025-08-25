@@ -30,6 +30,7 @@ interface VideoPlayerProps {
     nextEpisode?: any;
     type: string;
     id: string;
+    season? : number;
 }
 
 interface AudioTrack {
@@ -56,7 +57,7 @@ const LoadingSpinner = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
 );
 
-export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id }: VideoPlayerProps) {
+export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, season }: VideoPlayerProps) {
     const router = useRouter();
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -1123,7 +1124,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id }:
                 <div className={`absolute top-0 left-0 right-0 p-4 md:p-6 transition-transform duration-300 ${showControls ? 'translate-y-0' : '-translate-y-full'} flex items-center gap-4 `}>
                     <button
                         onClick={() => {
-                            router.push(`/media/${type}/${id}`);
+                            router.push(`/media/${type}/${id}?season=${season}`);
                         }}
                         className="text-white hover:text-gray-300 transition-all control-element hover:bg-white/18 rounded-lg p-1 hover:scale-110 duration-100"
                     >
@@ -1131,7 +1132,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id }:
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </button>
-                    {/*<img src="/logo_fcnet.svg" alt="logo" className='w-15' />*/}
+                    {/*<img src="/logo.svg" alt="logo" className='w-15' />*/}
                     <h1 className="text-white text-lg md:text-xl font-semibold truncate drop-shadow-lg flex-1">
                         {title}
                     </h1>

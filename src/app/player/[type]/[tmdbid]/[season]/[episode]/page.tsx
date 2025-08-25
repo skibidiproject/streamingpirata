@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import VideoPlayer from '@/app/_components/VideoPlayer';
 
+
 interface PageProps {
   params: {
     type: string;
@@ -110,7 +111,7 @@ async function PlayerContent({ params }: { params: PageProps['params'] }) {
   console.log(await getNextEpisode(params));
   return (
     <div className="min-h-screen bg-black">
-      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)} />
+      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)} season={params.season}/>
     </div>
   );
 }

@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'Streaming Platform',
+    title: 'On Demand- FuckCopyright Network',
     description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità. Che cazzo di più? Mettiti seduto e prendi i popcorn! 🍿",
   };
 }

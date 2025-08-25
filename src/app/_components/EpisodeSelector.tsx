@@ -21,7 +21,7 @@ interface EpisodeComplete {
   still_url: string;
 }
 
-export default function EpisodeSelector({ id }: { id: string }) {
+export default function EpisodeSelector({ id, season }: { id: string, season?: number }) {
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [episodes, setEpisodes] = useState<EpisodeComplete[]>([]);
@@ -31,6 +31,11 @@ export default function EpisodeSelector({ id }: { id: string }) {
 
   // Fetch stagioni
   useEffect(() => {
+
+    if (season) {
+      setSelectedSeason(season);
+    }
+
     const fetchSeasons = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/tv/${id}/seasons`);
@@ -74,13 +79,13 @@ export default function EpisodeSelector({ id }: { id: string }) {
     if (selectedSeason !== null && selectedSeason !== undefined) {
       fetchEpisodes();
     }
-  }, [id, selectedSeason]);
+  }, [id, selectedSeason, season]);
 
   const LoadingDots = () => (
-    <div className="flex space-x-2 justify-center">
-      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+    <div className="flex space-x-2 justify-center py-5">
+      <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+      <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+      <div className="h-3 w-3 bg-white rounded-full animate-bounce"></div>
     </div>
   );
 

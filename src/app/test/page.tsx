@@ -9,7 +9,7 @@ export default function Home( ) {
         description: "Some Description",
         poster_url: "/poster.jpg",
         backdrop_url: null,
-        logo_url: "/logo_fcnet.svg",
+        logo_url: "/logo.svg",
         trailer_url: "https://trailer.example.com",
         release_date: "2025-01-01",
         certification: "PG-13",
