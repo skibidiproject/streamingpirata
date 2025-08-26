@@ -1,15 +1,27 @@
+
 services:
   db:
-    image: postgres
+    image: postgres:15
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: developer
-      POSTGRES_DB: my_postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mediaflow-proxy:
+    image: mhdzumair/mediaflow-proxy
+    container_name: mediaflow-proxy
+    environment:
+      API_PASSWORD: "MUH6HoR@xib2&8b1dmr&^H&J"
+    ports:
+      - "8888:8888"
+    depends_on:
+      - mediaflow
+    restart: unless-stopped
 
 volumes:
   postgres_data:
