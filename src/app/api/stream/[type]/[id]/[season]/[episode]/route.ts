@@ -12,7 +12,7 @@ async function buildPlayerUrl(type: string, id: string, season: number | null, e
 }
 
 export async function GET(req: NextRequest, { params }: { params: { type: string; id: string, season: number, episode: number } }) {
-  const { type, id , season, episode} = params;
+  const { type, id, season, episode } = params;
 
   const destination = await buildPlayerUrl(type, id, season, episode);
   if (!destination) {
@@ -27,8 +27,14 @@ export async function GET(req: NextRequest, { params }: { params: { type: string
       host: "VixCloud",
       redirect_stream: "true",
     },
-    api_password: process.env.MEDIAFLOW_PASSWORD,
+    api_password: process.env,
+    response_headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    }
   };
+
 
   const proxyResponse = await fetch(`${process.env.MEDIAFLOW_BASE_URL}/generate_url`, {
     method: "POST",
@@ -39,7 +45,7 @@ export async function GET(req: NextRequest, { params }: { params: { type: string
   });
 
   console.log(JSON.stringify(proxyPayload));
-  
+
   const result = await proxyResponse.json();
 
   return NextResponse.json(result);
