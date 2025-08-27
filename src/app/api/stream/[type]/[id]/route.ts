@@ -27,7 +27,7 @@ export async function GET(req: NextRequest, { params }: { params: { type: string
       host: "VixCloud",
       redirect_stream: "true",
     },
-    api_password: process.env,
+    api_password: process.env.MEDIAFLOW_PASSWORD,
     response_headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
