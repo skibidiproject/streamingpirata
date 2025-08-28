@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/app/lib/database";
-import { Label } from "@headlessui/react";
 
 export async function GET(
-    request: Request,
     { params }: { params: { id: string, type: string } }) {
     const type =  params.type;
     const id = await params.id;
@@ -79,7 +77,6 @@ export async function GET(
         const media = result.rows[0];
         const releaseDate = new Date(media.release_date);
         const today = new Date();
-        const twoWeeksAgo = new Date();
         // Azzerare orario per confrontare solo data
         releaseDate.setHours(0, 0, 0, 0);
 

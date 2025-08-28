@@ -8,7 +8,7 @@ interface TrailerButtonProps {
     isPlaying: boolean;
 }
 
-export default function TrailerButton({ url, onTrailerToggle, isPlaying}: TrailerButtonProps ) {
+export default function TrailerButton({ onTrailerToggle, isPlaying}: TrailerButtonProps ) {
 
 
     function play()

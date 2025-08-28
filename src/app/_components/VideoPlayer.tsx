@@ -13,12 +13,9 @@ import {
     ArrowsPointingInIcon,
     XMarkIcon,
     PauseIcon,
-    ForwardIcon,
-    BackwardIcon
 } from '@heroicons/react/24/solid';
 
-import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
-import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
+
 import FastForwardRoundedIcon from '@mui/icons-material/FastForwardRounded';
 
 
@@ -330,7 +327,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                 maxMaxBufferLength: 600,
                 startLevel: -1,
                 capLevelToPlayerSize: true,
-                xhrSetup: (xhr, url) => {
+                xhrSetup: (xhr) => {
                     xhr.setRequestHeader('Accept', '*/*');
                 }
             });
@@ -735,15 +732,6 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
         }
     };
 
-
-
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newVolume = parseFloat(e.target.value);
-        if (videoRef.current) {
-            videoRef.current.volume = newVolume;
-            setVolume(newVolume);
-        }
-    };
 
     function formatTime(time: number): string {
         if (isNaN(time)) return '0:00';

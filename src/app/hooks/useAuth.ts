@@ -1,6 +1,5 @@
 'use client'
 
-import { redirect } from 'next/dist/server/api-utils'
 import { useState, useEffect } from 'react'
 
 interface User {
@@ -50,6 +49,7 @@ export function useAuth() {
         })
       }
     } catch (error) {
+      console.log(error);
       setAuthState({
         user: null,
         isLoggedIn: false,

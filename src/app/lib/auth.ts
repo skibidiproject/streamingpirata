@@ -1,5 +1,5 @@
 // lib/auth.ts - Hook per React
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface User {
     id: string;
@@ -28,6 +28,7 @@ export function useAuth() {
                 return { success: false, error: data.error };
             }
         } catch (error) {
+            console.error(error);
             return { success: false, error: "Errore di connessione" };
         }
     };

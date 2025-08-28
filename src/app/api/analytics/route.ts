@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (e) {
+        console.error(e);
         return new Response(JSON.stringify({ message: "Errore durante l'inserimento" }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
 }
 
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     const data = await pool.query(`
         WITH data_recente AS (
             SELECT MAX(timestamp_) AS max_timestamp

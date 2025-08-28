@@ -107,7 +107,7 @@ export default function YouTubePlayer({
             origin: window.location.origin,
           },
           events: {
-            onReady: (event: any) => {
+            onReady: () => {
               if (isMounted) {
           
                 onReady?.();
@@ -148,6 +148,7 @@ export default function YouTubePlayer({
         });
 
       } catch (err) {
+        console.log(err);
         if (isMounted) {
           const errorMessage = 'Failed to load YouTube player';
           setError(errorMessage);
@@ -165,6 +166,7 @@ export default function YouTubePlayer({
           ytPlayerRef.current.destroy();
         } catch (e) {
           // Ignore destruction errors
+          console.log(e);
         }
       }
     };

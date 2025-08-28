@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Costruzione dinamica della query con CTE per label
-    let baseQuery = `
+    const baseQuery = `
       WITH streamable_seasons AS (
         SELECT
           media_id,
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       )
       SELECT m.*, label_info FROM media_with_labels m`;
 
-    let countQuery = `
+    const countQuery = `
       WITH streamable_seasons AS (
         SELECT
           media_id,
@@ -128,8 +128,8 @@ export async function GET(request: NextRequest) {
       )
       SELECT COUNT(*) as total FROM media_with_labels m`;
 
-    let whereConditions = ["m.streamable = TRUE"];
-    let queryParams: any[] = [];
+    const whereConditions = ["m.streamable = TRUE"];
+    const queryParams: any[] = [];
     let paramCounter = 1;
 
     // Filtro per genere

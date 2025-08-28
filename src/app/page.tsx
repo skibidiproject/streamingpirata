@@ -3,7 +3,6 @@ import Footer from "./_components/Footer";
 import HeroMediaCard from "./_components/HeroMediaCard";
 import ScrollSection from "./_components/ScrollSection";
 import { MediaData } from "./_components/Mediadata";
-import StartupDialog from "./_components/StartupDialog";
 import { shuffle } from "./shuffle";
 
 type Genre = {
