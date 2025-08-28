@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
-import PlausibleProvider from 'next-plausible'; 
+import PlausibleProvider from 'next-plausible';
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -29,7 +29,14 @@ export default function RootLayout({
         className={`${dmSans.variable} antialiased overflow-x-hidden`}
       >
 
-        <PlausibleProvider domain="analytics.fuckcopyright.net">{children}</PlausibleProvider>
+        <PlausibleProvider
+          domain="ondemand.fuckcopyright.net" // il sito da tracciare
+          trackOutboundLinks
+          selfHosted
+          customDomain="https://analytics.fuckcopyright.net" // dove sta Plausible
+        >
+          {children}
+        </PlausibleProvider>
       </body>
     </html>
   );
