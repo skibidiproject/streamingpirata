@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import PlausibleProvider from 'next-plausible';
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
 });
-
 
 export function generateMetadata(): Metadata {
   return {
@@ -21,22 +20,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
-
       <body
         className={`${dmSans.variable} antialiased overflow-x-hidden`}
       >
-
-        <PlausibleProvider
-          domain="ondemand.fuckcopyright.net" // il sito da tracciare
-          trackOutboundLinks
-          selfHosted
-          customDomain="https://analytics.fuckcopyright.net" // dove sta Plausible
-        >
-          {children}
-        </PlausibleProvider>
+        <Script
+          defer
+          data-domain="ondemand.fuckcopyright.net"
+          src="https://analytics.fuckcopyright.net/js/script.js"
+          strategy="afterInteractive"
+        />
+        {children}
       </body>
     </html>
   );
