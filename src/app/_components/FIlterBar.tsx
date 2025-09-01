@@ -161,7 +161,7 @@ export default function FilterBar({
   return (
     <div className="bg-black/80 backdrop-blur-md sticky top-[5.8rem] h-12 z-30 border-b border-[#212121] mb-20">
       <div className="relative">
-        <div className="px-4 py-3">
+        <div className="sm:px-8 py-[0.85rem] px-6">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setIsOpen(!isOpen)}

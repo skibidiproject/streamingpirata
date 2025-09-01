@@ -104,7 +104,7 @@ export default function Search() {
             {query && !error && (
                 <div className="px-4 sm:px-6 lg:px-8 pt-5">
                     <p className="text-white text-sm">
-                        Risultati per: <span className="text-white font-medium">"{query}"</span>
+                        Risultati per: <span className="text-white font-medium">&quot;{query}&quot;</span>
                         {results.length > 0 && (
                             <span className="ml-2">
                                 ({results.length} {results.length === 1 ? 'risultato' : 'risultati'})

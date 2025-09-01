@@ -235,9 +235,6 @@ export async function GET(request: NextRequest) {
     // Aggiungi parametri per LIMIT e OFFSET
     const finalQueryParams = [...queryParams, limit, offset];
 
-    console.log('Count query:', countFinalQuery);
-    console.log('Data query:', dataFinalQuery);
-    console.log('Query params:', finalQueryParams);
 
     // Esegui entrambe le query in parallelo
     const [countResult, dataResult] = await Promise.all([

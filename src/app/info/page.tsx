@@ -42,7 +42,7 @@ export default function Donations() {
             </Link>
           </div>
 
-          <h1 className='italic mt-10 mb-8 text-2xl'>"Culture shouldn't exist only for those who can afford it"</h1>
+          <h1 className='italic mt-10 mb-8 text-2xl'>&quot;Culture shouldn&apos;t exist only for those who can afford it&quot;</h1>
 
         </div>
       </div>
