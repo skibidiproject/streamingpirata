@@ -102,7 +102,7 @@ export default function Search() {
 
             {/* Mostra query e numero risultati */}
             {query && !error && (
-                <div className="px-4 sm:px-6 lg:px-8 pt-5">
+                <div className="px-4 sm:px-6 lg:px-8 pt-10">
                     <p className="text-white text-sm">
                         Risultati per: <span className="text-white font-medium">&quot;{query}&quot;</span>
                         {results.length > 0 && (

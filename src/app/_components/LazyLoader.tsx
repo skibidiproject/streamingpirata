@@ -389,7 +389,7 @@ export default function LazyLoader({ mediaData, filters = {} }: LazyLoaderProps)
             </div>
 
             {items.length > 0 && totalItems > items.length && (
-                <div className="fixed bottom-4 right-4 bg-zinc-900 text-white px-3 py-1 rounded-md text-sm shadow-lg border border-zinc-800">
+                <div className="fixed bottom-4 right-4 bg-zinc-900 text-white px-3 py-1 rounded-md text-sm shadow-lg border border-zinc-800 z-50">
                     {items.length}/{totalItems} caricati
                 </div>
             )}

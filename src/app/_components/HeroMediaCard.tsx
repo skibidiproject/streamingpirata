@@ -34,6 +34,7 @@ function getYouTubeVideoId(url: string): string | null {
 
 export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
   const [logoLoaded, setLogoLoaded] = useState(false);
+  const [backdropLoaded, setBackdropLoaded] = useState(false);
   const [mediaData, setMediaData] = useState<MediaData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +78,12 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
     fetchData();
   }, [mediaID]);
+
+  // Reset backdrop loaded state when mediaID changes
+  useEffect(() => {
+    setBackdropLoaded(false);
+  }, [mediaID]);
+
 
   if (isLoading) {
     return (
@@ -130,9 +137,15 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
 
 
         {/* Background Image */}
-        <img
+        <Image
+          alt="backdrop"
           src={bgUrl}
-          className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} z-4`}
+          fill
+          quality={70}
+          unoptimized
+          sizes="100vw"
+          className={`object-cover object-top transition-opacity duration-500 ${isTrailerPlaying ? "opacity-0 pointer-events-none" : backdropLoaded ? "opacity-100" : "opacity-0"} pointer-events-auto z-4`}
+          onLoadingComplete={() => setBackdropLoaded(true)}
         />
 
 
@@ -149,6 +162,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
                   src={mediaData.logo_url}
                   alt={mediaData.title}
                   fill
+                  unoptimized
                   quality={75}
                   className={`object-contain object-left transition-opacity duration-500 ${logoLoaded ? 'opacity-100' : 'opacity-0'}`}
                   onLoadingComplete={() => setLogoLoaded(true)}

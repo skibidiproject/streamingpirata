@@ -11,8 +11,8 @@ async function buildPlayerUrl(type: string, id: string, season: number | null, e
   return null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { type: string; id: string, season: number, episode: number } }) {
-  const { type, id, season, episode } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ type: string; id: string, season: number, episode: number }> }) {
+  const { type, id, season, episode } = await params;
 
   const destination = await buildPlayerUrl(type, id, season, episode);
   if (!destination) {

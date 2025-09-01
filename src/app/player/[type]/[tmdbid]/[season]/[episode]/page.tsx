@@ -1,27 +1,25 @@
 import { notFound } from 'next/navigation';
 import VideoPlayer from '@/app/_components/VideoPlayer';
 
-
 interface PageProps {
-  params: {
+  params: Promise<{
     type: string;
     tmdbid: string;
-    season?: number;
-    episode?: number;
-  };
+    season?: string;
+    episode?: string;
+  }>;
 }
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-// Traccia la visualizzazione
-async function insertViewRecord({ tmdbid, type }: PageProps['params']) {
-  const url = `${baseUrl}/api/analytics`;
 
+// Traccia la visualizzazione
+async function insertViewRecord({ tmdbid, type }: { tmdbid: string; type: string }) {
+  const url = `${baseUrl}/api/analytics`;
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: tmdbid, type }),
   });
-
   if (!response.ok) {
     console.error(`Errore registrazione visualizzazione: ${response.status}`);
   }
@@ -33,7 +31,12 @@ async function extractStream({
   tmdbid,
   season,
   episode,
-}: PageProps['params']): Promise<string | null> {
+}: {
+  type: string;
+  tmdbid: string;
+  season?: string;
+  episode?: string;
+}): Promise<string | null> {
   const url = `${baseUrl}/api/stream/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
   console.log(url);
   const response = await fetch(url, {
@@ -41,30 +44,34 @@ async function extractStream({
     headers: { 'Content-Type': 'application/json' },
     redirect: 'follow',
   });
-
   if (!response.ok) {
     console.error(`Errore nel recupero dello stream: ${response.status}`);
     return null;
   }
-
   const data = await response.json(); // supponiamo che il backend restituisca `{ streamUrl: string }`
   return data.url ?? null;
 }
 
-
 // Ottiene il titolo del contenuto
-async function getTitle({ type, tmdbid, season, episode }: PageProps['params']): Promise<string> {
+async function getTitle({ 
+  type, 
+  tmdbid, 
+  season, 
+  episode 
+}: { 
+  type: string; 
+  tmdbid: string; 
+  season?: string; 
+  episode?: string; 
+}): Promise<string> {
   try {
     let url = `${baseUrl}/api/contents/${type}/${tmdbid}`;
     if (type === 'tv' && season && episode) {
       url += `/episode/${season}/${episode}`;
     }
-
     const res = await fetch(url);
     if (!res.ok) throw new Error('Errore nel fetch API');
-
     const data = await res.json();
-
     if (type === 'movie') {
       return data.title || `Film ${tmdbid}`;
     } else if (type === 'tv' && season && episode) {
@@ -73,52 +80,74 @@ async function getTitle({ type, tmdbid, season, episode }: PageProps['params']):
   } catch (err) {
     console.error(err);
   }
-
   return `Streaming ${tmdbid}`;
 }
 
-// Ottiene il titolo del contenuto
-async function getNextEpisode({ type, tmdbid, season, episode }: PageProps['params']) {
+// Ottiene il prossimo episodio
+async function getNextEpisode({ 
+  type, 
+  tmdbid, 
+  season, 
+  episode 
+}: { 
+  type: string; 
+  tmdbid: string; 
+  season?: string; 
+  episode?: string; 
+}) {
   try {
     let url = `${baseUrl}/api/nextepisode/${tmdbid}`;
     if (type === 'tv' && season && episode) {
       url += `/${season}/${episode}`;
     }
-
     const res = await fetch(url);
     if (!res.ok) throw new Error('Errore nel fetch API');
-
     const data = await res.json();
     return data;
-
   } catch (err) {
     console.error(err);
     return null;
   }
-
 }
 
 // Componente player
-async function PlayerContent({ params }: { params: PageProps['params'] }) {
+async function PlayerContent({ 
+  params 
+}: { 
+  params: {
+    type: string;
+    tmdbid: string;
+    season?: string;
+    episode?: string;
+  }
+}) {
   const streamUrl = await extractStream(params);
   console.log(streamUrl);
   if (!streamUrl) {
     notFound();
   }
-
   await insertViewRecord(params);
   const title = await getTitle(params);
   console.log(await getNextEpisode(params));
+  
   return (
     <div className="min-h-screen bg-black">
-      <VideoPlayer streamUrl={streamUrl} title={title} type={params.type} id={params.tmdbid} nextEpisode={await getNextEpisode(params)} season={params.season}/>
+      <VideoPlayer 
+        streamUrl={streamUrl} 
+        title={title} 
+        type={params.type} 
+        id={params.tmdbid} 
+        nextEpisode={await getNextEpisode(params)} 
+        season={params.season ? parseInt(params.season) : undefined}
+      />
     </div>
   );
 }
 
 // Componente principale
-export default function PlayerPage({ params }: PageProps) {
+export default async function PlayerPage({ params }: PageProps) {
+  const resolvedParams = await params;
   return (
-    <PlayerContent params={params} />
+    <PlayerContent params={resolvedParams} />
   );
 }

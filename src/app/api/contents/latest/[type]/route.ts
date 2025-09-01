@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/database";
 
-export async function GET(request: NextRequest, { params }: { params: { type: string } }) {
-  const type = params.type;
+export async function GET(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
+  const {type} = await params;
   const { searchParams } = new URL(request.url);
   const genreQuery = searchParams.get("genre")?.trim() || "";
   const queryParams: any[] = [];

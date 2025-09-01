@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/database";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string, season: number, episode: number } }) {
-    const { id, season, episode } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string, season: number, episode: number }> }) {
+    const { id, season, episode } = await params;
 
     const result = await pool.query(`SELECT 
             ts.media_id AS id,

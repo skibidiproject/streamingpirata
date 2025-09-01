@@ -1019,7 +1019,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                                             </button>
                                         ))
                                     ) : (
-                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg ">
                                             Nessuna qualità aggiuntiva disponibile
                                         </div>
                                     )}
@@ -1029,7 +1029,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                             {settingsTab === 'audio' && (
                                 <>
                                     {audioTracks.length === 0 ? (
-                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg">
                                             Nessuna traccia audio aggiuntiva
                                         </div>
                                     ) : (
@@ -1060,7 +1060,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                             {settingsTab === 'subtitles' && (
                                 <>
                                     {subtitleTracks.length === 0 ? (
-                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg bg-zinc-900/30">
+                                        <div className="px-3 py-4 text-gray-500 text-sm text-center rounded-lg">
                                             Nessun sottotitolo disponibile
                                         </div>
                                     ) : (

@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/database";
 
-export async function GET(
-    { params }: { params: { id: string, type: string } }) {
-    const type =  params.type;
-    const id = await params.id;
+export async function GET(request: NextRequest,
+    { params }: { params: Promise<{ id: string, type: string }> }) {
+    const {type, id} = await params;
 
 
     const today = new Date();
