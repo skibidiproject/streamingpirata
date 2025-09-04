@@ -27,7 +27,7 @@ interface VideoPlayerProps {
     nextEpisode?: any;
     type: string;
     id: string;
-    season? : number;
+    season?: number;
 }
 
 interface AudioTrack {
@@ -180,12 +180,11 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
             if (relativeX > halfWidth - 100 && relativeX < halfWidth + 100 && relativeY > halfHeight - 100 && relativeY < halfHeight + 100 && showControls)
                 togglePlay()
-            else
-            {
+            else {
                 lastTapRef.current = now;
                 setShowControls(true)
-            }   
-                
+            }
+
         }
     };
 
@@ -307,7 +306,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
         handleTap(e);
 
-    
+
     };
 
     // Configure HLS with proxy support
@@ -704,7 +703,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
             videoRef.current.play();
             setIsPlaying(true);
             setShowPlayingIcon(false)
-            
+
         } else {
             videoRef.current.pause();
             setIsPlaying(false);
@@ -1112,7 +1111,11 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                 <div className={`absolute top-0 left-0 right-0 p-4 md:p-6 transition-transform duration-300 ${showControls ? 'translate-y-0' : '-translate-y-full'} flex items-center gap-4 `}>
                     <button
                         onClick={() => {
-                            router.push(`/media/${type}/${id}?season=${season}`);
+                            if (type == "tv") {
+                                router.push(`/media/${type}/${id}?season=${season}`);
+                            } else {
+                                router.push(`/media/${type}/${id}`);
+                            }
                         }}
                         className="text-white hover:text-gray-300 transition-all control-element hover:bg-white/18 rounded-lg p-1 hover:scale-110 duration-100"
                     >

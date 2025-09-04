@@ -26,7 +26,7 @@ async function insertViewRecord({ tmdbid, type }: { tmdbid: string; type: string
 }
 
 // Ottiene lo stream
-async function extractStream({
+async function buildExtractionUrl({
   type,
   tmdbid,
   season,
@@ -37,19 +37,10 @@ async function extractStream({
   season?: string;
   episode?: string;
 }): Promise<string | null> {
-  const url = `${baseUrl}/api/stream/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
-  console.log(url);
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    redirect: 'follow',
-  });
-  if (!response.ok) {
-    console.error(`Errore nel recupero dello stream: ${response.status}`);
-    return null;
-  }
-  const data = await response.json(); // supponiamo che il backend restituisca `{ streamUrl: string }`
-  return data.url ?? null;
+  const extractorUrl = process.env.EXTRACTOR_BASE_URL;
+  const vixUrl = process.env.VIXSRC_BASE_URL;
+  const url = `${extractorUrl}/api/v1/vixcloud/manifest?url=${vixUrl}/${type}/${tmdbid}/${season ?? ''}/${episode ?? ''}`;
+  return url
 }
 
 // Ottiene il titolo del contenuto
@@ -121,7 +112,7 @@ async function PlayerContent({
     episode?: string;
   }
 }) {
-  const streamUrl = await extractStream(params);
+  const streamUrl = await buildExtractionUrl(params);
   console.log(streamUrl);
   if (!streamUrl) {
     notFound();
