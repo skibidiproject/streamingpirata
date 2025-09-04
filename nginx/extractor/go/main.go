@@ -99,8 +99,8 @@ func resolveURL(targetURL, baseURL string) string {
 	return resolved.String()
 }
 
-// Rewrite manifest URLs with goroutines for parallel processing
-func rewriteManifest(manifestContent, baseURL string) string {
+// Rewrite manifest URLs for MAIN playlist (points to secondary playlist endpoint)
+func rewriteMainManifest(manifestContent, baseURL string) string {
 	lines := strings.Split(manifestContent, "\n")
 	result := make([]string, len(lines))
 
@@ -119,7 +119,7 @@ func rewriteManifest(manifestContent, baseURL string) string {
 		go func() {
 			defer wg.Done()
 			for job := range jobs {
-				result[job.index] = processManifestLine(job.line, baseURL)
+				result[job.index] = processMainManifestLine(job.line, baseURL)
 			}
 		}()
 	}
@@ -140,23 +140,96 @@ func rewriteManifest(manifestContent, baseURL string) string {
 	return strings.Join(result, "\n")
 }
 
-// Process single manifest line
-func processManifestLine(line, baseURL string) string {
+// Process single line for MAIN manifest
+func processMainManifestLine(line, baseURL string) string {
 	line = strings.TrimSpace(line)
 
 	if strings.HasPrefix(line, "#EXT-X-KEY:") || strings.HasPrefix(line, "#EXT-X-MEDIA") {
-		// Rewrite URI in metadata lines
+		// Rewrite URI in metadata lines to point to secondary playlist endpoint
 		return keyURIRegex.ReplaceAllStringFunc(line, func(match string) string {
 			submatches := keyURIRegex.FindStringSubmatch(match)
 			if len(submatches) >= 4 {
-				// Find which group matched (quoted with ", quoted with ', or unquoted)
 				var originalURI string
 				if submatches[1] != "" {
-					originalURI = submatches[1] // Double quoted
+					originalURI = submatches[1]
 				} else if submatches[2] != "" {
-					originalURI = submatches[2] // Single quoted
+					originalURI = submatches[2]
 				} else if submatches[3] != "" {
-					originalURI = submatches[3] // Unquoted
+					originalURI = submatches[3]
+				}
+
+				if originalURI != "" {
+					fullURI := resolveURL(originalURI, baseURL)
+					// Point to secondary playlist endpoint instead of nginx directly
+					proxiedURI := "/api/v1/vixcloud/secondary?url=" + url.QueryEscape(fullURI)
+					return fmt.Sprintf(`URI="%s"`, proxiedURI)
+				}
+			}
+			return match
+		})
+	} else if line != "" && !strings.HasPrefix(line, "#") {
+		// Rewrite segment/playlist URLs to point to secondary playlist endpoint
+		fullURL := resolveURL(line, baseURL)
+		return "/api/v1/vixcloud/secondary?url=" + url.QueryEscape(fullURL)
+	}
+
+	return line
+}
+
+// Rewrite SECONDARY playlist URLs (points segments to nginx proxy)
+func rewriteSecondaryManifest(manifestContent, baseURL string) string {
+	lines := strings.Split(manifestContent, "\n")
+	result := make([]string, len(lines))
+
+	const numWorkers = 4
+	jobs := make(chan struct {
+		index int
+		line  string
+	}, len(lines))
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for job := range jobs {
+				result[job.index] = processSecondaryManifestLine(job.line, baseURL)
+			}
+		}()
+	}
+
+	go func() {
+		defer close(jobs)
+		for i, line := range lines {
+			jobs <- struct {
+				index int
+				line  string
+			}{i, line}
+		}
+	}()
+
+	wg.Wait()
+
+	return strings.Join(result, "\n")
+}
+
+// Process single line for SECONDARY manifest
+func processSecondaryManifestLine(line, baseURL string) string {
+	line = strings.TrimSpace(line)
+
+	if strings.HasPrefix(line, "#EXT-X-KEY:") {
+		// Rewrite key URIs to point to nginx proxy
+		return keyURIRegex.ReplaceAllStringFunc(line, func(match string) string {
+			submatches := keyURIRegex.FindStringSubmatch(match)
+			if len(submatches) >= 4 {
+				var originalURI string
+				if submatches[1] != "" {
+					originalURI = submatches[1]
+				} else if submatches[2] != "" {
+					originalURI = submatches[2]
+				} else if submatches[3] != "" {
+					originalURI = submatches[3]
 				}
 
 				if originalURI != "" {
@@ -168,12 +241,11 @@ func processManifestLine(line, baseURL string) string {
 			return match
 		})
 	} else if line != "" && !strings.HasPrefix(line, "#") {
-		// Rewrite segment/playlist URLs
+		// Rewrite segment URLs (.ts files) to point to nginx proxy
 		fullURL := resolveURL(line, baseURL)
 		return NGINX_PROXY_BASE + fullURL
 	}
 
-	// Keep comments and empty lines as-is
 	return line
 }
 
@@ -331,7 +403,7 @@ func getVixCloudVersion(ctx context.Context, siteURL string) (string, error) {
 	return pageData.Version, nil
 }
 
-// Main handler
+// MAIN manifest handler (processes the first level playlist)
 func getManifest(c *gin.Context) {
 	inputURL := c.Query("url")
 	if inputURL == "" {
@@ -349,7 +421,7 @@ func getManifest(c *gin.Context) {
 		return
 	}
 
-	// Download manifest content in parallel with URL preparation
+	// Download manifest content
 	var manifestContent string
 	var manifestErr error
 	var wg sync.WaitGroup
@@ -368,8 +440,39 @@ func getManifest(c *gin.Context) {
 		return
 	}
 
-	// Rewrite URLs for nginx proxy
-	rewrittenManifest := rewriteManifest(manifestContent, manifestURL)
+	// Rewrite URLs for main manifest (points to secondary endpoint)
+	rewrittenManifest := rewriteMainManifest(manifestContent, manifestURL)
+
+	c.Header("Content-Type", "application/vnd.apple.mpegurl")
+	c.String(http.StatusOK, rewrittenManifest)
+}
+
+// SECONDARY manifest handler (processes playlist with .ts segments)
+func getSecondaryManifest(c *gin.Context) {
+	targetURL := c.Query("url")
+	if targetURL == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing URL parameter"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), REQUEST_TIMEOUT)
+	defer cancel()
+
+	// Download secondary manifest content
+	headers := map[string]string{
+		"User-Agent": USER_AGENT,
+		"Referer":    "https://vixsrc.to/",
+		"Origin":     "https://vixsrc.to/",
+	}
+
+	manifestContent, err := makeRequest(ctx, targetURL, headers)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Rewrite URLs for secondary manifest (points segments to nginx)
+	rewrittenManifest := rewriteSecondaryManifest(manifestContent, targetURL)
 
 	c.Header("Content-Type", "application/vnd.apple.mpegurl")
 	c.String(http.StatusOK, rewrittenManifest)
@@ -390,7 +493,8 @@ func main() {
 	r.Use(cors.New(config))
 
 	// Routes
-	r.GET("/api/v1/vixcloud/manifest", getManifest)
+	r.GET("/api/v1/vixcloud/manifest", getManifest)           // Main playlist
+	r.GET("/api/v1/vixcloud/secondary", getSecondaryManifest) // Secondary playlist
 
 	// Start server
 	fmt.Println("Server starting on :5000")

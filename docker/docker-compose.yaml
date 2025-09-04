@@ -1,4 +1,3 @@
-
 services:
   db:
     image: postgres:17
@@ -12,14 +11,14 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  mediaflow-proxy:
-    image: mhdzumair/mediaflow-proxy
-    container_name: mediaflow-proxy
-    environment:
-      API_PASSWORD: "MUH6HoR@xib2&8b1dmr&^H&J"
-    ports:
-      - "8888:8888"
-    restart: unless-stopped
+  # mediaflow-proxy:
+  #   image: mhdzumair/mediaflow-proxy
+  #   container_name: mediaflow-proxy
+  #   environment:
+  #     API_PASSWORD: "MUH6HoR@xib2&8b1dmr&^H&J"
+  #   ports:
+  #     - "8888:8888"
+  #   restart: unless-stopped
 
 volumes:
   postgres_data:
