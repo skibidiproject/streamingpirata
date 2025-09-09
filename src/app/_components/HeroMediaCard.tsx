@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { MediaData } from "./Mediadata";
 import CircleProgress from "./RatingCircle";
+import { notFound } from "next/navigation";
 
 interface HeroMediaCardProps {
   mediaID: string;
@@ -45,7 +46,7 @@ export default function HeroMediaCard({ mediaID, type }: HeroMediaCardProps) {
     async function getMediaData(mediaId: string, type: string): Promise<MediaData | null> {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/${type}/${mediaId}`);
-        if (!res.ok) throw new Error('Errore nel fetch API');
+        if (!res.ok) notFound();
         const data = await res.json();
         return data;
       } catch (error) {

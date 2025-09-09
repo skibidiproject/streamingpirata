@@ -57,7 +57,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
   return (
     <>
       <header
-        className={`fixed z-50 duration-500 
+        className={`fixed z-150 duration-500 
     ${!alwaysTransparent
             ? (scrolled
               ? 'bg-black/80 backdrop-blur-md shadow-md border-b-[#212121]'
@@ -69,7 +69,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
         {/* SINISTRA: Logo + Menu link */}
         <div className="flex items-center gap-x-10">
           <Link href="/">
-            <img src="/logo.svg" alt="Logo" className="w-85 h-auto lg:block hidden mt-[-0.2rem]" />
+            <img src="/logo_m.svg" alt="Logo" className="h-[5rem] lg:block hidden mt-[-0.2rem]" />
             <img src="/logo_m.svg" alt="Logo" className="w-32 h-auto lg:hidden block mt-[-0.75rem]" />
           </Link>
 
@@ -122,8 +122,8 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
       </header>
 
       {/* Mobile fullscreen menu */}
-      <div
-        className={`fixed inset-0 bg-black text-white z-40 flex flex-col items-center justify-center space-y-8 text-3xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-95'
+      <div  
+        className={`fixed inset-0 bg-black text-white z-150 flex flex-col items-center justify-center space-y-8 text-3xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-95'
           }`}
       >
         <ul className="text-center space-y-6">

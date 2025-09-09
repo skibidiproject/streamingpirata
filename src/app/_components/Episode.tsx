@@ -34,7 +34,7 @@ export default function Episode({ id, season, episode, title, description, still
     router.push(`/player/tv/${id}/${season}/${episode}`);
   }
 
-  const imageUrl = stillUrl || "https://www.hfrance.fr/wp-content/uploads/2025/06/1750435121218.jpg";
+  const imageUrl = stillUrl || "/no_cover.png";
 
   return (
     <div className="mt-5 py-1 rounded-lg flex items-start gap-4">
@@ -45,7 +45,7 @@ export default function Episode({ id, season, episode, title, description, still
       >
         {/* Loading spinner */}
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black rounded-md z-10">
+          <div className="absolute inset-0 flex items-center justify-center bg-black rounded-md z-5">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         )}
