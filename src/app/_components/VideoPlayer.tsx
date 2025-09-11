@@ -862,9 +862,24 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
             {/* Sottotitoli con posizione dinamica */}
             {customSubtitles && (
                 <div className={`absolute ${subtitlePosition} left-1/2 transform -translate-x-1/2 z-20 pointer-events-none px-2 transition-all duration-300`}>
-                    <div className="bg-black/20 backdrop-blur-sm p-2 text-center rounded-md mx-4 sm:mx-1">
+                    <div className="text-center mx-4 sm:mx-1">
                         <span
-                            className="text-white text-base lg:text-3xl font-medium leading-tight"
+                            className="text-white text-base lg:text-3xl font-medium leading-tight inline"
+                            style={{
+                                background: 'rgba(0, 0, 0, 0.8)', // Increased opacity to compensate
+                                backdropFilter: 'blur(4px)',
+                                padding: '2px 6px', // Reduced padding to minimize overlap
+                                borderRadius: '4px',
+                                boxDecorationBreak: 'clone',
+                                WebkitBoxDecorationBreak: 'clone',
+                                lineHeight: '1.2', // Tighter line height to reduce gap
+                                textShadow: `
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000
+          `
+                            }}
                             dangerouslySetInnerHTML={{ __html: customSubtitles }}
                         />
                     </div>
