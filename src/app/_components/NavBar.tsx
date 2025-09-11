@@ -69,7 +69,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
         {/* SINISTRA: Logo + Menu link */}
         <div className="flex items-center gap-x-10">
           <Link href="/">
-            <img src="/logo.svg" alt="Logo" className="w-30" />
+            <img src="/logo.svg" alt="Logo" className="sm:w-30 w-20 pr-4" />
           </Link>
 
           {/* Menu link (desktop only) */}
