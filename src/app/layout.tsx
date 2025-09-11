@@ -27,8 +27,8 @@ export default function RootLayout({
       >
         <Script
           defer
-          data-domain="ondemand.fuckcopyright.net"
-          src="https://analytics.fuckcopyright.net/js/script.js"
+          data-domain={process.env.NEXT_PUBLIC_BASE_DOMAIN}
+          src={`${process.env.NEXT_PUBLIC_ANALYTICS_BASE_URL}/js/script.js`}
           strategy="afterInteractive"
         />
         {children}
