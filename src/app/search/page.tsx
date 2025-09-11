@@ -6,7 +6,6 @@ import FilterBar, { FilterOptions } from "../_components/FIlterBar";
 import { useSearchParams } from "next/navigation";
 
 export default function Search() {
-    const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState<FilterOptions>({});
 
     const searchParams = useSearchParams();
@@ -57,15 +56,6 @@ export default function Search() {
                 <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
                     <div className="text-center">
                         <p className="text-white text-lg">Inserisci un termine di ricerca</p>
-                    </div>
-                </div>
-            ) : error ? (
-                <div className="flex flex-col items-center justify-center min-h-[60vh] w-full px-4">
-                    <div className="text-center max-w-md">
-                        <h2 className="text-white text-xl mb-3 font-semibold">
-                            Errore nella ricerca
-                        </h2>
-                        <p className="text-white mb-6 text-sm">{error}</p>
                     </div>
                 </div>
             ) : (

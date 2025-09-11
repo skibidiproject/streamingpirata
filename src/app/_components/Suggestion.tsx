@@ -13,12 +13,17 @@
             const fetchSuggestions = async () => {
                 const urlParams = new URLSearchParams();
                 urlParams.append("search", query);
+                urlParams.append("limit", "5")
+
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/suggestions?${urlParams.toString()}`,
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/contents/?${urlParams.toString()}`,
                     { cache: "no-store" }
                 );
+
+                
                 const data = await res.json();
-                setSuggestions(data.suggestions || []);
+                
+                setSuggestions(data.data || []);
             };
 
             fetchSuggestions();
@@ -27,11 +32,11 @@
         console.log(suggestions)
 
         return (
-            <div className={`absolute mt-8 h-fit w-full -z-10 bg-[#0a0a0a]/50  border border-[#2e2e2e] border-t-transparent backdrop-blur-2xl rounded-br-md rounded-bl-md ${suggestions.length === 0 ? "hidden" : ""} `}>
+            <div className={`absolute mt-8 h-fit w-full bg-[#0a0a0a]/85 border border-[#2e2e2e] border-t-transparent rounded-br-md rounded-bl-md ${suggestions.length === 0 ? "hidden" : ""} `}>
                 {suggestions.map((item) => (
-                    <a href={`/media/${item.type}/${item.id}`}>
-                        <div key={item.id} className="pl-5 py-1 hover:underline">
-                            <h1 >{item.title}</h1>
+                    <a href={`/media/${item.type}/${item.id}`} key={item.id} >
+                        <div className="px-5 py-1 hover:underline">
+                            <h1 className="truncate">{item.title}</h1>
                         </div>
                     </a>
                 ))}
