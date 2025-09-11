@@ -29,11 +29,76 @@ export async function GET(request: NextRequest) {
     }
 
     function normalizeString(s: string): string {
+      // Mappa per la normalizzazione dei caratteri accentati
+      const accentMap: { [key: string]: string } = {
+        'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a',
+        'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
+        'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+        'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
+        'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
+        'ñ': 'n', 'ç': 'c',
+        'À': 'A', 'Á': 'A', 'Â': 'A', 'Ã': 'A', 'Ä': 'A', 'Å': 'A',
+        'È': 'E', 'É': 'E', 'Ê': 'E', 'Ë': 'E',
+        'Ì': 'I', 'Í': 'I', 'Î': 'I', 'Ï': 'I',
+        'Ò': 'O', 'Ó': 'O', 'Ô': 'O', 'Õ': 'O', 'Ö': 'O',
+        'Ù': 'U', 'Ú': 'U', 'Û': 'U', 'Ü': 'U',
+        'Ñ': 'N', 'Ç': 'C'
+      };
+
       return s
         .toLowerCase()
+        // Rimuovi apostrofi e aggiungi spazio (l'estate -> l estate)
+        .replace(/'/g, ' ')
+        // Sostituisci caratteri accentati
+        .replace(/[àáâãäåèéêëìíîïòóôõöùúûüñç]/g, (match) => accentMap[match] || match)
+        // Normalizza punteggiatura e simboli in spazi
         .replace(/[.,\-'':–—]/g, ' ')
+        // Normalizza spazi multipli in uno singolo
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    function generateSearchVariants(query: string): string[] {
+      const normalized = normalizeString(query);
+      const variants = [normalized];
+      
+      // Se la query normalizzata contiene spazi dopo articoli, genera varianti
+      const wordsWithApostrophe = normalized.replace(/\b([ldun])\s+([aeiou])/g, "$1'$2");
+      if (wordsWithApostrophe !== normalized) {
+        variants.push(normalizeString(wordsWithApostrophe));
+      }
+      
+      const withoutSpaces = normalized.replace(/\b([ldun])\s+/g, "$1");
+      if (withoutSpaces !== normalized) {
+        variants.push(withoutSpaces);
+      }
+      
+      // CASO INVERSO: se la query originale è una parola attaccata come "lestate"
+      // Aggiungi varianti separate come "l estate" e "l'estate"
+      const originalLower = query.toLowerCase();
+      
+      // Pattern per parole che iniziano con articoli attaccati
+      const articlePatterns = [
+        { pattern: /^l([aeiou].+)$/i, article: 'l' },
+        { pattern: /^un([aeiou].+)$/i, article: 'un' },
+        { pattern: /^d([aeiou].+)$/i, article: 'd' }
+      ];
+      
+      for (const { pattern, article } of articlePatterns) {
+        const match = originalLower.match(pattern);
+        if (match) {
+          const wordPart = match[1];
+          // Variante con spazio: "lestate" -> "l estate"
+          const spaced = `${article} ${wordPart}`;
+          variants.push(normalizeString(spaced));
+          
+          // Variante con apostrofo: "lestate" -> "l'estate" 
+          const withApostrophe = `${article}'${wordPart}`;
+          variants.push(normalizeString(withApostrophe));
+        }
+      }
+      
+      return [...new Set(variants)]; // Rimuovi duplicati
     }
 
     // Determina se è attiva una ricerca testuale
@@ -223,24 +288,26 @@ export async function GET(request: NextRequest) {
       paramCounter++;
     }
 
-    // Filtro per ricerca testuale - usa il parametro già aggiunto per la rilevanza
+    // Filtro per ricerca testuale - usa varianti multiple
     if (isTextSearch) {
-      const searchIndex = isTextSearch ? 1 : paramCounter; // Usa il primo parametro se è ricerca testuale
-      const normalizedQuery = normalizeString(searchQuery);
-      const search = `%${normalizedQuery}%`;
-
-      whereConditions.push(`
-        LOWER(
+      const searchVariants = generateSearchVariants(searchQuery);
+      
+      // Crea condizioni OR per tutte le varianti
+      const searchConditions = searchVariants.map((variant, index) => {
+        const searchParam = `%${variant}%`;
+        queryParams.push(searchParam);
+        return `LOWER(
           TRIM(
             REGEXP_REPLACE(
               REGEXP_REPLACE(m.title, '[.,\\-'':–—]', ' ', 'g'),
               '\\s+', ' ', 'g'
             )
           )
-        ) LIKE $${paramCounter}
-      `);
-      queryParams.push(search);
-      paramCounter++;
+        ) LIKE $${paramCounter + index}`;
+      });
+      
+      whereConditions.push(`(${searchConditions.join(' OR ')})`);
+      paramCounter += searchVariants.length;
     }
 
     // Costruzione WHERE clause
