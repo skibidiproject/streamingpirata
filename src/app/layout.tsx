@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'Cinema - FuckCopyright Network',
+    title: 'Streaming - FuckCopyright Network',
     description: "Streaming di film e serie TV in italiano, gratis!",
   };
 }

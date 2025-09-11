@@ -127,6 +127,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     const handleVolumeSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!videoRef.current || !volumeSliderRef.current) return;
+        if (isLoading) return;
 
         const rect = volumeSliderRef.current.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -213,6 +214,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
     };
 
     const handleVolumeDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if (isLoading) return;
         isVolumeSliderDragging.current = true;
         updateVolumeFromEvent(e);
         document.addEventListener('mousemove', handleVolumeDragging);
@@ -236,6 +238,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!videoRef.current || !duration || !progressRef.current) return;
+        if (isLoading) return;
 
         const rect = progressRef.current.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -268,6 +271,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
     };
 
     const handleDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if (isLoading) return;
         isDraggingRef.current = true; // Cambia da isDragging.current a isDraggingRef.current
         updateTimeFromEvent(e);
         document.addEventListener('mousemove', handleDragging);
@@ -630,7 +634,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                 case 'm':
                 case 'M':
                     e.preventDefault();
-                    if (videoRef.current) {
+                    if (videoRef.current && !isLoading) {
                         videoRef.current.muted = !videoRef.current.muted;
                     }
                     break;
@@ -649,6 +653,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     // Settings panel toggle handler
     const handleClickSettings = (e?: React.MouseEvent) => {
+        if (isLoading) return;
         if (e) e.stopPropagation();
         setShowSettings(prev => {
             if (prev) {
@@ -660,6 +665,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
     };
 
     const handleClickNextEpisode = (e?: React.MouseEvent) => {
+        if (isLoading) return;
         if (e) e.stopPropagation();
         router.push(`/player/tv/${nextEpisode.id}/${nextEpisode.season}/${nextEpisode.episode}`);
     };
@@ -697,7 +703,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     const togglePlay = () => {
         if (!videoRef.current) return;
-
+        if (isLoading) return;
 
         if (videoRef.current.paused) {
             videoRef.current.play();
@@ -717,6 +723,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
 
     const toggleFullscreen = () => {
+        if (isLoading) return;
         const container = containerRef.current;
         if (!container) return;
 
@@ -750,6 +757,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     const skipBackward = () => {
         if (!videoRef.current) return;
+        if (isLoading) return;
 
         const newTime = Math.max(videoRef.current.currentTime - 10, 0);
         videoRef.current.currentTime = newTime;
@@ -762,6 +770,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
     const skipForward = () => {
         if (!videoRef.current) return;
+        if (isLoading) return;
 
         const newTime = Math.min(videoRef.current.currentTime + 10, duration);
         videoRef.current.currentTime = newTime;
@@ -897,15 +906,15 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
             {/* Enhanced Loading Overlay */}
 
             {isLoading && (
-                <div className="absolute inset-0 bg-[#0a0a0a] bg-opacity-90 flex items-center justify-center z-50 cursor-default">
-                    <div className="text-center">
+                <div className="absolute inset-0 bg-[#0a0a0a] bg-opacity-90 flex items-center justify-center z-50 cursor-default pointer-events-none">
+                    <div className="text-center pointer-events-none">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
                         <p className="text-white text-lg">{loadingMessage}</p>
                     </div>
                 </div>
             )}
 
-            {skipDirection === "forward" && (
+            {skipDirection === "forward" && !isLoading && (
                 <FastForwardRoundedIcon
                     key={skipAnimKey}
                     className="absolute top-1/2 right-[9vw] -translate-y-1/2 z-50 fadeInOut aspect-square"
@@ -913,7 +922,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
                 />
             )}
 
-            {skipDirection === "backward" && (
+            {skipDirection === "backward" && !isLoading && (
                 <FastForwardRoundedIcon
                     key={skipAnimKey}
                     className="absolute top-1/2 left-[9vw] rotate-180 -translate-y-1/2 z-50 fadeInOut aspect-square"
@@ -1230,7 +1239,7 @@ export default function VideoPlayer({ streamUrl, title, nextEpisode, type, id, s
 
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (videoRef.current) {
+                                        if (videoRef.current && !isLoading) {
                                             const newMutedState = !videoRef.current.muted;
                                             videoRef.current.muted = newMutedState;
                                             setIsMuted(newMutedState); // Aggiungi questa riga
