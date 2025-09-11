@@ -64,12 +64,12 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
               : 'bg-transparent border-b-transparent')
             : 'bg-black/80 backdrop-blur-md shadow-md border-b-[#212121]'
           } 
-    w-screen text-white px-5 md:px-8 lg:px-8 h-24 border-b flex items-center justify-between`}
+    w-screen text-white px-5 gap-x-5 md:px-8 lg:px-8 h-24 border-b flex items-center justify-between`}
       >
         {/* SINISTRA: Logo + Menu link */}
         <div className="flex items-center gap-x-10">
           <Link href="/">
-            <img src="/logo.svg" alt="Logo" className="sm:w-30 w-20 pr-4" />
+            <img src="/logo.svg" alt="Logo" className="sm:w-30 w-full" />
           </Link>
 
           {/* Menu link (desktop only) */}
@@ -97,7 +97,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
         </div>
 
         {/* DESTRA: Search + hamburger */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="block" suppressHydrationWarning>
             <Search />
           </div>
@@ -121,7 +121,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
       </header>
 
       {/* Mobile fullscreen menu */}
-      <div  
+      <div
         className={`fixed inset-0 bg-black text-white z-145 flex flex-col items-center justify-center space-y-8 text-3xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-95'
           }`}
       >
