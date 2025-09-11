@@ -382,15 +382,15 @@ export default function LazyLoader({ mediaData, filters = {} }: LazyLoaderProps)
                 {!hasMore && items.length > 0 && totalItems > itemsPerPage && (
                     <div className="flex justify-center items-center h-16 mt-4">
                         <div className="text-gray-500 text-sm">
-                            Tutti gli elementi disponibili sono stati caricati ({totalItems} totali)
+                            Tutti i titoli disponibili sono stati caricati ({totalItems} totali)
                         </div>
                     </div>
                 )}
             </div>
 
-            {items.length > 0 && totalItems > items.length && (
+            {items.length > 0 && (
                 <div className="fixed bottom-4 right-4 bg-zinc-900 text-white px-3 py-1 rounded-md text-sm shadow-lg border border-zinc-800 z-50">
-                    {items.length}/{totalItems} caricati
+                    {totalItems} titoli trovati
                 </div>
             )}
         </div>

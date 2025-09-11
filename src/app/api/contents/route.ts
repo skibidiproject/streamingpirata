@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Filtro per ricerca testuale
-    if (rawSearchQuery !== null && searchQuery.length >= 3) {
+    if (rawSearchQuery !== null && searchQuery.length >= 1) {
       const normalizedQuery = normalizeString(searchQuery);
       const search = `%${normalizedQuery}%`;
 
@@ -214,9 +214,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Validazione per ricerca testuale
-    if (rawSearchQuery !== null && searchQuery.length < 3) {
+    if (rawSearchQuery !== null && searchQuery.length < 1) {
       return NextResponse.json(
-        { error: "Inserisci più di tre caratteri." },
+        { error: "Inserisci almeno un carattere per la ricerca" },
         { status: 400 }
       );
     }
