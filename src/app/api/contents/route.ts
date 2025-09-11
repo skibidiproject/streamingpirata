@@ -36,7 +36,10 @@ export async function GET(request: NextRequest) {
         .trim();
     }
 
-    // Costruzione dinamica della query con CTE per label
+    // Determina se è attiva una ricerca testuale
+    const isTextSearch = rawSearchQuery !== null && searchQuery.length >= 1;
+
+    // Costruzione dinamica della query con CTE per label e rilevanza
     const baseQuery = `
       WITH streamable_seasons AS (
         SELECT
@@ -56,7 +59,7 @@ export async function GET(request: NextRequest) {
         WHERE ts.streamable = TRUE
         GROUP BY ts.media_id
       ),
-      media_with_labels AS (
+      media_with_labels_and_relevance AS (
         SELECT
           m.*,
           ss.max_season_release_date,
@@ -85,7 +88,45 @@ export async function GET(request: NextRequest) {
                 ELSE json_build_object('label', false)
               END
             ELSE json_build_object('label', false)
-          END AS label_info
+          END AS label_info,
+          ${isTextSearch ? `
+          -- Calcolo rilevanza solo se c'è una ricerca testuale
+          CASE
+            WHEN LOWER(
+              TRIM(
+                REGEXP_REPLACE(
+                  REGEXP_REPLACE(m.title, '[.,\\-'':–—]', ' ', 'g'),
+                  '\\s+', ' ', 'g'
+                )
+              )
+            ) = $1 THEN 100  -- Match esatto
+            WHEN LOWER(
+              TRIM(
+                REGEXP_REPLACE(
+                  REGEXP_REPLACE(m.title, '[.,\\-'':–—]', ' ', 'g'),
+                  '\\s+', ' ', 'g'
+                )
+              )
+            ) LIKE $2 THEN 90  -- Inizia con la query
+            WHEN LOWER(
+              TRIM(
+                REGEXP_REPLACE(
+                  REGEXP_REPLACE(m.title, '[.,\\-'':–—]', ' ', 'g'),
+                  '\\s+', ' ', 'g'
+                )
+              )
+            ) LIKE $3 THEN 80  -- Finisce con la query
+            WHEN POSITION($1 IN LOWER(
+              TRIM(
+                REGEXP_REPLACE(
+                  REGEXP_REPLACE(m.title, '[.,\\-'':–—]', ' ', 'g'),
+                  '\\s+', ' ', 'g'
+                )
+              )
+            )) = 1 THEN 70  -- Query all'inizio (senza normalizzazione spazi)
+            ELSE 50  -- Match generico
+          END AS relevance_score
+          ` : '0 AS relevance_score'}
         FROM media m
         LEFT JOIN streamable_seasons ss ON (
           ss.media_id = m.id
@@ -93,7 +134,7 @@ export async function GET(request: NextRequest) {
         )
         LEFT JOIN latest_episodes le ON le.media_id = m.id
       )
-      SELECT m.*, label_info FROM media_with_labels m`;
+      SELECT m.*, label_info, relevance_score FROM media_with_labels_and_relevance m`;
 
     const countQuery = `
       WITH streamable_seasons AS (
@@ -131,6 +172,17 @@ export async function GET(request: NextRequest) {
     const whereConditions = ["m.streamable = TRUE"];
     const queryParams: any[] = [];
     let paramCounter = 1;
+
+    // Se c'è ricerca testuale, aggiungi i parametri per il calcolo della rilevanza
+    if (isTextSearch) {
+      const normalizedQuery = normalizeString(searchQuery);
+      queryParams.push(
+        normalizedQuery,           // Match esatto
+        `${normalizedQuery}%`,     // Inizia con
+        `%${normalizedQuery}`      // Finisce con
+      );
+      paramCounter += 3;
+    }
 
     // Filtro per genere
     if (genreQuery) {
@@ -171,8 +223,9 @@ export async function GET(request: NextRequest) {
       paramCounter++;
     }
 
-    // Filtro per ricerca testuale
-    if (rawSearchQuery !== null && searchQuery.length >= 1) {
+    // Filtro per ricerca testuale - usa il parametro già aggiunto per la rilevanza
+    if (isTextSearch) {
+      const searchIndex = isTextSearch ? 1 : paramCounter; // Usa il primo parametro se è ricerca testuale
       const normalizedQuery = normalizeString(searchQuery);
       const search = `%${normalizedQuery}%`;
 
@@ -193,9 +246,12 @@ export async function GET(request: NextRequest) {
     // Costruzione WHERE clause
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
-    // Ordinamento
+    // Ordinamento - priorità alla rilevanza se c'è ricerca testuale
     let orderBy = "";
-    if (orderbyQuery) {
+    if (isTextSearch && !orderbyQuery) {
+      // Se c'è una ricerca testuale e nessun ordinamento specifico, ordina per rilevanza
+      orderBy = "ORDER BY relevance_score DESC, m.rating DESC, m.title ASC";
+    } else if (orderbyQuery) {
       switch (orderbyQuery) {
         case 'date':
           orderBy = `ORDER BY m.release_date ${orderDirection.toUpperCase()}`;
@@ -205,6 +261,13 @@ export async function GET(request: NextRequest) {
           break;
         case 'az':
           orderBy = `ORDER BY m.title ${orderDirection.toUpperCase()}`;
+          break;
+        case 'relevance':
+          if (isTextSearch) {
+            orderBy = `ORDER BY relevance_score ${orderDirection.toUpperCase()}`;
+          } else {
+            orderBy = "ORDER BY m.rating DESC";
+          }
           break;
         default:
           orderBy = "ORDER BY m.title ASC";
@@ -221,8 +284,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Query per il conteggio totale (per la paginazione)
-    const countFinalQuery = `${countQuery} ${whereClause}`;
+    // Query per il conteggio totale (per la paginazione) - usa parametri diversi per la count
+    const countQueryParams = queryParams.slice(isTextSearch ? 3 : 0); // Rimuovi i primi 3 parametri se è ricerca testuale
+    const countFinalQuery = `${countQuery} ${whereClause.replace(/\$(\d+)/g, (match, num) => {
+      const newNum = parseInt(num) - (isTextSearch ? 3 : 0);
+      return `$${newNum}`;
+    })}`;
     
     // Query per i dati paginati
     const dataFinalQuery = `
@@ -235,10 +302,9 @@ export async function GET(request: NextRequest) {
     // Aggiungi parametri per LIMIT e OFFSET
     const finalQueryParams = [...queryParams, limit, offset];
 
-
     // Esegui entrambe le query in parallelo
     const [countResult, dataResult] = await Promise.all([
-      pool.query(countFinalQuery, queryParams),
+      pool.query(countFinalQuery, countQueryParams),
       pool.query(dataFinalQuery, finalQueryParams)
     ]);
 
@@ -248,6 +314,9 @@ export async function GET(request: NextRequest) {
     const hasMore = page < totalPages;
 
     console.log(`Page ${page}/${totalPages}, showing ${medias.length}/${totalItems} items`);
+    if (isTextSearch) {
+      console.log(`Search query: "${searchQuery}", ordered by relevance`);
+    }
 
     // Ritorna i dati con metadati di paginazione
     return NextResponse.json({
@@ -259,7 +328,8 @@ export async function GET(request: NextRequest) {
         itemsPerPage: limit,
         hasMore,
         itemsOnPage: medias.length
-      }
+      },
+      ...(isTextSearch && { searchInfo: { query: searchQuery, orderedByRelevance: true } })
     });
 
   } catch (error) {

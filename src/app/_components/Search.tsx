@@ -60,7 +60,7 @@ export default function Search() {
         </button>
       </div>
       {
-        debouncedQuery.trim() && debouncedQuery.length > 2 && viewSuggestions && <Suggetions query={debouncedQuery} />
+        debouncedQuery.trim() && debouncedQuery.length > 1 && viewSuggestions && <Suggetions query={debouncedQuery} />
       }
     </div>
   );

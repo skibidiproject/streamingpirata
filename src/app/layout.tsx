@@ -10,8 +10,11 @@ const dmSans = DM_Sans({
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'FUCKCOPYRIGHT.NET - ON DEMAND',
-    description: "L'unica piattaforma italiana di streaming gratuito e senza pubblicità.",
+    title: 'Cinema - FuckCopyright Network',
+    description: "Streaming di film e serie TV in italiano, gratis!",
+    icons: {
+      icon: '/favicon.ico',
+    },
   };
 }
 

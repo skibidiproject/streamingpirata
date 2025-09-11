@@ -69,8 +69,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
         {/* SINISTRA: Logo + Menu link */}
         <div className="flex items-center gap-x-10">
           <Link href="/">
-            <img src="/Logo1.png" alt="Logo" className="h-[3rem] lg:block hidden mt-[-0.2rem]" />
-            <img src="/Logo1.png" alt="Logo" className="w-32 h-auto lg:hidden block mt-[-0.75rem]" />
+            <img src="/logo.svg" alt="Logo" className="w-30" />
           </Link>
 
           {/* Menu link (desktop only) */}
@@ -123,7 +122,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
 
       {/* Mobile fullscreen menu */}
       <div  
-        className={`fixed inset-0 bg-black text-white z-150 flex flex-col items-center justify-center space-y-8 text-3xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-95'
+        className={`fixed inset-0 bg-black text-white z-145 flex flex-col items-center justify-center space-y-8 text-3xl transition-all duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-95'
           }`}
       >
         <ul className="text-center space-y-6">
