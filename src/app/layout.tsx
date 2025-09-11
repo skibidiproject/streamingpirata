@@ -12,9 +12,6 @@ export function generateMetadata(): Metadata {
   return {
     title: 'Cinema - FuckCopyright Network',
     description: "Streaming di film e serie TV in italiano, gratis!",
-    icons: {
-      icon: '/favicon.ico',
-    },
   };
 }
 
