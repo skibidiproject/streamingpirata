@@ -9,16 +9,29 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh # Monta lo script per creare i DB
     restart: unless-stopped
 
-  # mediaflow-proxy:
-  #   image: mhdzumair/mediaflow-proxy
-  #   container_name: mediaflow-proxy
-  #   environment:
-  #     API_PASSWORD: "MUH6HoR@xib2&8b1dmr&^H&J"
-  #   ports:
-  #     - "8888:8888"
-  #   restart: unless-stopped
+  umami:
+    image: docker.umami.is/umami-software/umami:postgresql-latest
+    container_name: umami
+    environment:
+      DATABASE_TYPE: postgres
+      DATABASE_URL: postgresql://postgres:developer@db:5432/umami_db
+      REDIS_URL: redis://redis:6379 # Connessione a Redis
+    ports:
+      - "5050:3000"
+    depends_on:
+      - db
+      - redis  # Umami dipende da Redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"  # Redis di default usa la porta 6379
+    restart: unless-stopped
 
 volumes:
   postgres_data:
