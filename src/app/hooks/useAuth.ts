@@ -30,7 +30,7 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('https://accounts-testing.riccardocinaglia.it/api/auth/me', {
+      const response = await fetch('https://test.0/api/auth/me', {
         credentials: 'include',
       })
       const data = await response.json()
@@ -63,7 +63,7 @@ export function useAuth() {
     setError(null)
 
     try {
-      const res = await fetch('https://accounts-testing.riccardocinaglia.it/api/auth/login', {
+      const res = await fetch('https://test.0/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // fondamentale per cookie cross-domain
@@ -86,7 +86,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await fetch('https://accounts-testing.riccardocinaglia.it/api/auth/logout', {
+      await fetch('https://test.0/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       })
@@ -97,7 +97,7 @@ export function useAuth() {
         loading: false,
       })
 
-      window.location.href = 'https://accounts-testing.riccardocinaglia.it/login'
+      window.location.href = 'https://test.0/login'
     } catch (error) {
       console.error('Errore durante il logout:', error)
     }
