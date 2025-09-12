@@ -22,15 +22,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src={`${process.env.NEXT_PUBLIC_ANALYTICS_BASE_URL}/script.js`}
+          data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`${dmSans.variable} antialiased overflow-x-hidden`}
       >
-        <Script
-          defer
-          data-domain={process.env.NEXT_PUBLIC_BASE_DOMAIN}
-          src={`${process.env.NEXT_PUBLIC_ANALYTICS_BASE_URL}/js/script.js`}
-          strategy="afterInteractive"
-        />
         {children}
       </body>
     </html>
