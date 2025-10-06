@@ -41,7 +41,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           onClick={() => scroll("left")}
           className={`
             ${!canScrollLeft ? 'opacity-0 pointer-events-none' : 'opacity-100'}
-            absolute h-full z-15 w-20 
+            absolute h-full z-92 w-20 
             overflow-hidden
             group
             before:content-['']
@@ -62,7 +62,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
               bg-gradient-to-r from-[#0a0a0a] from-0% to-transparent to-10%
             "
           />
-          <h1 className="absolute z-15 left-5 text-2xl font-bold invisible group-hover:visible h-fit ">
+          <h1 className="absolute z-95 left-5 text-2xl font-bold invisible group-hover:visible h-fit ">
             <ChevronLeftIcon className="w-8 text-white" />
           </h1>
         </button>
@@ -71,7 +71,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
           onClick={() => scroll("right")}
           className={`
             ${!canScrollRight ? 'opacity-0 pointer-events-none' : 'opacity-100'}
-            absolute h-full z-15 w-20 
+            absolute h-full z-92 w-20 
             overflow-hidden
             group right-4
             before:content-['']
@@ -92,7 +92,7 @@ export default function ScrollSection({ media }: { media: MediaData[] }) {
               bg-gradient-to-l from-[#0a0a0a] from-5% to-transparent to-20%
             "
           />
-          <h1 className="absolute z-15 right-5 text-2xl font-bold invisible group-hover:visible h-fit ">
+          <h1 className="absolute z-95 right-5 text-2xl font-bold invisible group-hover:visible h-fit ">
             <ChevronRightIcon className="w-8 text-white" />
           </h1>
         </button>
