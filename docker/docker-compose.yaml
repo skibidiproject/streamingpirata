@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh # Monta lo script per creare i DB
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     restart: unless-stopped
 
   umami:
@@ -18,20 +18,32 @@ services:
     environment:
       DATABASE_TYPE: postgres
       DATABASE_URL: postgresql://postgres:developer@db:5432/umami_db
-      REDIS_URL: redis://redis:6379 # Connessione a Redis
+      REDIS_URL: redis://redis:6379
     ports:
       - "5050:3000"
     depends_on:
       - db
-      - redis  # Umami dipende da Redis
+      - redis
     restart: unless-stopped
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"  # Redis di default usa la porta 6379
+      - "6379:6379"
+    restart: unless-stopped
+
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+    ports:
+      - "5051:8978"
+    volumes:
+      - cloudbeaver_data:/opt/cloudbeaver/workspace
+    depends_on:
+      - db
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  cloudbeaver_data:
