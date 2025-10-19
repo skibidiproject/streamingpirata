@@ -121,13 +121,10 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
           <li>
             <Link href="/archivio" onClick={closeMenu} className="hover:underline">Archivio</Link>
           </li>
-          {
-            /*
-          <li>
-            <a href={`/login`}>Login</a>
+          <li className="mt-5">
+            <a href={`/logout`} onClick={closeMenu} className="py-1.5 px-4 rounded-sm bg-white text-black text-2xl">Logout</a>
           </li>
-          */
-          }
+          
         </ul>
       </div>
 
