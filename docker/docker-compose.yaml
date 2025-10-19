@@ -38,7 +38,7 @@ services:
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: management.postgre@fuckcopyright.net
-      PGADMIN_DEFAULT_PASSWORD: FJ$sik9kbRr$Wd
+      PGADMIN_DEFAULT_PASSWORD: '#J$sik9kbRr$Wd'
     ports:
       - "5051:80"
     volumes:
