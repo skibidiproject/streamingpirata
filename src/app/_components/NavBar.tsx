@@ -4,15 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Search from "./Search";
-import { useAuth } from "@/app/hooks/useAuth";
 
 interface NavBarProps {
   alwaysTransparent?: boolean;
 }
 
 function Navbar({ alwaysTransparent = false }: NavBarProps) {
-  const { user, isLoggedIn, loading } = useAuth();
-  console.log(user, isLoggedIn, loading)
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -78,21 +75,7 @@ function Navbar({ alwaysTransparent = false }: NavBarProps) {
             <Link href="/film" className={getLinkClasses('/film')}>Film</Link>
             <Link href="/serie-tv" className={getLinkClasses('/serie-tv')}>Serie TV</Link>
             <a href="/archivio" className={getLinkClasses('/archivio')}>Archivio</a>
-
-            { /*
-            !loading && (isLoggedIn && user ? (
-              <a href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}`} className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer">
-                Account
-              </a>
-            ) : (
-              <a
-                href={`${process.env.NEXT_PUBLIC_ACCOUNT_CENTER_BASE_URL}/login?redirect=ondemand`}
-                className="bg-white text-black px-4 py-1 rounded hover:cursor-pointer"
-              >
-                Login
-              </a>
-            ))
-              */}
+            <a href="/logout" className="py-1 px-2 rounded-sm bg-white text-black">Logout</a>
           </nav>
         </div>
 

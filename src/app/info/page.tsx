@@ -11,7 +11,7 @@ export default function Donations() {
   return (
     <>
       <Navbar />
-      <div className="text-white px-4 py-8 w-screen pt-30">
+      <div className="text-white px-4 py-8 w-screen pt-40 pb-10">
         <div className="mx-auto w-[97%] sm:w-[30rem] md:w-[40rem] lg:w-[55rem]  text-justify">
 
           <h1 className="text-2xl md:text-3xl font-bold mb-4">Supporta il Progetto</h1>
@@ -33,17 +33,7 @@ export default function Donations() {
             ))}
           </div>
 
-          <p className="text-white mt-6 mb-4  text-sm text-center">
-            Ogni contributo, anche piccolo, ci aiuta a mantenere il servizio attivo e gratuito per tutti.
-          </p>
-          <div className="w-full italic mt-3 text-center">
-            <Link href="/info/gestori">
-              <small>I gestori della piattaforma</small>
-            </Link>
-          </div>
-
-          <h1 className="italic mt-10 mb-8 text-2xl text-center">&quot;Culture shouldn&apos;t exist only for those who can afford it&quot;</h1>
-
+            <img src="/cat-cat-spinning-pillow.gif" alt="this server is powered by this cat" className='mx-auto mt-2'/>
         </div>
       </div>
     </>

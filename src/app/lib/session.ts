@@ -1,25 +1,28 @@
-// lib/session.ts
-import { SessionOptions } from "iron-session";
+import { SessionOptions } from 'iron-session';
 
 export interface SessionData {
+  lastRefresh: any;
   user?: {
     id: number;
-    username: string;
+    telegramId: number;
+    firstName: string;
+    lastName?: string;
+    username?: string;
+    photoUrl?: string;
+    isAdmin: boolean;
+    status: string;
   };
   isLoggedIn: boolean;
 }
 
 export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_SECRET!,
-  cookieName: "admin_session",
+  cookieName: 'fuckcopyright_session',
   cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    // Nessun maxAge = session cookie (si cancella alla chiusura browser)
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30, // 30 giorni
+    path: '/',
+    domain: process.env.SESSION_DOMAIN,
   },
 };
-
-// Dichiarazione modulo per TypeScript
-declare module "iron-session" {
-  interface IronSessionData extends SessionData {}
-}
