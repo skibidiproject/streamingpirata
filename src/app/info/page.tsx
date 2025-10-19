@@ -2,7 +2,6 @@
 
 import Crypto, { Wallets } from '../_components/Crypto'
 import Navbar from '../_components/NavBar'
-import Link from 'next/link'
 
 
 export default function Donations() {
