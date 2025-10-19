@@ -33,17 +33,20 @@ services:
       - "6379:6379"
     restart: unless-stopped
 
-  cloudbeaver:
-    image: dbeaver/cloudbeaver:latest
-    container_name: cloudbeaver
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: management.postgre@fuckcopyright.net
+      PGADMIN_DEFAULT_PASSWORD: FJ$sik9kbRr$Wd
     ports:
-      - "5051:8978"
+      - "5051:80"
     volumes:
-      - cloudbeaver_data:/opt/cloudbeaver/workspace
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - db
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  cloudbeaver_data:
+  pgadmin_data:
