@@ -415,6 +415,16 @@ class TMDBImporter {
   // Inserisci o aggiorna media
   async insertOrUpdateMedia(mediaType, data) {
     const tmdbId = data.id;
+    
+    // CONTROLLO DISPONIBILITÀ FILM
+    if (mediaType === "movie") {
+      const isAvailable = await this.checkMovieAvailability(tmdbId);
+      if (!isAvailable) {
+        console.log(`Skipping movie ${tmdbId} - not available on vixsrc`);
+        return null;
+      }
+    }
+    
     const logoUrl = await this.getBestLogo(mediaType, tmdbId);
     const trailerUrl = this.extractTrailer(data);
     const certification = this.extractCertification(data, mediaType);
@@ -548,11 +558,34 @@ class TMDBImporter {
         
         const statusMsg = this.forceAdd && this.isInFuture(seasonData.air_date) ? " (FORCED - not yet released)" : "";
         
-        // CORREZIONE: Conta gli episodi dall'array episodes
-        const episodeCount = seasonData.episodes ? seasonData.episodes.length : 0;
-        console.log(`Season ${seasonNumber} has ${episodeCount} episodes`);
+        const episodes = seasonData.episodes || [];
         
-        // Inserisci stagione con il conteggio corretto
+        // CONTROLLO DISPONIBILITÀ EPISODI
+        const availableEpisodes = [];
+        for (const episode of episodes) {
+          // Controlla se l'episodio è già uscito
+          if (!this.forceAdd && (this.isInFuture(episode.air_date) || !episode.air_date)) {
+            console.log(`Skipping episode S${seasonNumber}E${episode.episode_number} - not yet aired (${episode.air_date})`);
+            continue;
+          }
+          
+          // Controlla disponibilità su vixsrc
+          const isAvailable = await this.checkEpisodeAvailability(tmdbId, seasonNumber, episode.episode_number);
+          if (isAvailable) {
+            availableEpisodes.push(episode);
+          }
+        }
+        
+        // Se nessun episodio disponibile, salta la stagione
+        if (availableEpisodes.length === 0) {
+          console.log(`Skipping season ${seasonNumber} - no episodes available on vixsrc`);
+          continue;
+        }
+        
+        const episodeCount = availableEpisodes.length;
+        console.log(`Season ${seasonNumber} has ${episodeCount} available episodes (out of ${episodes.length} total)`);
+        
+        // Inserisci stagione con il conteggio degli episodi disponibili
         await this.client.query(`
           INSERT INTO tv_seasons (id, media_id, season_number, description, number_of_episodes, release_date)
           VALUES ($1, $2, $3, $4, $5, $6)
@@ -565,28 +598,20 @@ class TMDBImporter {
           mediaId,
           seasonData.season_number,
           seasonData.overview,
-          episodeCount, // <-- CORREZIONE: Usa il conteggio dall'array episodes
+          episodeCount,
           seasonData.air_date
         ]);
         
         console.log(`Season ${seasonNumber} release date: ${seasonData.air_date}${statusMsg}`);
         
-        // Inserisci episodi
-        const episodes = seasonData.episodes || [];
-        for (const episode of episodes) {
-          // Controlla se l'episodio è già uscito
-          if (!this.forceAdd && (this.isInFuture(episode.air_date) || !episode.air_date)) {
-            console.log(`Skipping episode S${seasonNumber}E${episode.episode_number} - not yet aired (${episode.air_date})`);
-            continue;
-          }
-          
+        // Inserisci solo gli episodi disponibili
+        for (const episode of availableEpisodes) {
           const episodeStatusMsg = this.forceAdd && this.isInFuture(episode.air_date) ? " (FORCED - not yet aired)" : "";
           
           console.log(`Processing episode S${seasonNumber}E${episode.episode_number}: ${episode.name} (Release: ${episode.air_date || 'N/A'})${episodeStatusMsg}`);
           
           const stillUrl = await this.getBestEpisodeStill(tmdbId, seasonNumber, episode.episode_number);
           
-          // MODIFICA: Aggiungi episode.air_date alla query di inserimento
           await this.client.query(`
             INSERT INTO tv_episodes (id, season_id, episode_number, title, description, duration, still_url, release_date)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -604,7 +629,7 @@ class TMDBImporter {
             episode.overview,
             episode.runtime || episode.duration,
             stillUrl,
-            episode.air_date // <-- AGGIUNTO: Data di rilascio dell'episodio
+            episode.air_date
           ]);
         }
       }
