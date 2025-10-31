@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import NextTopLoader from 'nextjs-toploader';
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -32,6 +33,11 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} antialiased overflow-x-hidden`}
       >
+        <NextTopLoader
+          color="#155dfc"
+          height={2}
+          showSpinner={false}
+        />
         {children}
       </body>
     </html>
