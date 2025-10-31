@@ -16,8 +16,10 @@ type GenreSection = {
   items: MediaData[];
 };
 
-export default async function Home() {
+// Forza dynamic rendering per questa pagina
+export const dynamic = 'force-dynamic';
 
+export default async function Home() {
   let latestMedia: MediaData[] = [];
   let genreResults: GenreSection[] = [];
   let heroMedia: MediaData | null = null;
@@ -43,7 +45,6 @@ export default async function Home() {
     });
     latestMedia = await resLatest.json();
 
-
     // Fetch per ogni genere
     genreResults = await Promise.all(
       genres.map(async ({ id, name }) => {
@@ -55,7 +56,7 @@ export default async function Home() {
           return {
             id,
             name,
-            items: shuffle(data), // vedere se randomizzare per estetica
+            items: shuffle(data),
           };
         } catch (err) {
           console.error(`Errore nel fetch del genere ${name}:`, err);
@@ -80,20 +81,17 @@ export default async function Home() {
     <>
       <NavBar />
       {/*<StartupDialog />*/}
-
+      
       {/* Hero Section */}
       {heroMedia && (
         <HeroMediaCard mediaID={heroMedia.id} type={heroMedia.type} />
       )}
-
-      
 
       {/* Nuovi arrivi */}
       <div>
         <h1 className="text-2xl font-bold ml-6 mt-10">Nuovi arrivi</h1>
         <ScrollSection media={latestMedia} />
       </div>
-
 
       {/* Sezioni per genere */}
       {genreResults.map(({ id, name, items }) => (
