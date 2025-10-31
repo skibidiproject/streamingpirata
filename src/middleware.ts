@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { unsealData } from 'iron-session';
 import { sessionOptions, SessionData } from '@/app/lib/session';
 
-const ENABLE_AUTH = false;
+const ENABLE_AUTH = true;
 
 
 const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL || "";
